@@ -85,7 +85,7 @@ function Jobs() {
               <TopToolBox>
                 <div className="ninjadash-showcase-top d-flex justify-content-between align-items-center">
                   <div className="ninjadash-showcase-top__text">
-                    <p className="search-result">Showing 1–8 of 86 results</p>
+                    <p className="search-result">Produtos 1–8 de 86 resultados</p>
                   </div>
                   {(window.innerWidth <= 991 && window.innerWidth >= 768) ||
                     (window.innerWidth > 575 && (

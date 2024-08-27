@@ -1,3 +1,5 @@
+// Não utilizado
+
 import UilFacebook from '@iconscout/react-unicons/icons/uil-facebook-f';
 import UilInstagram from '@iconscout/react-unicons/icons/uil-instagram';
 import UilLinkedin from '@iconscout/react-unicons/icons/uil-linkedin';

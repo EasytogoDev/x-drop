@@ -41,7 +41,7 @@ function Profile() {
         <Col xl={12} lg={16} xs={24}>
           <BasicFormWrapper>
             <Form name="editProfile" onFinish={handleSubmit}>
-              <Form.Item name="name" initialValue="Duran Clayton" label="Name">
+              <Form.Item name="name" initialValue="Vinicius Aguiar" label="Name">
                 <Input />
               </Form.Item>
               <Form.Item name="phone" initialValue="01742920502" label="Phone Number">

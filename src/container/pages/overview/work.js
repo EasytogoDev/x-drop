@@ -23,30 +23,30 @@ function Work() {
           <BasicFormWrapper>
             <Form style={{ width: '100%' }} form={form} name="work" onFinish={handleSubmit}>
               <Heading className="form-title" as="h4">
-                Work Information
+                Informações de Trabalho
               </Heading>
 
-              <Form.Item name="company" label="Company Name">
-                <Input placeholder="Company Name" />
+              <Form.Item name="company" label="Nome da Empresa">
+                <Input placeholder="Nome da Empresa" />
               </Form.Item>
 
-              <Form.Item name="department" label="Department">
-                <Input placeholder="Department name" />
+              <Form.Item name="department" label="Setor">
+                <Input placeholder="Nome do Setor" />
               </Form.Item>
 
-              <Form.Item name="designation" label="Designation">
-                <Input placeholder="Designation" />
+              <Form.Item name="designation" label="Função">
+                <Input placeholder="Função" />
               </Form.Item>
 
-              <Form.Item name="hiringDate" rules={[{ type: 'object', whitespace: true }]} label="Hiring Date">
+              <Form.Item name="hiringDate" rules={[{ type: 'object', whitespace: true }]} label="Data de Contratação">
                 <DatePicker format={dateFormat} style={{ width: '100%' }} />
               </Form.Item>
 
               <Form.Item name="status" initialValue="active" label="Status">
                 <Radio.Group>
-                  <Radio value="active">Active</Radio>
-                  <Radio value="deactivated">Deactivated</Radio>
-                  <Radio value="blocked">Blocked</Radio>
+                  <Radio value="active">Ativo</Radio>
+                  <Radio value="deactivated">Desativado</Radio>
+                  <Radio value="blocked">Bloqueado</Radio>
                 </Radio.Group>
               </Form.Item>
               <Form.Item>
@@ -58,10 +58,10 @@ function Work() {
                       return form.resetFields();
                     }}
                   >
-                    Reset
+                    Limpar
                   </Button>
                   <Button htmlType="submit" type="primary">
-                    <Link to="/admin/users/add-user/social">Next</Link>
+                    <Link to="/admin/usuarios/adicionar/social">Próximo</Link>
                   </Button>
                 </div>
               </Form.Item>

@@ -519,7 +519,7 @@ const Main = Styled.div`
         padding: 50px 30px 25px;
     }
     .columnCardsWrapper .ant-card{
-        background: ${({ theme }) => theme[theme.mainContent]['white-background']};
+        background: ${({ theme }) => theme[theme.mainContent]['dark-background']};
     }
     .columnCardsWrapper .ant-card-head{
         background: ${({ theme }) => theme[theme.mainContent]['white-background']};

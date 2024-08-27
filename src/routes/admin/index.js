@@ -1,13 +1,28 @@
+/* eslint-disable */
 import { Spin } from 'antd';
 import React, { lazy, Suspense, useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Axios from './axios';
+import Assinaturas from './assinaturas';
 import Dashboard from './dashboard';
 import Ecommerce from './ecommerce';
+import Fiscal from './fiscal';
+import Orders from './newOrder';
+import Financeiro from './financeiro';
+import Produtos from './produtos';
+import Ferramentas from './ferramentas';
+import Aprendizado from './aprendizado';
+import Vendas from './vendas';
+import Configuracoes from './configuracoes';
+import Relatorios from './relatorios';
+import MySubscription from './others';
+import Compras from './compras';
+import Suporte from './suporte';
+import Estoque from './estoque';
 import Features from './features';
 import Gallery from './gallery';
 import Pages from './pages';
-import Users from './users';
+import Usuarios from './usuarios';
 import Widgets from './widgets';
 import withAdminLayout from '../../layout/withAdminLayout';
 
@@ -68,7 +83,7 @@ const Admin = React.memo(() => {
         <Route path="components/*" element={<Components />} />
         <Route path="charts/*" element={<Charts />} />
         <Route path="app/task/*" element={<Task />} />
-        <Route path="users/*" element={<Users />} />
+        <Route path="usuarios/*" element={<Usuarios />} />
         <Route path="app/support/tickets/*" element={<Tickets />} />
         <Route path="app/support/tickets/add" element={<AddTicket />} />
         <Route path="app/support/ticketDetails/:id" element={<TicketDetails />} />
@@ -84,9 +99,23 @@ const Admin = React.memo(() => {
         <Route path="contact/addNew" element={<ContactAddNew />} />
         <Route path="app/calendar/*" element={<Calendars />} />
         <Route path="features/*" element={<Features />} />
+        <Route path="assinaturas/*" element={<Assinaturas />} />
+        <Route path="aprendizado/*" element={<Aprendizado />} />
+        <Route path="configuracoes/*" element={<Configuracoes />} />
+        <Route path="others/*" element={<MySubscription />} />
+        <Route path="fiscal/*" element={<Fiscal />} />
+        <Route path="newOrder/*" element={<Orders />} />
+        <Route path="financeiro/*" element={<Financeiro />} />
+        <Route path="ferramentas/*" element={<Ferramentas />} />
+        <Route path="vendas/*" element={<Vendas />} />
+        <Route path="relatorios/*" element={<Relatorios />} />
+        <Route path="produtos/*" element={<Produtos />} />
+        <Route path="suporte/*" element={<Suporte />} />
+        <Route path="compras/*" element={<Compras />} />
         <Route path="project/*" element={<Projects />} />
         <Route path="profile/myProfile/*" element={<Myprofile />} />
         <Route path="ecommerce/*" element={<Ecommerce />} />
+        <Route path="estoque/*" element={<Estoque />} />
         <Route path="main/chat/*" element={<Chat />} />
         <Route path="email/*" element={<Inbox />} />
         <Route path="maps/*" element={<Maps />} />

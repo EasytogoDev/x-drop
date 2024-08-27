@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { lazy, Suspense } from 'react';
 import { Row, Col, Skeleton } from 'antd';
 import { NavLink, Route, Routes } from 'react-router-dom';
@@ -39,7 +40,11 @@ function MyProfile() {
               }
             >
               <UserCards
-                user={{ name: 'Duran Clyton', designation: 'UI/UX Designer', img: 'static/img/users/1.png' }}
+                user={{
+                  name: 'Vinicius Aguiar',
+                  designation: 'Desenvolvedor Web',
+                  // img: require(`public/118391888.jpg`),
+                }}
               />
             </Suspense>
             <Suspense

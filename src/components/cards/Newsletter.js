@@ -1,3 +1,5 @@
+// Não utilizado
+
 import React from 'react';
 import { NewsletterStyle } from './Style';
 import { Button } from '../buttons/buttons';

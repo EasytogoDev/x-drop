@@ -21,7 +21,7 @@ function ForgotPassword() {
             </div>
             <div className="ninjadash-authentication-content">
               <p className="forgot-text">
-                Enter the email address you used when you joined and we’ll send you instructions to reset your password.
+                Enter the email address you used when you joined and well send you instructions to reset your password.
               </p>
               <Form.Item
                 label="Email Address"

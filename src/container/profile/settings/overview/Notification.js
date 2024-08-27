@@ -20,7 +20,7 @@ function Notification() {
       <Cards
         title={
           <div className="setting-card-title">
-            <Heading as="h4">Notifications</Heading>
+            <Heading as="h4">Notificações</Heading>
             <span>Choose What Notification you will Receive</span>
           </div>
         }

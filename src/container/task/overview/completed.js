@@ -5,7 +5,7 @@ import { TaskListWrap } from '../style';
 function Completed() {
   return (
     <TaskListWrap className="mb-30">
-      <TaskList header="Task List" description taskStatus="completed" taskLimit={10} />
+      <TaskList header="Ativos" description taskStatus="completed" taskLimit={10} />
     </TaskListWrap>
   );
 }

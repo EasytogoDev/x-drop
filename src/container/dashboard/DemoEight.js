@@ -21,7 +21,7 @@ function DemoEight() {
     },
     {
       path: 'first',
-      breadcrumbName: 'Demo 8',
+      breadcrumbName: 'Dashboard Informativo',
     },
   ];
   return (

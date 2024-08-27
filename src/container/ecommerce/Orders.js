@@ -100,12 +100,12 @@ function Orders() {
 
   const columns = [
     {
-      title: 'Order Id',
+      title: 'ID do Pedido',
       dataIndex: 'id',
       key: 'id',
     },
     {
-      title: 'customer',
+      title: 'Cliente',
       dataIndex: 'customer',
       key: 'customer',
     },
@@ -115,17 +115,17 @@ function Orders() {
       key: 'status',
     },
     {
-      title: 'Amount',
+      title: 'Preço',
       dataIndex: 'amount',
       key: 'amount',
     },
     {
-      title: 'Date',
+      title: 'Data',
       dataIndex: 'date',
       key: 'date',
     },
     {
-      title: 'Action',
+      title: 'Ações',
       dataIndex: 'action',
       key: 'action',
     },
@@ -143,7 +143,7 @@ function Orders() {
 
   return (
     <>
-      <PageHeader className="ninjadash-page-header-main" title="Orders" routes={PageRoutes} />
+      <PageHeader className="ninjadash-page-header-main" title="Pedidos" routes={PageRoutes} />
       <Main>
         <Cards headless>
           <Row gutter={15}>
@@ -177,7 +177,7 @@ function Orders() {
                         Export
                       </Button>
                       <Button size="small" type="primary">
-                        <UilPlus /> Add Seller
+                        <UilPlus /> Adicionar Pedido
                       </Button>
                     </div>
                   </Col>

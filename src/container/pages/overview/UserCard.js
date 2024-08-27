@@ -1,9 +1,11 @@
-import React from 'react';
+/* eslint-disable prettier/prettier */
+// import React from 'react';
 import UilEnvelope from '@iconscout/react-unicons/icons/uil-envelope';
-import UilUserPlus from '@iconscout/react-unicons/icons/uil-user-plus';
+// import UilUserPlus from '@iconscout/react-unicons/icons/uil-user-plus';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Col, Row } from 'antd';
+import React from 'react';
 import { UserCard } from '../style';
 import Heading from '../../../components/heading/heading';
 import { Cards } from '../../../components/cards/frame/cards-frame';
@@ -18,6 +20,11 @@ function UserCards({ user }) {
           <figure>
             <img src={require(`../../../${img}`)} alt="" />
           </figure>
+          {/* <Image 
+            source={{ uri: 'https://github.com/ViniAguiar1.png'}}
+            width={200}
+            height={200}
+          /> */}
           <figcaption>
             <div className="card__content">
               <Heading className="card__name" as="h6">
@@ -29,12 +36,12 @@ function UserCards({ user }) {
             <div className="card__actions">
               <Button size="default" type="white">
                 <UilEnvelope />
-                Message
+                Mensagem
               </Button>
-              <Button size="default" type="white">
+              {/* <Button size="default" type="white">
                 <UilUserPlus />
-                Following
-              </Button>
+                Segui
+              </Button> */}
             </div>
             <div className="card__info">
               <Row gutter={15}>
@@ -43,7 +50,7 @@ function UserCards({ user }) {
                     <Heading className="info-single__title" as="h2">
                       $72,572
                     </Heading>
-                    <p>Total Revenue</p>
+                    <p>Vendas</p>
                   </div>
                 </Col>
                 <Col xs={8}>
@@ -51,7 +58,7 @@ function UserCards({ user }) {
                     <Heading className="info-single__title" as="h2">
                       3,257
                     </Heading>
-                    <p>Orders</p>
+                    <p>Pedidos</p>
                   </div>
                 </Col>
                 <Col xs={8}>
@@ -59,7 +66,7 @@ function UserCards({ user }) {
                     <Heading className="info-single__title" as="h2">
                       74
                     </Heading>
-                    <p>Products</p>
+                    <p>Produtos</p>
                   </div>
                 </Col>
               </Row>

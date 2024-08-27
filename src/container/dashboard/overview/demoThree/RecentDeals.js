@@ -10,12 +10,12 @@ const { recentDeal } = tableData;
 
 const dealColumns = [
   {
-    title: 'Product Name',
+    title: 'Nome do produto',
     dataIndex: 'productname',
     key: 'prroductname',
   },
   {
-    title: 'Price',
+    title: 'Preço',
     dataIndex: 'price',
     key: 'price',
   },
@@ -55,23 +55,23 @@ const RecentDeal = React.memo(() => {
               <ul>
                 <li className={dealTab === 'today' ? 'ninjadash-active' : 'ninjadash-year'}>
                   <Link onClick={(event) => handleTabActivation('today', event)} to="#">
-                    Year
+                    Hoje
                   </Link>
                 </li>
-                <li className={dealTab === 'week' ? 'ninjadash-active' : 'ninjadash-week'}>
+                {/* <li className={dealTab === 'week' ? 'ninjadash-active' : 'ninjadash-week'}>
                   <Link onClick={(event) => handleTabActivation('week', event)} to="#">
-                    Week
+                    Semana
                   </Link>
-                </li>
-                <li className={dealTab === 'month' ? 'ninjadash-active' : 'ninjadash-month'}>
+                </li> */}
+                {/* <li className={dealTab === 'month' ? 'ninjadash-active' : 'ninjadash-month'}>
                   <Link onClick={(event) => handleTabActivation('month', event)} to="#">
-                    Month
+                    Mês
                   </Link>
-                </li>
+                </li> */}
               </ul>
             </div>
           }
-          title="Recent Deals"
+          title="Ultimos pedidos"
           size="large"
         >
           <TableDefaultStyle className="ninjadash-having-header-bg">

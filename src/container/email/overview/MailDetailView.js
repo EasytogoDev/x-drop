@@ -70,7 +70,7 @@ function Single() {
             <Link onClick={() => navigate(-1)} to="#">
               <UilArrowLeft />
             </Link>
-            <Tooltip placement="bottom" title="Refresh">
+            <Tooltip placement="bottom" title="Recarregar">
               <NavLink to="#">
                 <UilRedo />
               </NavLink>

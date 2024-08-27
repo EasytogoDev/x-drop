@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Row, Col, Form, Input, Button } from 'antd';
 import FontAwesome from 'react-fontawesome';
@@ -21,7 +23,7 @@ function SocialProfile() {
           <BasicFormWrapper>
             <Form form={form} name="editAccount" onFinish={handleSubmit}>
               <Heading className="form-title" as="h4">
-                Social Profiles
+                Rede Sociais
               </Heading>
               <Form.Item name="facebook" label="Facebook">
                 <Input
@@ -33,16 +35,16 @@ function SocialProfile() {
                   placeholder="URL"
                 />
               </Form.Item>
-              <Form.Item name="twitter" label="Twitter">
+              {/* <Form.Item name="twitter" label="X">
                 <Input
                   prefix={
                     <span className="twitter">
-                      <FontAwesome name="twitter" />
+                      <img src='../../../../public/x-icon.png' />
                     </span>
                   }
                   placeholder="URL"
                 />
-              </Form.Item>
+              </Form.Item> */}
               <Form.Item name="linkedin" label="Linkedin">
                 <Input
                   prefix={
@@ -73,25 +75,30 @@ function SocialProfile() {
                   placeholder="URL"
                 />
               </Form.Item>
-              <Form.Item name="youtube" label="Youtube">
+
+              
+              {/* PRECISA SER ATUALIZADO POSTERIORMENTE!!! */}
+              {/* <Form.Item name="youtube" label="TikTok">
                 <Input
                   prefix={
                     <span className="youtube">
-                      <FontAwesome name="youtube" />
+                      <img src='../../../../public/logotipo-do-tiktok_628407-1683-removebg-preview.png'/>
                     </span>
                   }
                   placeholder="Url"
                 />
-              </Form.Item>
+              </Form.Item> */}
 
               <Form.Item>
                 <div className="add-user-bottom text-right">
                   <Button className="ant-btn ant-btn-light" type="default" htmlType="submit">
-                    <Link to="/admin/users/add-user/work">Back</Link>
+                    <Link to="/admin/users/add-user/work">Voltar</Link>
                   </Button>
-                  <Button onClick={handleSubmit} type="primary">
-                    Save Profile
-                  </Button>
+                  <Link to="/admin/usuarios/lista">
+                    <Button onClick={handleSubmit} type="primary">
+                      Salvar Perfil
+                    </Button>
+                  </Link>
                 </div>
               </Form.Item>
             </Form>

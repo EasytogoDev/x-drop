@@ -5,7 +5,7 @@ import { TaskListWrap } from '../style';
 function Favourite() {
   return (
     <TaskListWrap className="mb-30">
-      <TaskList header="Task List" description taskStatus="favourite" taskLimit={10} />
+      <TaskList header="Favoritos" description taskStatus="favourite" taskLimit={10} />
     </TaskListWrap>
   );
 }

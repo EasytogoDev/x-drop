@@ -9,7 +9,7 @@ import { Scrollbars } from '@pezhmanparsaee/react-custom-scrollbars';
 import { connect } from 'react-redux';
 import { Link, NavLink } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
-import MenueItems from './MenueItems';
+import MenuItems from './MenueItems';
 import { FooterStyle, LayoutContainer, SmallScreenAuthInfo, TopMenuSearch } from './Style';
 import TopMenu from './TopMenu';
 import Search from '../components/utilities/auth-info/Search';
@@ -123,7 +123,7 @@ const ThemeLayout = (WrappedComponent) => {
                   <div className="navbar-brand align-cener-v">
                     <Link
                       className={topMenu && window.innerWidth > 991 ? 'ninjadash-logo top-menu' : 'ninjadash-logo'}
-                      to="/admin"
+                      to="/admin/demo-8"
                     >
                       <img
                         src={
@@ -203,7 +203,7 @@ const ThemeLayout = (WrappedComponent) => {
                       renderView={renderView}
                       renderTrackVertical={(props) => <div {...props} className="ninjadash-track-vertical" />}
                     >
-                      <MenueItems topMenu={topMenu} toggleCollapsed={toggleCollapsedMobile} />
+                      <MenuItems topMenu={topMenu} toggleCollapsed={toggleCollapsedMobile} />
                     </Scrollbars>
                   </Sider>
                 </ThemeProvider>
@@ -215,14 +215,13 @@ const ThemeLayout = (WrappedComponent) => {
                     <Row>
                       <Col md={12} xs={24}>
                         <span className="admin-footer__copyright">
-                          © 2023<Link to="#">SovWare</Link>
+                          © 2024<Link to="https://easytogo.com.br/">Easytogo Soluções Técnologicas Ltda </Link>
                         </span>
                       </Col>
                       <Col md={12} xs={24}>
                         <div className="admin-footer__links">
-                          <NavLink to="#">About</NavLink>
-                          <NavLink to="#">Team</NavLink>
-                          <NavLink to="#">Contact</NavLink>
+                          <NavLink to="/outros/perguntas-frequentes">F.A.Q</NavLink>
+                          <NavLink to="/outros/termos">Termos</NavLink>
                         </div>
                       </Col>
                     </Row>

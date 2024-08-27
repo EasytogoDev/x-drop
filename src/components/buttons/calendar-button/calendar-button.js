@@ -1,3 +1,5 @@
+// Não encontrado
+
 import UilCalendar from '@iconscout/react-unicons/icons/uil-calendar-alt';
 import React from 'react';
 import { DateRangePickerOne } from '../../datePicker/datePicker';
@@ -11,7 +13,7 @@ function CalendarButtonPageHeader() {
     <Popover placement="bottomRight" title="Search by Calendar" content={content} action="hover">
       <Button size="small" type="white">
         <UilCalendar />
-        Calendar
+        Calendário
       </Button>
     </Popover>
   );

@@ -4,7 +4,6 @@ import initialStateGroup from '../../demoData/usersGroupData.json';
 const userReducer = (state = initialState) => {
   return state;
 };
-
 const userGroupReducer = (state = initialStateGroup) => {
   return state;
 };

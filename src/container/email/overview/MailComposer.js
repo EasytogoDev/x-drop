@@ -63,18 +63,18 @@ function MailComposer({ onChange, onSend, defaultTag, replay, text }) {
                 onChange={handleChange}
               />
             </div>
-            <span className="mail-cc">Cc</span>
+            {/* <span className="mail-cc">Cc</span> */}
           </div>
         )}
         <div className="group">
-          <RichTextEditor placeholder="Type your message..." value={state.value} onChange={onChanges} />
+          <RichTextEditor placeholder="Digite sua URL" value={state.value} onChange={onChanges} />
         </div>
       </div>
       {!text && (
         <div className="footer">
           <div className="left d-flex align-items-center">
             <Button size="default" type="primary" onClick={onSubmit} raised>
-              Send
+              Gerar QrCode
             </Button>
             <Link to="#">
               <Upload {...props}>

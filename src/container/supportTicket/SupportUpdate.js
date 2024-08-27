@@ -73,7 +73,7 @@ function SupportCreate({ visible, onCancel, handleSubmit, editableData }) {
             </Form.Item>
             <Form.Item
               name="description"
-              label="Description"
+              label="Descrição"
               rules={[
                 {
                   required: true,
@@ -84,7 +84,7 @@ function SupportCreate({ visible, onCancel, handleSubmit, editableData }) {
             </Form.Item>
             <Form.Item>
               <Button size="default" htmlType="submit" type="primary" key="submit" onClick={() => handleOk}>
-                Submit Ticket
+                Abrir Chamado
               </Button>
             </Form.Item>
           </Form>

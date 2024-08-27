@@ -21,8 +21,8 @@ const TotalEarning = React.memo(() => {
                     title={
                       <div className="ninjadash-card-title-wrap">
                         <span className="ninjadash-card-title-text">
-                          Total {item.title}
-                          <span className="ninjadash-card-subtitile">(Last){item.period}</span>
+                          Ganhos totais
+                          <span className="ninjadash-card-subtitile">(Últimos 10 meses)</span>
                         </span>
                         <span className="ninjadash-card-title-extra-text">
                           <span className="ninjadash-total-chart-total">$8550</span>

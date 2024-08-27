@@ -10,17 +10,17 @@ const { topProduct } = tableData;
 
 const productColumns = [
   {
-    title: 'Product Name',
+    title: 'Nome do produto',
     dataIndex: 'productname',
     key: 'prroductname',
   },
   {
-    title: 'Deals',
+    title: 'Oferta',
     dataIndex: 'deals',
     key: 'deals',
   },
   {
-    title: 'Amount',
+    title: 'Quantia',
     dataIndex: 'amount',
     key: 'amount',
   },
@@ -61,23 +61,23 @@ const TopProduct = React.memo(() => {
               <ul>
                 <li className={productTab === 'today' ? 'ninjadash-active' : 'ninjadash-year'}>
                   <Link onClick={(event) => handleTabActivation('today', event)} to="#">
-                    Year
+                    Hoje
                   </Link>
                 </li>
                 <li className={productTab === 'week' ? 'ninjadash-active' : 'ninjadash-week'}>
                   <Link onClick={(event) => handleTabActivation('week', event)} to="#">
-                    Week
+                    Semana
                   </Link>
                 </li>
                 <li className={productTab === 'month' ? 'ninjadash-active' : 'ninjadash-month'}>
                   <Link onClick={(event) => handleTabActivation('month', event)} to="#">
-                    Month
+                    Mês
                   </Link>
                 </li>
               </ul>
             </div>
           }
-          title="Top Product"
+          title="Top Produtos"
           size="large"
         >
           <TableDefaultStyle className="ninjadash-having-header-bg">

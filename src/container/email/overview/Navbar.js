@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { Input, Form } from 'antd';
 import UilInbox from '@iconscout/react-unicons/icons/uil-inbox';
-import UilStar from '@iconscout/react-unicons/icons/uil-star';
-import UilMessage from '@iconscout/react-unicons/icons/uil-message';
+// import UilStar from '@iconscout/react-unicons/icons/uil-star';
+// import UilMessage from '@iconscout/react-unicons/icons/uil-message';
 import UilPlus from '@iconscout/react-unicons/icons/uil-plus';
-import UilEdit from '@iconscout/react-unicons/icons/uil-edit';
-import UilExclamationOctagon from '@iconscout/react-unicons/icons/uil-exclamation-octagon';
-import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
+// import UilEdit from '@iconscout/react-unicons/icons/uil-edit';
+// import UilExclamationOctagon from '@iconscout/react-unicons/icons/uil-exclamation-octagon';
+// import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
 import UilListUl from '@iconscout/react-unicons/icons/uil-list-ul';
 import propTypes from 'prop-types';
 import { EmailNav } from './style';
@@ -68,12 +68,12 @@ const EmailNavbar = React.memo(({ toggleCollapsed }) => {
           <NavLink to="./inbox" onClick={toggleCollapsed}>
             <UilInbox />
             <span className="nav-text">
-              <span>Inbox</span>
+              <span>Inicio</span>
               <span className="badge badge-primary">3</span>
             </span>
           </NavLink>
         </li>
-        <li>
+        {/* <li>
           <NavLink to="./starred" onClick={toggleCollapsed}>
             <UilStar />
             <span className="nav-text">
@@ -88,8 +88,8 @@ const EmailNavbar = React.memo(({ toggleCollapsed }) => {
               <span>Sent</span>
             </span>
           </NavLink>
-        </li>
-        <li>
+        </li> */}
+        {/* <li>
           <NavLink to="./drafts" onClick={toggleCollapsed}>
             <UilEdit />
             <span className="nav-text">
@@ -113,7 +113,7 @@ const EmailNavbar = React.memo(({ toggleCollapsed }) => {
               <span>Trash</span>
             </span>
           </NavLink>
-        </li>
+        </li> */}
       </ul>
       <div className="nav-labels">
         <p>Labels</p>

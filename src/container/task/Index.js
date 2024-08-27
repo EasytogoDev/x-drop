@@ -28,7 +28,7 @@ function Task() {
     },
     {
       path: '',
-      breadcrumbName: 'Task',
+      breadcrumbName: 'Encurtador de link',
     },
   ];
   const [form] = Form.useForm();
@@ -105,7 +105,7 @@ function Task() {
   const path = '/admin/app/task';
   return (
     <>
-      <PageHeader className="ninjadash-page-header-main" title="Task" routes={PageRoutes} />
+      <PageHeader className="ninjadash-page-header-main" title="Encurtador de link" routes={PageRoutes} />
       <Main>
         <Row gutter={25}>
           <Col xxl={5} lg={6} md={7} xs={24}>
@@ -115,7 +115,7 @@ function Task() {
                   <div className="ninjadash-taskApp-sidebar">
                     <Button className="ninjadash-btn-add" size="large" type="primary" raised onClick={showModal}>
                       <UilPlus />
-                      Add Task
+                      Add Link
                     </Button>
                     <ul className="ninjadash-taskApp-sidebar__nav">
                       <li className="ninjadash-taskApp-sidebar__nav--item">
@@ -123,7 +123,7 @@ function Task() {
                           <span className="nav-item-icon">
                             <UilEdit />
                           </span>
-                          <span className="nav-item-text">All</span>
+                          <span className="nav-item-text">Todos</span>
                         </NavLink>
                       </li>
                       <li className="ninjadash-taskApp-sidebar__nav--item">
@@ -131,7 +131,7 @@ function Task() {
                           <span className="nav-item-icon">
                             <UilStar />
                           </span>
-                          <span className="nav-item-text">Favourite</span>
+                          <span className="nav-item-text">Favoritos</span>
                         </NavLink>
                       </li>
                       <li className="ninjadash-taskApp-sidebar__nav--item">
@@ -139,14 +139,14 @@ function Task() {
                           <span className="nav-item-icon">
                             <UilCheck />
                           </span>
-                          <span className="nav-item-text">Completed</span>
+                          <span className="nav-item-text">Ativos</span>
                         </NavLink>
                       </li>
                     </ul>
                   </div>
                 </SidebarWrap>
                 <Modal
-                  title="Add Task"
+                  title="Add link"
                   className="ninjadash-addTask-modal"
                   type={state.modalType}
                   visible={state.visible}
@@ -157,18 +157,18 @@ function Task() {
                     <BasicFormWrapper>
                       <Form form={form} name="add-task" onFinish={handleAddTask}>
                         <Form.Item rules={[{ required: true, message: 'Please add a Title' }]} name="title">
-                          <Input placeholder="Title" size="middle" />
+                          <Input placeholder="Digite o link aqui" size="middle" />
                         </Form.Item>
 
                         <Form.Item name="description">
-                          <Input.TextArea rows={4} placeholder="Add Description" />
+                          <Input.TextArea rows={4} placeholder="Comentário" />
                         </Form.Item>
                         <div className="ninjadash-modal-actions">
                           <Button size="small" type="white" key="cancel" outlined onClick={handleCancel}>
                             Cancel
                           </Button>
                           <Button htmlType="submit" size="small" type="primary" key="submit">
-                            Add Task
+                            Add link
                           </Button>
                         </div>
                       </Form>

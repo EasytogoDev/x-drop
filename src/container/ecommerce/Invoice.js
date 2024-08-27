@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMessage from '@iconscout/react-unicons/icons/uil-message';
 import UilPrint from '@iconscout/react-unicons/icons/uil-print';

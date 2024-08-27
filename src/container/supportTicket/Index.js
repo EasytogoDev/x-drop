@@ -1,5 +1,5 @@
 import React, { lazy, useState, useEffect, Suspense } from 'react';
-import { Row, Col, Input, Select, Table, Popconfirm, Skeleton } from 'antd';
+import { Row, Col, Input, Table, Popconfirm, Skeleton } from 'antd';
 import UilEye from '@iconscout/react-unicons/icons/uil-eye';
 import UilEdit from '@iconscout/react-unicons/icons/uil-edit';
 import UilPlus from '@iconscout/react-unicons/icons/uil-plus';
@@ -217,9 +217,9 @@ function SupportTicket() {
     dispatch(ticketUpdateSearch(id, 'id'));
   };
 
-  const handleStatusSearch = (value) => {
-    dispatch(ticketUpdateSearch(value, 'status'));
-  };
+  // const handleStatusSearch = (value) => {
+  //   dispatch(ticketUpdateSearch(value, 'status'));
+  // };
 
   const handleSubjectSearch = (e) => {
     const { value } = e.currentTarget;
@@ -228,7 +228,7 @@ function SupportTicket() {
 
   return (
     <>
-      <PageHeader className="ninjadash-page-header-main" title="Support Ticket" routes={PageRoutes} />
+      <PageHeader className="ninjadash-page-header-main" title="Suporte" routes={PageRoutes} />
       <Main>
         <TicketBox>
           <Row justify="center">
@@ -248,18 +248,18 @@ function SupportTicket() {
             <Col sm={24} xs={24}>
               <Cards headless>
                 <div className="ninjadash-support-content-top">
-                  <Heading as="h4">All Support Ticket</Heading>
+                  <Heading as="h4">Suporte</Heading>
                   <Button onClick={showModal} size="default" type="primary">
-                    <UilPlus /> Add Ticket
+                    <UilPlus /> Abrir chamado
                   </Button>
                 </div>
                 <div className="ninjadash-support-content-filter">
-                  <div className="ninjadash-support-content-filter__left">
+                  <div className="ninjadash-support-contesupportnt-filter__left">
                     <div className="ninjadash-support-content-filter__input">
                       <span className="label">Id:</span>
-                      <Input onChange={handleIdSearch} placeholder="Search with Id" />
+                      <Input onChange={handleIdSearch} placeholder="Procure pelo Id" />
                     </div>
-                    <div className="ninjadash-support-content-filter__input">
+                    {/* <div className="ninjadash-support-content-filter__input">
                       <span className="label">Status:</span>
                       <Select onChange={handleStatusSearch} style={{ width: 200 }} defaultValue="">
                         <Select.Option value="">All</Select.Option>
@@ -267,10 +267,10 @@ function SupportTicket() {
                         <Select.Option value="Pending">Pending</Select.Option>
                         <Select.Option value="Close">Close</Select.Option>
                       </Select>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="ninjadash-support-content-filter__right">
-                    <Input onChange={handleSubjectSearch} size="default" placeholder="Search" prefix={prefix} />
+                    <Input onChange={handleSubjectSearch} size="default" placeholder="Procurar" prefix={prefix} />
                   </div>
                 </div>
                 <div className="ninjadash-support-content-table">

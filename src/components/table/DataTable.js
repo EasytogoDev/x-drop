@@ -37,7 +37,7 @@ function DataTable({ filterOption, filterOnchange, rowSelection, tableData, colu
             <div className="ninjadash-datatable-filter__left">
               <div className="ninjadash-datatable-filter__input">
                 <span className="label">Id:</span>
-                <Input className="ninjadash-data-id" placeholder="Search with Id" />
+                <Input className="ninjadash-data-id" placeholder="Pesquise pela Descrição" />
               </div>
               <div className="ninjadash-datatable-filter__input">
                 <span className="label">Status:</span>

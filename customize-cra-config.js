@@ -1,4 +1,3 @@
-
 import { theme } from './src/config/theme/themeVariables';
 const CracoLessPlugin = require('craco-less');
 

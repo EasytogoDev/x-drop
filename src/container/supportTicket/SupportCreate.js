@@ -22,7 +22,7 @@ function SupportCreate({ visible, onCancel, handleSubmit }) {
     <Modal
       getContainer={false}
       type="primary"
-      title="Create Support"
+      title="Abrir Chamado"
       visible={visible}
       footer={null}
       onCancel={handleCancel}
@@ -44,7 +44,7 @@ function SupportCreate({ visible, onCancel, handleSubmit }) {
             </Form.Item>
             <Form.Item
               name="subject"
-              label="Subject"
+              label="Titulo"
               rules={[
                 {
                   required: true,
@@ -53,23 +53,23 @@ function SupportCreate({ visible, onCancel, handleSubmit }) {
             >
               <Input />
             </Form.Item>
-            <Form.Item name="priority" initialValue="high" label="Priority">
+            <Form.Item name="priority" initialValue="high" label="Prioridade">
               <Select style={{ width: '100%' }}>
-                <Option value="high">High</Option>
-                <Option value="medium">Medium</Option>
-                <Option value="low">Low</Option>
+                <Option value="high">Alta</Option>
+                <Option value="medium">Médio</Option>
+                <Option value="low">Baixo</Option>
               </Select>
             </Form.Item>
             <Form.Item name="status" initialValue="open" label="Status">
               <Select style={{ width: '100%' }}>
-                <Option value="open">Open</Option>
-                <Option value="close">Close</Option>
-                <Option value="pending">Pending</Option>
+                <Option value="open">Aberto</Option>
+                <Option value="close">Fechado</Option>
+                <Option value="pending">Pendente</Option>
               </Select>
             </Form.Item>
             <Form.Item
               name="description"
-              label="Description"
+              label="Descrição"
               rules={[
                 {
                   required: true,
@@ -80,7 +80,7 @@ function SupportCreate({ visible, onCancel, handleSubmit }) {
             </Form.Item>
             <Form.Item>
               <Button size="default" htmlType="submit" type="primary" key="submit" onClick={() => handleOk}>
-                Submit Ticket
+                Enviar Chamado
               </Button>
             </Form.Item>
           </Form>

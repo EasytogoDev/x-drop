@@ -1,9 +1,10 @@
+/* eslint-disable prettier/prettier */
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Col, List, Row, Select, Spin } from 'antd';
 import UilSmile from '@iconscout/react-unicons/icons/uil-smile';
-import UilUpload from '@iconscout/react-unicons/icons/uil-upload';
-import UilImport from '@iconscout/react-unicons/icons/uil-import';
+// import UilUpload from '@iconscout/react-unicons/icons/uil-upload';
+// import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMessage from '@iconscout/react-unicons/icons/uil-message';
 import UilLeft from '@iconscout/react-unicons/icons/uil-arrow-left';
 import { useDispatch, useSelector } from 'react-redux';
@@ -158,27 +159,27 @@ function SupportTicketDetails() {
                     <Row>
                       <Col md={8} xs={24}>
                         <div className="ninjadash-ticket-author">
-                          <h4 className="ninjadash-ticket-details__top-title">Requested By:</h4>
+                          <h4 className="ninjadash-ticket-details__top-title">Chamado aberto por:</h4>
                           <div className="ninjadash-ticket-author__info">
                             <img style={{ width: '30px' }} src={require(`../../${dataState[0].user.img}`)} alt="" />
                             <span className="ninjadash-ticket-author__name">{dataState[0].user.name}</span>
                           </div>
-                          <h4>Priority</h4>
+                          <h4>Prioridade</h4>
                           <Select
                             onChange={handleUpdatePriority}
                             style={{ width: '200px' }}
                             defaultValue={dataState[0].priority}
                           >
-                            <Select.Option value="Low">Low</Select.Option>
-                            <Select.Option value="Medium">Medium</Select.Option>
-                            <Select.Option value="High">High</Select.Option>
+                            <Select.Option value="Low">Baixa</Select.Option>
+                            <Select.Option value="Medium">Média</Select.Option>
+                            <Select.Option value="High">Alta</Select.Option>
                           </Select>
                         </div>
                       </Col>
                       <Col md={8} xs={24}>
                         <div className="ninjadash-ticket-date-info">
                           <div className="ninjadash-ticket-date-info__text">
-                            <h4 className="ninjadash-ticket-details__top-title">Created Date</h4>
+                            <h4 className="ninjadash-ticket-details__top-title">Data Inicial</h4>
                             <span>January 20, 2020</span>
                           </div>
                           <h4>Status</h4>
@@ -187,23 +188,23 @@ function SupportTicketDetails() {
                             style={{ width: '200px' }}
                             defaultValue={dataState[0].status}
                           >
-                            <Select.Option value="Close">Close</Select.Option>
-                            <Select.Option value="Open">Open</Select.Option>
-                            <Select.Option value="Pending">Pending</Select.Option>
+                            <Select.Option value="Close">Encerrado</Select.Option>
+                            <Select.Option value="Open">Aberto</Select.Option>
+                            <Select.Option value="Pending">Pendente</Select.Option>
                           </Select>
                         </div>
                       </Col>
                       <Col md={8} xs={24}>
                         <div className="ninjadash-ticket-date-info">
                           <div className="ninjadash-ticket-date-info__text">
-                            <h4 className="ninjadash-ticket-details__top-title">Updated Date</h4>
-                            <span>February 02, 2020</span>
+                            <h4 className="ninjadash-ticket-details__top-title">Data de Ataulização</h4>
+                            <span>Abril 20, 2020</span>
                           </div>
                         </div>
                       </Col>
                     </Row>
                     <div className="ninjadash-ticket-overview">
-                      <h4 className="ninjadash-ticket-overview__title">Overview :</h4>
+                      <h4 className="ninjadash-ticket-overview__title">Visão Geral :</h4>
                       <p>{dataState[0].description}</p>
                     </div>
                   </Cards>
@@ -237,7 +238,7 @@ function SupportTicketDetails() {
                             </span>
                             <input
                               onChange={handleChange}
-                              placeholder="Type your message..."
+                              placeholder="Digite sua mensagem..."
                               name="chat"
                               id="chat"
                               style={{ width: '100%' }}
@@ -255,7 +256,7 @@ function SupportTicketDetails() {
                   </Cards>
                 </ClientConversation>
               </Col>
-              <Col lg={8} xs={24}>
+              {/* <Col lg={8} xs={24}>
                 <div className="ninjadash-ticket-file-system">
                   <Cards bordered={false} title="File Attachment">
                     <div className="ninjadash-ticket-file-list">
@@ -278,7 +279,7 @@ function SupportTicketDetails() {
                         </Link>
                       </div>
                       {/* End of .file-list__single */}
-                      <div className="ninjadash-ticket-file-item d-flex">
+                      {/* <div className="ninjadash-ticket-file-item d-flex">
                         <div className="ninjadash-ticket-file-item__info d-flex">
                           <div className="ninjadash-ticket-file-item__logo">
                             <img
@@ -296,7 +297,7 @@ function SupportTicketDetails() {
                           <UilUpload />
                         </Link>
                       </div>
-                      {/* End of .file-list__single */}
+                      End of .file-list__single
                       <div className="ninjadash-ticket-file-item d-flex">
                         <div className="ninjadash-ticket-file-item__info d-flex">
                           <div className="ninjadash-ticket-file-item__logo">
@@ -318,7 +319,7 @@ function SupportTicketDetails() {
                     </div>
                   </Cards>
                 </div>
-              </Col>
+              </Col>  */}
             </Row>
           </TicketDetailsBox>
         ) : (

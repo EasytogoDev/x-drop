@@ -1,3 +1,5 @@
+// Já comentado
+
 import { Carousel } from 'antd';
 import React from 'react';
 import propTypes from 'prop-types';

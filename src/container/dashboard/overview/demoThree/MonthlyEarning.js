@@ -30,7 +30,7 @@ const MonthlyEarning = React.memo(({ title }) => {
           start: '#8231D340',
           end: '#ffffff05',
         }),
-      label: 'Current period',
+      label: 'Periodo Atual',
       pointStyle: 'circle',
       pointRadius: '0',
       hoverRadius: '9',
@@ -53,17 +53,17 @@ const MonthlyEarning = React.memo(({ title }) => {
                   <ul>
                     <li className={earningsTab === 'today' ? 'ninjadash-active' : 'ninjadash-today'}>
                       <Link onClick={(event) => handleTabActivation('today', event)} to="#">
-                        Today
+                        Hoje
                       </Link>
                     </li>
                     <li className={earningsTab === 'week' ? 'ninjadash-active' : 'ninjadash-week'}>
                       <Link onClick={(event) => handleTabActivation('week', event)} to="#">
-                        Week
+                        Semana
                       </Link>
                     </li>
                     <li className={earningsTab === 'month' ? 'ninjadash-active' : 'ninjadash-month'}>
                       <Link onClick={(event) => handleTabActivation('month', event)} to="#">
-                        Month
+                        Mês
                       </Link>
                     </li>
                   </ul>
@@ -81,7 +81,7 @@ const MonthlyEarning = React.memo(({ title }) => {
                     custom: customTooltips,
                     callbacks: {
                       title() {
-                        return `Total Revenue`;
+                        return `Total`;
                       },
                       label(t) {
                         const { formattedValue, dataset } = t;
@@ -101,7 +101,7 @@ const MonthlyEarning = React.memo(({ title }) => {
 });
 
 MonthlyEarning.defaultProps = {
-  title: 'Monthly Earning',
+  title: 'Todas as vendas',
 };
 
 MonthlyEarning.propTypes = {

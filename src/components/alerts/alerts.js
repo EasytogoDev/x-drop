@@ -1,3 +1,5 @@
+// Não encontrado - a resolver
+
 import PropTypes from 'prop-types';
 import React from 'react';
 import { AlertWrap } from './Style';

@@ -5,6 +5,7 @@ import propTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { CourseCardWrap } from './Style';
+import styles from './cardThumbnail.module.css';
 
 function CourseCard({ courseData }) {
   const { id, thumbnail, title, author, authorImg, price, duration, lectures } = courseData;
@@ -13,7 +14,7 @@ function CourseCard({ courseData }) {
       <CourseCardWrap className="ninjadash-course-card-single">
         <Card bordered={false}>
           <div className="ninjadash-course-card-thumbnail">
-            <img src={require(`../../static/img/courses/${thumbnail}`)} alt="ninjaDash" />
+            <img className={styles.imgCard} src={require(`../../static/img/courses/${thumbnail}`)} alt="ninjaDash" />
           </div>
           <div className="ninjadash-course-card-content">
             <h4 className="ninjadash-course-card-title">
@@ -30,7 +31,7 @@ function CourseCard({ courseData }) {
               <ul className="ninjadash-course-card-meta__right">
                 <li className="bg-secondary">
                   <UilBook />
-                  <span>{lectures} Lectures</span>
+                  <span>{lectures} Aulas</span>
                 </li>
                 <li className="bg-primary">
                   <UilClock />

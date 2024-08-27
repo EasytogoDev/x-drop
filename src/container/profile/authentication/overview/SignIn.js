@@ -61,36 +61,36 @@ function SignIn() {
       <Col xxl={6} xl={8} md={12} sm={18} xs={24}>
         <AuthFormWrap>
           <div className="ninjadash-authentication-top">
-            <h2 className="ninjadash-authentication-top__title">Sign in HexaDash</h2>
+            <h2 className="ninjadash-authentication-top__title">Login</h2>
           </div>
           <div className="ninjadash-authentication-content">
             <Form name="login" form={form} onFinish={handleSubmit} layout="vertical">
               <Form.Item
-                name="email"
-                rules={[{ message: 'Please input your username or Email!', required: true }]}
-                initialValue="ninjadash@dm.com"
-                label="Username or Email Address"
+                name="usuario"
+                rules={[{ message: 'Por favor, insira o nome de usuário ou e-mail!', required: true }]}
+                initialValue="gustavohp@easytogo.com.br"
+                label="Nome de usuário ou endereço de e-mail"
               >
                 <Input placeholder="name@example.com" />
               </Form.Item>
-              <Form.Item name="password" initialValue="123456" label="Password">
-                <Input.Password placeholder="Password" />
+              <Form.Item name="senha" initialValue="1234" label="Senha">
+                <Input.Password placeholder="Insira sua senha" />
               </Form.Item>
               <div className="ninjadash-auth-extra-links">
                 <Checkbox onChange={onChange} checked={state.checked}>
-                  Keep me logged in
+                  Matenha-me conectado
                 </Checkbox>
                 <NavLink className="forgot-pass-link" to="/forgotPassword">
-                  Forgot password?
+                  Esqueceu a senha?
                 </NavLink>
               </div>
               <Form.Item>
                 <Button className="btn-signin" htmlType="submit" type="primary" size="large">
-                  {isLoading ? 'Loading...' : 'Sign In'}
+                  {isLoading ? 'Loading...' : 'Login'}
                 </Button>
               </Form.Item>
               <p className="ninjadash-form-divider">
-                <span>Or</span>
+                <span>Ou</span>
               </p>
               <ul className="ninjadash-social-login">
                 <li>
@@ -116,15 +116,15 @@ function SignIn() {
               </ul>
               <div className="auth0-login">
                 <Link to="#" onClick={() => lock.show()}>
-                  SignIn with Auth0
+                  Faça login com
                 </Link>
-                <Link to="/fbSignIn">SignIn With Firebase</Link>
+                <Link to="/fbSignIn">Login com Firebase</Link>
               </div>
             </Form>
           </div>
           <div className="ninjadash-authentication-bottom">
             <p>
-              Don`t have an account?<Link to="/register">Sign up</Link>
+              Não possui uma conta?<Link to="/register">Cadastre-se</Link>
             </p>
           </div>
         </AuthFormWrap>

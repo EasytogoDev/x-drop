@@ -1353,7 +1353,7 @@
     ]
   },
   "profitGrowth":{
-    "title": "Profit Growth",
+    "title": "Lucro Líquido",
     "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"],
     "orders": [10, 55, 42, 30, 42, 80, 35, 10, 53, 62],
     "sales": [30, 30, 35, 10, 5, 60, 8, 42, 30, 70],

@@ -9,26 +9,26 @@ import { Cards } from '../../../components/cards/frame/cards-frame';
 import { Dropdown } from '../../../components/dropdown/dropdown';
 
 function TeamCard({ user, actions }) {
-  const { name, designation, img } = user;
+  const { nome, email, foto } = user;
 
   return (
     <UserCard>
       <div className="card team-card">
         <Cards headless>
           <figure>
-            <img src={require(`../../../${img}`)} alt="" />
+            <img src={foto.replace('//imagens', '/imagens')} alt={nome} />
             <figcaption>
               <div className="edit">
                 <Dropdown content={actions} action={['click']} className="wide-dropdwon">
-                  <Link className="card__more_actions" to="#">
+                  <Link className="card__more_actions" to="">
                     <UilEllipsisH />
                   </Link>
                 </Dropdown>
               </div>
               <Heading className="card__name" as="h6">
-                <Link to="#">{name}</Link>
+                <Link to="#">{nome}</Link>
               </Heading>
-              <span className="card__designation">{designation}</span>
+              <span className="card__designation">{email}</span>
               <div className="card__social">
                 <Link className="btn-icon facebook" to="#">
                   <FontAwesome name="facebook" />

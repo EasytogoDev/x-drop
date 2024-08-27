@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 
 const Product = lazy(() => import('../../container/ecommerce/product/Products'));
 const ProductAdd = lazy(() => import('../../container/ecommerce/product/AddProduct'));
+// const localArmazem = lazy(() => import('../../container/ecommerce/product/localArmazem'));
 const ProductEdit = lazy(() => import('../../container/ecommerce/product/EditProduct'));
 const ProductDetails = lazy(() => import('../../container/ecommerce/product/ProductDetails'));
 const Invoice = lazy(() => import('../../container/ecommerce/Invoice'));
@@ -17,6 +18,7 @@ function EcommerceRoute() {
     <Routes>
       <Route path="products/*" element={<Product />} />
       <Route exact path="add-product" element={<ProductAdd />} />
+      {/* <Route exact path="local-armazem" element={<localArmazem />} /> */}
       <Route exact path="edit-product" element={<ProductEdit />} />
       <Route exact path="productDetails/:id" element={<ProductDetails />} />
       <Route exact path="invoice" element={<Invoice />} />

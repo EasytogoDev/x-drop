@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable react/jsx-no-bind */
 import { Badge } from 'antd';
 import PropTypes from 'prop-types';
@@ -74,13 +76,13 @@ const MessageBox = React.memo(() => {
             <li>
               <Link to="#">
                 <figure className="ninjadash-top-dropdown__content">
-                  <img src={require('../../../static/img/avatar/NoPath.png')} alt="" />
+                  <img src='https://github.com/ViniAguiar1.png'/>
                   <figcaption>
                     <Heading as="h5">
                       Software <span className="color-success">3 hrs ago</span>
                     </Heading>
                     <div>
-                      <span className="ninjadash-top-dropdownText">Lorem ipsum dolor amet cosec...</span>
+                      <span className="ninjadash-top-dropdownText">Olha aqui kkkkk</span>
                       <span>
                         <Badge className="badge-success" count={3} />
                       </span>
@@ -92,7 +94,7 @@ const MessageBox = React.memo(() => {
             <li>
               <Link to="#">
                 <figure className="ninjadash-top-dropdown__content">
-                  <img src={require('../../../static/img/avatar/NoPath.png')} alt="" />
+                  <img src='https://github.com/ViniAguiar1.png'/>
                   <figcaption>
                     <Heading as="h5">
                       Software <span className="color-success">3 hrs ago</span>
@@ -166,7 +168,7 @@ const MessageBox = React.memo(() => {
         </div>
       </Scrollbars>
       <Link className="btn-seeAll" to="#">
-        See all messages
+        Ver todas as mensagens
       </Link>
     </UserActionDropDown>
   );

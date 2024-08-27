@@ -28,7 +28,7 @@ function AuthorBox() {
           </figure>
           <figcaption>
             <div className="info">
-              <Heading as="h4">Duran Clayton</Heading>
+              <Heading as="h4">Vinicius Aguiar</Heading>
               <p>UI/UX Designer</p>
             </div>
           </figcaption>

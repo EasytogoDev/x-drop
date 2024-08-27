@@ -104,7 +104,7 @@ function TopMenu() {
               </li>
               <li>
                 <NavLink to={`${path}/demo-8`} onClick={addParentActive}>
-                  Demo 8
+                  informativo
                 </NavLink>
               </li>
               <li>
@@ -437,7 +437,7 @@ function TopMenu() {
               <li>
                 <ul>
                   <li>
-                    <NavLink onClick={addParentActive} to={`${path}pages//starter`}>
+                    <NavLink onClick={addParentActive} to={`${path}pages/starter`}>
                       Blank Page
                     </NavLink>
                   </li>

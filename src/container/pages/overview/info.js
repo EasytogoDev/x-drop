@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Row, Col, Form, Input, Upload, Select } from 'antd';
 import { Link } from 'react-router-dom';
@@ -16,6 +17,23 @@ function Info() {
     setState({ ...state, values });
   };
 
+  // eslint-disable-next-line no-unused-vars
+  const [country, setCountry] = useState('');
+  const [cities, setCities] = useState([]);
+
+  const handleCountryChange = (value) => {
+    setCountry(value);
+
+    let citiesData = [];
+    if (value === 'brasil') {
+      citiesData = ['São Paulo', 'Rio de Janeiro', 'Minas Gerais', 'Bahia'];
+    } else if (value === 'eua') {
+      citiesData = ['Califórnia', 'Flórida', 'Nova York'];
+    }
+    setCities(citiesData);
+  };
+
+
   return (
     <Row justify="center">
       <Col xxl={10} xl={14} md={16} xs={24}>
@@ -23,7 +41,7 @@ function Info() {
           <BasicFormWrapper>
             <Form style={{ width: '100%' }} form={form} name="info" onFinish={handleSubmit}>
               <Heading className="form-title" as="h4">
-                Personal Information
+                Informações Pessoais
               </Heading>
 
               <figure className="photo-upload align-center-v">
@@ -35,43 +53,43 @@ function Info() {
                     </Link>
                   </Upload>
                   <div className="info">
-                    <Heading as="h4">Profile Photo</Heading>
+                    <Heading as="h4">Foto de Perfil</Heading>
                   </div>
                 </figcaption>
               </figure>
 
-              <Form.Item label="Name" name="name">
-                <Input placeholder="Input Name" />
+              <Form.Item label="Nome" name="name">
+                <Input placeholder="Digite seu nome" />
               </Form.Item>
 
               <Form.Item
-                label="Email Address"
+                label="Endereço de e-mail:"
                 name="email"
                 rules={[{ message: 'Please input your email!', type: 'email' }]}
               >
                 <Input placeholder="name@example.com" />
               </Form.Item>
 
-              <Form.Item name="phone" label="Phone Number">
-                <Input placeholder="+440 2546 5236" />
+              <Form.Item name="phone" label="Número de Celular">
+                <Input placeholder="+55 (11) 9 9999-9999" />
               </Form.Item>
 
-              <Form.Item name="country" initialValue="" label="Country">
-                <Select style={{ width: '100%' }}>
-                  <Option value="">Please Select</Option>
-                  <Option value="bangladesh">Bangladesh</Option>
-                  <Option value="india">India</Option>
-                  <Option value="pakistan">Pakistan</Option>
+              <Form.Item name="country" initialValue="" label="País">
+                <Select style={{ width: '100%' }} onChange={handleCountryChange}>
+                  <Option value="">Por favor, selecione</Option>
+                  <Option value="brasil">Brasil</Option>
+                  <Option value="eua">Estados Unidos da América</Option>
+                  {/* <Option value="pakistan">Pakistan</Option> */}
                 </Select>
               </Form.Item>
 
-              <Form.Item initialValue="" name="city" label="City">
-                <Select style={{ width: '100%' }}>
-                  <Option value="">Please Select</Option>
-                  <Option value="dhaka">Dhaka</Option>
-                  <Option value="khulna">Khulna</Option>
-                  <Option value="barisal">Barisal</Option>
-                </Select>
+              <Form.Item initialValue="" name="city" label="Cidade">
+              <Select style={{ width: '100%' }}>
+                <Option value="">Por favor, selecione</Option>
+                {cities.map(city => (
+                  <Option key={city} value={city}>{city}</Option>
+                ))}
+              </Select>
               </Form.Item>
 
               <Form.Item name="website" label="Website">
@@ -86,10 +104,10 @@ function Info() {
                       return form.resetFields();
                     }}
                   >
-                    Reset
+                    Limpar
                   </Button>
                   <Button htmlType="submit" type="primary">
-                    <Link to="/admin/users/add-user/work">Save & Next</Link>
+                    <Link to="/admin/usuarios/adicionar/work">Salvar e Próximo</Link>
                   </Button>
                 </div>
               </Form.Item>

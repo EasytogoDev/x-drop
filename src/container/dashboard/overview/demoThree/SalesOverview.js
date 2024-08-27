@@ -26,7 +26,7 @@ const SalesOverview = React.memo(() => {
   /* State destructuring */
   const { overviewTab } = state;
 
-  const labels = ['Shirt', 'Pant', 'Footwear'];
+  const labels = ['Eletrônicos', 'Roupas', 'Acessórios'];
   const options = {
     cutout: 62,
     borderWidth: 2,
@@ -52,7 +52,7 @@ const SalesOverview = React.memo(() => {
       data: salesOverviewData,
       backgroundColor: ['#FA8B0C', '#FB3586', '#5840FF'],
       centerText: '$7.9K',
-      centerTextLabel: 'Revenue',
+      centerTextLabel: 'Receita',
     },
   ];
 
@@ -83,23 +83,23 @@ const SalesOverview = React.memo(() => {
               <ul>
                 <li className={overviewTab === 'today' ? 'ninjadash-active' : 'ninjadash-deactivate'}>
                   <Link type="button" onClick={(e) => handleTabActivation('today', e)} to="#">
-                    Today
+                    Hoje
                   </Link>
                 </li>
                 <li className={overviewTab === 'week' ? 'ninjadash-active' : 'ninjadash-deactivate'}>
                   <Link onClick={(e) => handleTabActivation('week', e)} to="#">
-                    Week
+                    Semana
                   </Link>
                 </li>
                 <li className={overviewTab === 'month' ? 'ninjadash-active' : 'ninjadash-deactivate'}>
                   <Link onClick={(e) => handleTabActivation('month', e)} to="#">
-                    Month
+                    Mês
                   </Link>
                 </li>
               </ul>
             </div>
           }
-          title="Sales Overview"
+          title="Visão geral"
           size="large"
         >
           <div className="ninjadash-overview-wrap">
