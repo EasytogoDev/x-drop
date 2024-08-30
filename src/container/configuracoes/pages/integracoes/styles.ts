@@ -1,6 +1,10 @@
 /* eslint-disable */
 import styled from 'styled-components';
 
+interface ModalProps {
+  isOpen: boolean;
+}
+
 export const Main = styled.div`
   padding: 20px;
   background-color: #f4f5f7;
@@ -166,4 +170,59 @@ export const Tag = styled.span`
   font-size: 12px;
   margin-top: 10px;
   display: inline-block;
+`;
+
+export const Modal = styled.div<ModalProps>`
+  display: ${(props) => (props.isOpen ? 'block' : 'none')};
+  position: fixed;
+  z-index: 1050;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  outline: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+`;
+
+export const ModalContent = styled.div`
+  position: relative;
+  margin: 10% auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 800px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+`;
+
+export const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dee2e6;
+`;
+
+export const ModalBody = styled.div`
+  padding: 20px 0;
+`;
+
+export const ModalFooter = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10px;
+  border-top: 1px solid #dee2e6;
+`;
+
+export const CloseButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+  &:hover {
+    color: #000;
+  }
 `;

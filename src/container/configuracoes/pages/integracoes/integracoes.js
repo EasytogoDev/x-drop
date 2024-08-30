@@ -1,6 +1,6 @@
 /* eslint-disable */
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Substitua useHistory por useNavigate
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '../../../../components/page-headers/page-headers';
 import {
   Main,
@@ -18,13 +18,22 @@ import {
   CalculateButton,
   IntegrationGrid,
   IntegrationCard,
-  IntegrationList
+  IntegrationList,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  CloseButton
 } from './styles.ts';
 import Cookies from 'js-cookie';
 
 function Integracoes() {
   const [fornecedores, setFornecedores] = useState([]);
-  const navigate = useNavigate(); // useNavigate em vez de useHistory
+  const [integracoes, setIntegracoes] = useState([]);
+  const [selectedIntegration, setSelectedIntegration] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
   const PageRoutes = [
     {
       path: '/admin',
@@ -38,6 +47,7 @@ function Integracoes() {
 
   useEffect(() => {
     carregaFornecedor();
+    carregaIntegracoes();
   }, []);
 
   function carregaFornecedor() {
@@ -58,13 +68,62 @@ function Integracoes() {
       .then((response) => response.json())
       .then((result) => {
         setFornecedores(result);
+        // Salva apenas o código do primeiro fornecedor no localStorage
+        if (result.length > 0) {
+          localStorage.setItem('selectedFornecedor', 3);
+        }
       })
       .catch((error) => console.error(error));
   }
 
-  function handleSupplierClick(id) {
-    navigate(`/galpao/${id}`); // useNavigate para redirecionar
+  function carregaIntegracoes() {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/integracoes`,
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((result) => {
+        const baseUrl = process.env.REACT_APP_API_ENDPOINT;
+        const integracoesCompletas = result.map(integracao => ({
+          ...integracao,
+          imagemINTEGRACAO: `${baseUrl}${integracao.imagemINTEGRACAO}`
+        }));
+        setIntegracoes(integracoesCompletas);
+      })
+      .catch((error) => console.error(error));
   }
+
+  useEffect(() => {
+    if (isModalOpen && selectedIntegration) {
+      console.log('Modal aberto:', selectedIntegration);
+    }
+  }, [isModalOpen, selectedIntegration]);
+
+  const handleIntegrationClick = useCallback((integration) => {
+    setSelectedIntegration(integration);
+    setIsModalOpen(true);
+    console.log('Integração selecionada:', integration);
+
+    // Salva apenas o código da integração selecionada no localStorage
+    localStorage.setItem('selectedIntegration', integration.codigoINTEGRACAO);
+  }, []);
+
+  function closeModal() {
+    setIsModalOpen(false);
+    setSelectedIntegration(null);
+  }
+
+  console.log('Render:', isModalOpen, selectedIntegration);
 
   return (
     <>
@@ -74,10 +133,9 @@ function Integracoes() {
           <Title>Fornecedores</Title>
           <SuppliersList>
             {fornecedores.map((fornecedor) => (
-              <SupplierItem key={fornecedor.id} onClick={() => handleSupplierClick(fornecedor.id)}>
+              <SupplierItem key={fornecedor.id}>
                 <SupplierInfo>
                   <span>{fornecedor.nome}</span>
-                  {/* <Tag color="#007bff">✔️</Tag> */}
                   <Tag color="#ff0000">NOVO</Tag>
                   <Tag color="#28a745">Instalada</Tag>
                 </SupplierInfo>
@@ -108,31 +166,14 @@ function Integracoes() {
 
         <Section>
           <Title>Integrações Disponíveis</Title>
+
           <IntegrationGrid>
-            <IntegrationCard onClick={() => handleIntegrationClick('shopee')}>
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Shopee_logo.svg/1200px-Shopee_logo.svg.png" alt="Shopee" />
-              <Tag color="#bbb">V2</Tag>
-            </IntegrationCard>
-            <IntegrationCard onClick={() => handleIntegrationClick('mercado-livre')}>
-              <img src="https://logodownload.org/wp-content/uploads/2016/10/mercado-livre-logo.png" alt="Mercado Livre" />
-            </IntegrationCard>
-            <IntegrationCard onClick={() => handleIntegrationClick('shopify')}>
-              <img src="https://www.svgrepo.com/show/376356/shopify.svg" alt="Shopify" />
-              <Tag color="#bbb">V2 - AUTO</Tag>
-            </IntegrationCard>
-            <IntegrationCard onClick={() => handleIntegrationClick('b2w')}>
-              <img src="https://logodownload.org/wp-content/uploads/2019/09/b2w-logo.png" alt="B2W" />
-            </IntegrationCard>
-            <IntegrationCard onClick={() => handleIntegrationClick('magalu')}>
-              <img src="https://logodownload.org/wp-content/uploads/2019/08/magalu-logo.png" alt="Magalu" />
-            </IntegrationCard>
-            <IntegrationCard onClick={() => handleIntegrationClick('via-varejo')}>
-              <img src="https://logodownload.org/wp-content/uploads/2019/08/viavarejo-logo.png" alt="Via Varejo" />
-            </IntegrationCard>
-            <IntegrationCard onClick={() => handleIntegrationClick('bling')}>
-              <img src="https://logodownload.org/wp-content/uploads/2019/09/bling-logo.png" alt="Bling" />
-              <Tag color="#bbb">V3</Tag>
-            </IntegrationCard>
+            {integracoes.map((integracao) => (
+              <IntegrationCard key={integracao.codigoINTEGRACAO} onClick={() => handleIntegrationClick(integracao)}>
+                <img src={integracao.imagemINTEGRACAO} alt={integracao.nomeINTEGRACAO} />
+                <p>{integracao.nomeINTEGRACAO}</p>
+              </IntegrationCard>
+            ))}
           </IntegrationGrid>
         </Section>
 
@@ -171,6 +212,32 @@ function Integracoes() {
             </tbody>
           </IntegrationList>
         </Section>
+
+        {isModalOpen && selectedIntegration && (
+          <Modal isOpen={isModalOpen}>
+            <ModalContent>
+              <ModalHeader>
+                <h2>{selectedIntegration.nomeINTEGRACAO}</h2>
+                <CloseButton onClick={closeModal}>X</CloseButton>
+              </ModalHeader>
+              <ModalBody>
+                <p>Fornecedor: {fornecedores[0].nome}</p>
+                <p>Contato: {fornecedores[0].usuario}</p>
+                <div>
+                  <img
+                    src={selectedIntegration.imagemINTEGRACAO}
+                    alt={selectedIntegration.nomeINTEGRACAO}
+                    style={{ cursor: 'pointer', width: '100px', height: 'auto' }}
+                    onClick={() => window.location.href = selectedIntegration.urlINTEGRACAO}
+                  />
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <button onClick={closeModal}>Fechar</button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        )}
       </Main>
     </>
   );
