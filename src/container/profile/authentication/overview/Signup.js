@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ReactSVG } from 'react-svg';
+// import { ReactSVG } from 'react-svg';
 import { Row, Col, Form, Input, Button } from 'antd';
-import UilFacebook from '@iconscout/react-unicons/icons/uil-facebook-f';
-import UilTwitter from '@iconscout/react-unicons/icons/uil-twitter';
-import UilGithub from '@iconscout/react-unicons/icons/uil-github';
+// import UilFacebook from '@iconscout/react-unicons/icons/uil-facebook-f';
+// import UilTwitter from '@iconscout/react-unicons/icons/uil-twitter';
+// import UilGithub from '@iconscout/react-unicons/icons/uil-github';
 
 import { useDispatch } from 'react-redux';
 import { AuthFormWrap } from './style';
@@ -31,26 +31,30 @@ function SignUp() {
       <Col xxl={6} xl={8} md={12} sm={18} xs={24}>
         <AuthFormWrap>
           <div className="ninjadash-authentication-top">
-            <h2 className="ninjadash-authentication-top__title">Sign Up HexaDash</h2>
+            <h2 className="ninjadash-authentication-top__title">Inscreva-se na X-Drop</h2>
           </div>
           <div className="ninjadash-authentication-content">
             <Form name="register" onFinish={handleSubmit} layout="vertical">
-              <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input your Full name!' }]}>
-                <Input placeholder="Full name" />
+              <Form.Item
+                label="Nome"
+                name="name"
+                rules={[{ required: true, message: 'Por favor insira seu nome completo!' }]}
+              >
+                <Input placeholder="Nome Completo" />
               </Form.Item>
               <Form.Item
                 name="email"
-                label="Email Address"
-                rules={[{ required: true, message: 'Please input your email!', type: 'email' }]}
+                label="Endereço de E-mail"
+                rules={[{ required: true, message: 'Por favor insira seu e-mail!', type: 'email' }]}
               >
-                <Input placeholder="name@example.com" />
+                <Input placeholder="nome@exemplo.com" />
               </Form.Item>
               <Form.Item
-                label="Password"
+                label="Senha"
                 name="password"
-                rules={[{ required: true, message: 'Please input your password!' }]}
+                rules={[{ required: true, message: 'Por favor insira sua senha!' }]}
               >
-                <Input.Password placeholder="Password" />
+                <Input.Password placeholder="senha" />
               </Form.Item>
               <div className="ninjadash-auth-extra-links">
                 <Checkbox onChange={onChange} checked={state.checked}>
@@ -62,10 +66,10 @@ function SignUp() {
                   Create Account
                 </Button>
               </Form.Item>
-              <p className="ninjadash-form-divider">
+              {/* <p className="ninjadash-form-divider">
                 <span>Or</span>
-              </p>
-              <ul className="ninjadash-social-login">
+              </p> */}
+              {/* <ul className="ninjadash-social-login">
                 <li>
                   <Link className="google-social" to="#">
                     <ReactSVG src={require(`../../../../static/img/icon/google-plus.svg`).default} />
@@ -86,7 +90,7 @@ function SignUp() {
                     <UilGithub />
                   </Link>
                 </li>
-              </ul>
+              </ul> */}
             </Form>
           </div>
           <div className="ninjadash-authentication-bottom">

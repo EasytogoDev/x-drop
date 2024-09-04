@@ -152,7 +152,7 @@ function Painel() {
     } catch (error) {
       console.error('Erro ao buscar saldo:', error);
     }
-  };
+  }; 
 
   // Função para abrir o modal
   const showModal = () => {
@@ -252,6 +252,7 @@ function Painel() {
             <Button type="primary">Filtrar</Button>
           </FiltroItem>
         </FiltrosContainer>
+        
 
         <FiltrosContainer>
           <FiltroItem>

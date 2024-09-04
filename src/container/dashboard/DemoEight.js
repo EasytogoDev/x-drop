@@ -10,7 +10,7 @@ const ProfitGrowth = lazy(() => import('./overview/demoThree/ProfitGrowth'));
 const SalesOverview = lazy(() => import('./overview/demoThree/SalesOverview'));
 const TopProduct = lazy(() => import('./overview/demoThree/TopProduct'));
 const RecentDeals = lazy(() => import('./overview/demoThree/RecentDeals'));
-const ActiveUser = lazy(() => import('./overview/demoThree/ActiveUserjs'));
+// const ActiveUser = lazy(() => import('./overview/demoThree/ActiveUserjs'));
 const TotalEarning = lazy(() => import('./overview/demoThree/TotalEarning'));
 
 function DemoEight() {
@@ -77,6 +77,8 @@ function DemoEight() {
               <TotalEarning />
             </Suspense>
           </Col>
+          {/* 
+          COMENTADO POR NAO ESTAR FINALIZADO 
           <Col xxl={16} xs={24}>
             <Suspense
               fallback={
@@ -87,7 +89,7 @@ function DemoEight() {
             >
               <ActiveUser />
             </Suspense>
-          </Col>
+          </Col> */}
           <Col xxl={8} xs={24}>
             <Suspense
               fallback={

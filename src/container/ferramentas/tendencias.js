@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Main } from '../styled';

@@ -183,8 +183,8 @@ function FornecedorCard({ fornecedor }) {
     setMostrarEndereco(!mostrarEndereco);
   };
 
-  const handleCatalogoClick = () => {
-    navigate('/ecommerce/products/grid');
+  const handleCatalogoClick = (codigo) => {
+    navigate(`/compras/products/grid${codigo}`);
   };
 
   return (
@@ -200,7 +200,7 @@ function FornecedorCard({ fornecedor }) {
             </StatusLabel>
 
             {fornecedor.ativo && (
-              <CatalogoButton onClick={handleCatalogoClick}>
+              <CatalogoButton onClick={() => handleCatalogoClick(fornecedor.codigo)}>
                 Ver Catálogo
               </CatalogoButton>
             )}

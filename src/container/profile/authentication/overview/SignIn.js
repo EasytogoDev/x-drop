@@ -1,6 +1,3 @@
-import UilFacebook from '@iconscout/react-unicons/icons/uil-facebook-f';
-import UilGithub from '@iconscout/react-unicons/icons/uil-github';
-import UilTwitter from '@iconscout/react-unicons/icons/uil-twitter';
 import { Button, Col, Form, Input, Row } from 'antd';
 import { Auth0Lock } from 'auth0-lock';
 import React, { useCallback, useState } from 'react';
@@ -8,7 +5,6 @@ import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ReactSVG } from 'react-svg';
 import { AuthFormWrap } from './style';
 import { login, authOLogin } from '../../../../redux/authentication/actionCreator';
 import { Checkbox } from '../../../../components/checkbox/checkbox';
@@ -30,14 +26,14 @@ function SignIn() {
 
   const handleSubmit = useCallback(
     (values) => {
-      dispatch(login(values, () => navigate('/admin')));
+      dispatch(login(values, () => navigate('/')));
     },
     [navigate, dispatch],
   );
 
   const handleAuthOSubmit = useCallback(
     (values) => {
-      dispatch(authOLogin(values, () => navigate('/admin')));
+      dispatch(authOLogin(values, () => navigate('/')));
     },
     [navigate, dispatch],
   );
@@ -89,7 +85,7 @@ function SignIn() {
                   {isLoading ? 'Loading...' : 'Login'}
                 </Button>
               </Form.Item>
-              <p className="ninjadash-form-divider">
+              {/* <p className="ninjadash-form-divider">
                 <span>Ou</span>
               </p>
               <ul className="ninjadash-social-login">
@@ -119,7 +115,7 @@ function SignIn() {
                   Faça login com
                 </Link>
                 <Link to="/fbSignIn">Login com Firebase</Link>
-              </div>
+              </div> */}
             </Form>
           </div>
           <div className="ninjadash-authentication-bottom">
