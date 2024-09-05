@@ -43,8 +43,11 @@ function PesquisarTendencias() {
           name: product.keyword,
           meli: product.url
         }))
+
+        console.log("CHEGANDO AQUI!!")
+
         setLoading(false);
-        setTendencias(result); 
+        setTendencias(trends); 
       })
       .catch((error) => {
         console.error(error);

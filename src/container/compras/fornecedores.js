@@ -184,7 +184,7 @@ function FornecedorCard({ fornecedor }) {
   };
 
   const handleCatalogoClick = (codigo) => {
-    navigate(`/compras/products/grid${codigo}`);
+    navigate(`/compras/products/grid/${codigo}`);
   };
 
   return (

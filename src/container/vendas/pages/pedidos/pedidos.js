@@ -22,7 +22,7 @@ import { PageHeader } from '../../../../components/page-headers/page-headers';
 function Pedidos() {
   const PageRoutes = [
     { path: '/admin', breadcrumbName: 'Dashboard' },
-    { path: '', breadcrumbName: 'Pedidos' },
+    { path: '', breadcrumbName: 'Vendas > Pedidos' },
   ];
 
   const [allChecked, setAllChecked] = useState(false);
@@ -223,7 +223,7 @@ function Pedidos() {
 
   return (
     <>
-      <PageHeader className="ninjadash-page-header-main" title="Pedidos" routes={PageRoutes} />
+      <PageHeader className="ninjadash-page-header-main" title="Vendas - Pedidos" routes={PageRoutes} />
       <Main>
         <Container>
           <SearchSection>
