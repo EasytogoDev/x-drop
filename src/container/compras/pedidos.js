@@ -1,208 +1,485 @@
 /* eslint-disable */
-import React, { useEffect, useState } from 'react';
-import { Table, Input, Modal, List, Spin } from 'antd';
+import React, { useState, useEffect } from 'react';
+import dayjs from 'dayjs';
+import Cookies from 'js-cookie';
+import {
+  Main,
+  Container,
+  SearchSection,
+  FilterSection,
+  ActionsSection,
+  Table,
+  StatusButton,
+  Icon,
+  Modal,
+  ModalContent,
+  CloseButton,
+  ModalOverlay,
+  ItemTable,
+} from './styles.ts';
 import { PageHeader } from '../../components/page-headers/page-headers';
-import { Main } from '../styled';
-import { SearchOutlined } from '@ant-design/icons';
-import styled from 'styled-components';
-
-const { Search } = Input;
-
-// Styled components
-const StyledMain = styled(Main)`
-  padding: 24px;
-`;
-
-const StyledSearch = styled(Search)`
-  margin-bottom: 16px;
-  border-radius: 8px;
-
-  .ant-input {
-    border-radius: 8px;
-  }
-`;
-
-const StyledModal = styled(Modal)`
-  .ant-modal-content {
-    border-radius: 12px;
-  }
-
-  .ant-modal-title {
-    font-weight: bold;
-    color: #52c41a;
-  }
-`;
 
 function Pedidos() {
   const PageRoutes = [
-    {
-      path: '/admin/compras',
-      breadcrumbName: 'Compras',
-    },
-    {
-      path: '',
-      breadcrumbName: 'Pedidos',
-    },
+    { path: '/admin', breadcrumbName: 'Dashboard' },
+    { path: '', breadcrumbName: 'Compras > Pedidos' },
   ];
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [allChecked, setAllChecked] = useState(false);
+  const [originalPedidos, setOriginalPedidos] = useState([]);
+  const [filteredPedidos, setFilteredPedidos] = useState([]);
+  const [filters, setFilters] = useState({
+    status: 'Todos',
+    canal: '',
+    integracao: '',
+    dataInicio: '',
+    dataFim: '',
+    search: '',
+  });
 
-  const handleSearch = (value) => {
-    setSearchTerm(value);
-  };
-
-  const handleViewDetails = (order) => {
-    setSelectedOrder(order);
-    setIsDetailModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsDetailModalOpen(false);
-  };
-
-  const filteredOrders = orders.filter(order =>
-    order.supplier.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const columns = [
-    {
-      title: 'Fornecedor',
-      dataIndex: 'supplier',
-      key: 'supplier',
-    },
-    {
-      title: 'Total',
-      dataIndex: 'total',
-      key: 'total',
-      render: (text) => `R$${text}`,
-    },
-    {
-      title: 'Data',
-      dataIndex: 'date',
-      key: 'date',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-    },
-    {
-      title: 'Ações',
-      key: 'actions',
-      render: (text, record) => (
-        <a onClick={() => handleViewDetails(record)}>Ver Detalhes</a>
-      ),
-    },
-  ];
+  const [selectedPedido, setSelectedPedido] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [integracoes, setIntegracoes] = useState([]);
+  const [integracoesDados, setIntegracoesDados] = useState([]);
 
   useEffect(() => {
-    // Simulando uma requisição à API com setTimeout
-    setTimeout(() => {
-      const fetchedOrders = [
-        { id: 1, supplier: 'Fornecedor A', total: 1500, date: '2024-08-01', status: 'Pendente' },
-        { id: 2, supplier: 'Fornecedor B', total: 2200, date: '2024-08-05', status: 'Concluído' },
-        { id: 3, supplier: 'Fornecedor C', total: 1800, date: '2024-08-07', status: 'Cancelado' },
-        { id: 4, supplier: 'Fornecedor D', total: 3200, date: '2024-08-10', status: 'Pendente' },
-        { id: 5, supplier: 'Fornecedor E', total: 2700, date: '2024-08-12', status: 'Concluído' },
-        { id: 6, supplier: 'Fornecedor F', total: 3400, date: '2024-08-15', status: 'Cancelado' },
-        { id: 7, supplier: 'Fornecedor G', total: 1100, date: '2024-08-17', status: 'Pendente' },
-        { id: 8, supplier: 'Fornecedor H', total: 1950, date: '2024-08-18', status: 'Concluído' },
-        { id: 9, supplier: 'Fornecedor I', total: 2300, date: '2024-08-19', status: 'Pendente' },
-        { id: 10, supplier: 'Fornecedor J', total: 2900, date: '2024-08-20', status: 'Concluído' },
-      ];
-      setOrders(fetchedOrders);
-      setLoading(false);
-    }, 2000); // Simula um atraso de 2 segundos
+    // Fetch dos pedidos da API
+    const fetchPedidos = async () => {
+      const accessToken = Cookies.get('access_token');
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/pedidos`, {
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        const data = await response.json();
+        
+        console.log('----------------------------------');
+        console.log(data);
+        console.log('----------------------------------');
+        setFilteredPedidos(data);
+        setOriginalPedidos(data);
+        
+      } catch (error) {
+        console.error('Erro ao buscar pedidos:', error);
+      }
+    };
+
+    fetchPedidos();
   }, []);
 
   useEffect(() => {
-    carregaPedidos();
-  }, [])
+    carregaIntegracoes();
+    carregaIntegracoesDados();
+  }, []);
 
-  function carregaPedidos() {
+  function carregaIntegracoes() {
     const accessToken = Cookies.get('access_token');
     const myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
 
     const requestOptions = {
-      method: "GET",
+      method: 'GET',
       headers: myHeaders,
-      redirect: "follow",
+      redirect: 'follow',
     };
 
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/fornecedores/produtos/3`, requestOptions)
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/integracoes`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        const mappedProducts = result.map(product => ({
-          id: product.ID,
-          name: product.Nome,
-          price: product.PrecoVenda,
-          category: product.Categoria,
+        const baseUrl = process.env.REACT_APP_API_ENDPOINT;
+        const integracoesCompletas = result.map((integracao) => ({
+          ...integracao,
+          imagem: `${baseUrl}${integracao.imagem}`,
         }));
-        setProducts(mappedProducts);
-        setIsLoadingProducts(false);
+        setIntegracoes(integracoesCompletas);
       })
-      .catch((error) => {
-        console.error(error);
-        setIsLoadingProducts(false);
-      });
+      .catch((error) => console.error(error));
   }
+
+  function carregaIntegracoesDados() {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+
+    const requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    };
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/vinculos-integracoes`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log('Dados recebidos:', result);
+        setIntegracoesDados(result); // Apenas carregando os dados sem modificá-los
+      })
+      .catch((error) => console.error('Erro ao carregar integrações:', error));
+  }
+
+  const handleCheckboxChange = () => {
+    setAllChecked(!allChecked);
+    setFilteredPedidos((prevPedidos) =>
+      prevPedidos.map((pedido) => ({ ...pedido, checked: !allChecked }))
+    );
+  };
+
+  const handleIndividualCheckboxChange = (id) => {
+    setFilteredPedidos((prevPedidos) =>
+      prevPedidos.map((pedido) =>
+        pedido.codigo === id ? { ...pedido, checked: !pedido.checked } : pedido
+      )
+    );
+  };
+
+  const handleFilterChange = () => {
+    let pedidosFiltrados = [...originalPedidos];
+
+    if (filters.status && filters.status !== 'Todos') {
+      pedidosFiltrados = pedidosFiltrados.filter((pedido) => pedido.status === filters.status);
+    }
+
+    if (filters.canal) {
+      pedidosFiltrados = pedidosFiltrados.filter(
+        (pedido) => pedido.vinculo.canal === filters.canal
+      );
+    }
+
+    if (filters.integracao) {
+      pedidosFiltrados = pedidosFiltrados.filter(
+        (pedido) => pedido.integracao === filters.integracao
+      );
+    }
+
+    if (filters.dataInicio) {
+      pedidosFiltrados = pedidosFiltrados.filter((pedido) =>
+        dayjs(pedido.data).isAfter(dayjs(filters.dataInicio).subtract(1, 'day'))
+      );
+    }
+
+    if (filters.dataFim) {
+      pedidosFiltrados = pedidosFiltrados.filter((pedido) =>
+        dayjs(pedido.data).isBefore(dayjs(filters.dataFim).add(1, 'day'))
+      );
+    }
+
+    if (filters.search) {
+      pedidosFiltrados = pedidosFiltrados.filter(
+        (pedido) =>
+          (pedido.dadosPedido &&
+            pedido.dadosPedido.toLowerCase().includes(filters.search.toLowerCase())) ||
+          (pedido.codRastreio &&
+            pedido.codRastreio.toLowerCase().includes(filters.search.toLowerCase())) ||
+          (pedido.conta && pedido.conta.toLowerCase().includes(filters.search.toLowerCase()))
+      );
+    }
+
+    setFilteredPedidos(pedidosFiltrados);
+  };
+
+  const handleSearchChange = (e) => {
+    setFilters({ ...filters, search: e.target.value });
+    handleFilterChange();
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      status: 'Todos',
+      canal: '',
+      integracao: '',
+      dataInicio: '',
+      dataFim: '',
+      search: '',
+    });
+    setFilteredPedidos(originalPedidos);
+  };
+
+  useEffect(() => {
+    handleFilterChange();
+  }, [
+    filters.canal,
+    filters.status,
+    filters.integracao,
+    filters.dataInicio,
+    filters.dataFim,
+    filters.search,
+  ]);
+
+  const openModal = (pedido) => {
+    setSelectedPedido(pedido);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeModal();
+    }
+  };
 
   return (
     <>
-      <PageHeader className="ninjadash-page-header-main" title="Pedidos" routes={PageRoutes} />
-      <StyledMain>
-        <StyledSearch
-          placeholder="Buscar pedidos"
-          onSearch={handleSearch}
-          onChange={(e) => handleSearch(e.target.value)}
-          prefix={<SearchOutlined />}
-        />
-        {loading ? (
-          <Spin size="large" />
-        ) : (
-          <Table
-            columns={columns}
-            dataSource={filteredOrders}
-            rowKey="id"
-            pagination={{ pageSize: 5 }}
-          />
-        )}
-      </StyledMain>
+      <PageHeader className="ninjadash-page-header-main" title="Compras - Pedidos" routes={PageRoutes} />
+      <Main>
+        <Container>
+          <SearchSection>
+            <input
+              type="text"
+              placeholder="Buscar por Nome do Cliente, CEP, rastreio, Cidade ou id do pedido"
+              value={filters.search}
+              onChange={handleSearchChange}
+            />
+            <button type="button" onClick={handleFilterChange}>
+              Buscar
+            </button>
+          </SearchSection>
+          <label htmlFor="error-checkbox" className="error-checkbox">
+            <input id="error-checkbox" type="checkbox" /> Com erros na nota
+          </label>
 
-      {/* Modal para detalhes do pedido */}
-      {selectedOrder && (
-        <StyledModal
-          title={`Detalhes do Pedido - ${selectedOrder.supplier}`}
-          visible={isDetailModalOpen}
-          onCancel={handleCloseModal}
-          footer={null}
-        >
-          <p><strong>Fornecedor:</strong> {selectedOrder.supplier}</p>
-          <p><strong>Total:</strong> R${selectedOrder.total}</p>
-          <p><strong>Data:</strong> {selectedOrder.date}</p>
-          <p><strong>Status:</strong> {selectedOrder.status}</p>
+          <FilterSection>
+            <div>
+              <label htmlFor="dataInicio">
+                Data Inicial:
+                <input
+                  id="dataInicio"
+                  type="date"
+                  value={filters.dataInicio}
+                  onChange={(e) =>
+                    setFilters({ ...filters, dataInicio: e.target.value })
+                  }
+                />
+              </label>
+            </div>
+            <div>
+              <label htmlFor="dataFim">
+                Data Final:
+                <input
+                  id="dataFim"
+                  type="date"
+                  value={filters.dataFim}
+                  onChange={(e) => setFilters({ ...filters, dataFim: e.target.value })}
+                />
+              </label>
+            </div>
+            <div>
+              <label htmlFor="statusPedido">
+                Status do pedido:
+                <select
+                  id="statusPedido"
+                  value={filters.status}
+                  onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                >
+                  <option value="Todos">Todos</option>
+                  <option value="Pago">Pago</option>
+                  <option value="Não Pago">Não Pago</option>
+                  <option value="Com etiquetas">Com etiquetas</option>
+                  <option value="Sem etiquetas">Sem etiquetas</option>
+                  <option value="Com Nf de entrada">Com Nf de entrada</option>
+                  <option value="Sem Nf de entrada">Sem Nf de entrada</option>
+                  <option value="Com Nf de Saida">Com Nf de Saida</option>
+                  <option value="Sem Nf de Saida">Sem Nf de Saida</option>
+                  <option value="Etiqueta Impressa">Etiqueta Impressa</option>
+                  <option value="Etiqueta Não impressa">Etiqueta Não impressa</option>
+                  <option value="Embalado">Embalado</option>
+                  <option value="Não Embalado">Não Embalado</option>
+                </select>
+              </label>
+            </div>
+            <div>
+              <label htmlFor="canal">
+                Filtrar Canal:
+                <select
+                  id="canal"
+                  value={filters.canal}
+                  onChange={(e) => {
+                    setFilters({ ...filters, canal: e.target.value });
+                    handleFilterChange();
+                  }}
+                >
+                  <option value="">- Selecione -</option>
+                  {integracoes
+                    .filter((integracao) => integracao.ativo === 1)
+                    .map((integracao) => (
+                      <option key={integracao.id} value={integracao.nome}>
+                        {integracao.nome}
+                      </option>
+                    ))}
+                </select>
+              </label>
+            </div>
+            <div>
+              <label htmlFor="integracaoDado">
+                Filtrar Integração:
+                <select
+                  id="integracaoDado"
+                  value={filters.integracao}
+                  onChange={(e) => {
+                    setFilters({ ...filters, integracao: e.target.value });
+                    handleFilterChange();
+                  }}
+                >
+                  <option value="">- Selecione -</option>
+                  {integracoesDados
+                    .filter((integracaoDado) => integracaoDado.ativo === 1)
+                    .map((integracaoDado) => {
+                      const integracao = integracoes.find(
+                        (integ) => integ.id === integracaoDado.integracao
+                      );
+                      return (
+                        <option key={integracaoDado.codigo} value={integracaoDado.idusuario}>
+                          {integracao ? `${integracao.nomeINTEGRACAO} (${integracaoDado.idusuario})` : `(${integracaoDado.idusuario})`}
+                        </option>
+                      );
+                    })}
+                </select>
 
-          {/* Lista de produtos (exemplo estático, pode ser dinâmico conforme necessidade) */}
-          <List
-            header={<div>Produtos</div>}
-            dataSource={[
-              { name: 'Produto 1', quantity: 10, price: 100 },
-              { name: 'Produto 2', quantity: 5, price: 200 },
-              // Adicione mais produtos conforme necessário
-            ]}
-            renderItem={item => (
-              <List.Item>
-                {item.name} - Quantidade: {item.quantity} - Preço: R${item.price}
-              </List.Item>
-            )}
-          />
-        </StyledModal>
-      )}
+
+              </label>
+            </div>
+            <div className="filter-buttons">
+              <button type="button" className="primary" onClick={handleFilterChange}>
+                Filtrar
+              </button>
+              <button type="button" className="clear" onClick={handleClearFilters}>
+                Limpar Filtros
+              </button>
+            </div>
+          </FilterSection>
+
+          <ActionsSection>
+            <button type="button" className="primary">
+              + Novo pedido Manual
+            </button>
+            <button type="button">Gerar etiqueta(s)</button>
+            <button type="button">Imprimir Etiqueta(s)</button>
+            <button type="button">Atualizar Status MKTPLC</button>
+          </ActionsSection>
+
+          <Table>
+            <thead>
+              <tr>
+                <th>
+                  <input
+                    type="checkbox"
+                    checked={allChecked}
+                    onChange={handleCheckboxChange}
+                    aria-label="CheckBox"
+                  />
+                </th>
+                <th>#PEDIDO</th>
+                <th>CONTA</th>
+                <th>CANAL</th>
+                <th>DADOS DO PEDIDO</th>
+                <th>NOME</th>
+                <th>COD. RASTREIO</th>
+                <th>PRODUTO(S)</th>
+                <th>VALOR TOTAL</th>
+                <th>STATUS</th>
+                <th>DATA</th>
+                <th>NFE ERP</th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              {filteredPedidos.map((pedido) => (
+                <tr
+                  key={pedido.codigo}
+                  onClick={() => openModal(pedido)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <td>
+                    <label htmlFor={`checkbox[${pedido.codigo}]`}>
+                      <input
+                        id={`checkbox[${pedido.codigo}]`}
+                        type="checkbox"
+                        checked={pedido.checked || allChecked}
+                        onChange={() => handleIndividualCheckboxChange(pedido.codigo)}
+                        aria-label={`checkbox[${pedido.codigo}]`}
+                      />
+                    </label>
+                  </td>
+                  <td>{pedido.codigo}</td>
+                  <td>({pedido.vinculo.conta})</td>
+                  <td>
+                    <Icon
+                      id={`icon-${pedido.codigo}`}
+                      canal={pedido.vinculo.canal}
+                      aria-label={`icon-${pedido.codigo}`}
+                    />
+                  </td>
+                  <td>{pedido.titulo}</td>
+                  <td>{pedido.nome}</td>
+                  <td>{pedido.codRastreio}</td>
+                  <td>{pedido.Itens.map((item) => item.nomeProduto).join(', ')}</td>
+                  <td>{`R$ ${parseFloat(pedido.total).toFixed(2)}`}</td>
+                  <td>
+                    <StatusButton status={pedido.status}>
+                      {pedido.status === 0 ? 'Não Pago' : 'Pago'}
+                    </StatusButton>
+                  </td>
+                  <td>{dayjs(pedido.datacriacao).format('DD/MM/YYYY')}</td>
+                  <td>{pedido.nfeErp || 'N/A'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+
+          {modalVisible && selectedPedido && (
+            <ModalOverlay onClick={handleOverlayClick}>
+              <Modal>
+                <ModalContent>
+                  <CloseButton onClick={closeModal}>X</CloseButton>
+                  <h2>Detalhes do Pedido #{selectedPedido.codigo}</h2>
+                  <p>
+                    <strong>Conta:</strong> {selectedPedido.vinculo.numeroPEDIDO}
+                  </p>
+                  <p>
+                    <strong>Dados do Pedido:</strong> {selectedPedido.titulo}
+                  </p>
+                  <p>
+                    <strong>Código de Rastreio:</strong> {selectedPedido.codRastreio || 'N/A'}
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {selectedPedido.status === 0 ? 'Não Pago' : 'Pago'}
+                  </p>
+                  <p>
+                    <strong>Canal:</strong> {selectedPedido.vinculo.numeroPEDIDO}
+                  </p>
+                  <p>
+                    <strong>Data:</strong> {dayjs(selectedPedido.datacriacao).format('DD/MM/YYYY')}
+                  </p>
+                  <p>
+                    <strong>Produtos:</strong>
+                  </p>
+                  <ItemTable>
+                    <thead>
+                      <tr>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Preço</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedPedido.Itens.map((item) => (
+                        <tr key={item.codigo}>
+                          <td>{item.nomeProduto}</td>
+                          <td>{item.quantidade}</td>
+                          <td>{`R$ ${parseFloat(item.preco).toFixed(2)}`}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </ItemTable>
+                </ModalContent>
+              </Modal>
+            </ModalOverlay>
+          )}
+        </Container>
+      </Main>
     </>
   );
 }
