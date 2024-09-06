@@ -26,9 +26,7 @@ function PesquisarTendencias() {
   }, []);
 
   function carregaTendencias(){
-    const accessToken = Cookies.get('access_token');
     const myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${accessToken}`);
 
     const requestOptions = {
       method: "GET",
@@ -36,7 +34,7 @@ function PesquisarTendencias() {
       redirect: "follow",
     };
 
-    fetch("https://api.mercadolibre.com/trends/MLB?seller=258324988&access_token=APP_USR-6836702047440130-090414-bb59ee72ef6ade22848d262cc8262b5f-1973956702", requestOptions)
+    fetch("https://api.mercadolibre.com/trends/MLB?seller=258324988&access_token=APP_USR-6836702047440130-090513-86ffc8dcf4c213c2a7416529bfd597a2-258324988", requestOptions)
       .then((response) => response.json())
       .then((result) => {
         const trends = result.map(product => ({

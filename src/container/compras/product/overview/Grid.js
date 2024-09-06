@@ -1,27 +1,44 @@
 /* eslint-disable */
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Spin, Badge, Button, Card, Input, Drawer, Pagination, Modal, message } from 'antd';
-import { SoundOutlined, MenuOutlined } from '@ant-design/icons';
+import { Row, Col, Spin, Badge, Button, Card, Input, Drawer, Pagination, Modal, message, List } from 'antd';
+import { SoundOutlined, EyeOutlined, ShoppingCartOutlined, MenuOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import Cookies from 'js-cookie';
 
+// Estilos personalizados
 const Btn = styled(Button)`
-  color: #f59e0b;
+  color: #fff;
+  background-color: #6b46c1; /* Cor roxa do botão "Fazer Pergunta" */
   border: none;
   font-weight: bold;
-  margin-right: 10px !important;
+  width: 100%;
+  margin-bottom: 8px;
+
   &:hover {
-    background: #f59e0b;
-    color: #fff;
+    background-color: #5a3a9d;
   }
 `;
 
-const MobileMenuButton = styled(Button)`
-  display: none;
-  margin-bottom: 20px;
+const ViewButton = styled(Button)`
+  color: #fff;
+  background-color: #fb923c; /* Cor laranja para o botão "Visualizar Produto" */
+  border: none;
+  width: 100%;
+  margin-bottom: 8px;
 
-  @media (max-width: 768px) {
-    display: inline-block;
+  &:hover {
+    background-color: #f97316;
+  }
+`;
+
+const AddCartButton = styled(Button)`
+  color: #6b46c1;
+  background-color: transparent;
+  border: none;
+  width: 100%;
+
+  &:hover {
+    text-decoration: underline;
   }
 `;
 
@@ -32,86 +49,85 @@ const CardProduct = styled(Card)`
   background-color: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
-  height: 350px; /* Diminuído ainda mais para se ajustar melhor em telas menores */
+  height: auto;
 
   &:hover {
     transform: translateY(-5px);
   }
-
-  @media (max-width: 768px) {
-    height: 300px; /* Ajuste adicional para telas menores */
-    margin-bottom: 10px; /* Reduzir o espaço entre os cartões */
-  }
 `;
 
 const ImageBox = styled.img`
-  max-width: 140px; /* Reduzido ainda mais para se ajustar a telas menores */
+  max-width: 180px;
   margin-bottom: 12px;
   object-fit: cover;
-  height: 140px;
-
-  @media (max-width: 768px) {
-    max-width: 100px; /* Ajuste adicional para telas menores */
-    height: 100px;
-  }
+  height: 180px;
+  border-radius: 8px; /* Ajuste de bordas arredondadas */
 `;
 
 const Title = styled.h2`
-  font-size: 12px; /* Reduzido ainda mais para melhorar a legibilidade */
+  font-size: 16px;
   font-weight: bold;
   margin: 0;
   color: #111827;
-  height: 50px; /* Ajuste para evitar quebras de linha excessivas */
-  overflow: hidden;
-
-  @media (max-width: 768px) {
-    font-size: 10px; /* Ajuste adicional para telas menores */
-    height: 40px;
-  }
 `;
 
 const PriceSpan = styled.span`
   display: block;
-  font-size: 18px; /* Reduzido ainda mais */
+  font-size: 18px;
   color: #10b981;
   font-weight: bold;
   margin-top: 8px;
+`;
 
-  @media (max-width: 768px) {
-    font-size: 16px; /* Ajuste adicional para telas menores */
-  }
+const CodeSpan = styled.span`
+  display: block;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
 `;
 
 const Subtitle = styled.p`
-  font-size: 12px; /* Reduzido para melhorar a legibilidade */
+  font-size: 12px;
   color: #6b7280;
   margin-top: 4px;
-
-  @media (max-width: 768px) {
-    font-size: 11px; /* Ajuste adicional para telas menores */
-  }
 `;
 
 const WrapperButtons = styled.div`
   display: flex;
-  justify-content: space-between;
-  margin-top: 8px; /* Reduzido o espaço */
-  gap: 5px;
+  flex-direction: column; /* Botões empilhados */
+  margin-top: 12px;
+`;
 
-  @media (max-width: 768px) {
-    flex-direction: column; /* Alinha os botões verticalmente em telas menores */
-    gap: 5px;
+const PerguntaInput = styled(Input)`
+  margin-bottom: 16px;
+  width: 80%;
+`;
+
+const EnviarButton = styled(Button)`
+  background-color: #6b46c1;
+  color: #fff;
+  margin-left: 8px;
+
+  &:hover {
+    background-color: #5a3a9d;
   }
 `;
 
-const AddCartButton = styled(Button)`
-  background-color: #e5e7eb;
-  color: #374151;
-  border: none;
-  width: 100%; /* Ajuste para preencher a largura completa */
+const PerguntasBox = styled.div`
+  background-color: #f9fafb;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+  height: 200px; /* Defina uma altura fixa */
+  overflow-y: auto; /* Permitir rolagem */
+`;
 
-  &:hover {
-    background-color: #d1d5db;
+const MobileMenuButton = styled(Button)`
+  display: none;
+  margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    display: inline-block;
   }
 `;
 
@@ -165,6 +181,14 @@ function Grid() {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
 
+  // Para o modal de perguntas
+  const [isPerguntaModalVisible, setIsPerguntaModalVisible] = useState(false);
+  const [isViewProductModalVisible, setIsViewProductModalVisible] = useState(false);
+  const [isCadastroModalVisible, setIsCadastroModalVisible] = useState(false);
+
+  const [pergunta, setPergunta] = useState('');
+  const [perguntas, setPerguntas] = useState([]);
+
   const showDrawer = () => {
     setVisible(true);
   };
@@ -184,6 +208,37 @@ function Grid() {
 
   const handleAnnounce = (product) => {
     message.success(`Produto "${product.name}" anunciado com sucesso!`);
+  };
+
+  const handleEnviarPergunta = () => {
+    if (pergunta.trim()) {
+      setPerguntas([...perguntas, pergunta]);
+      setPergunta(''); // Limpar o campo de pergunta após envio
+    }
+  };
+
+  const showPerguntaModal = () => {
+    setIsPerguntaModalVisible(true);
+  };
+
+  const handlePerguntaModalClose = () => {
+    setIsPerguntaModalVisible(false);
+  };
+
+  const showViewProductModal = () => {
+    setIsViewProductModalVisible(true);
+  };
+
+  const handleViewProductModalClose = () => {
+    setIsViewProductModalVisible(false);
+  };
+
+  const showCadastroModal = () => {
+    setIsCadastroModalVisible(true);
+  };
+
+  const handleCadastroModalClose = () => {
+    setIsCadastroModalVisible(false);
   };
 
   useEffect(() => {
@@ -264,31 +319,20 @@ function Grid() {
     fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/fornecedores/imagens/3?produto=${CODIGO}`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        // Verifica se a imagem existe, caso contrário define como null
         const imagem = result && result.imagem && result.imagem[0] ? result.imagem[0] : null;
-  
-        // Adiciona o objeto com o código e a imagem (ou null) ao estado
         setImages(prevImages => [
           ...prevImages, 
-          {
-            codigo: CODIGO,
-            imagem: imagem
-          }
+          { codigo: CODIGO, imagem: imagem }
         ]);
       })
       .catch((error) => {
         console.error('Erro ao carregar imagem:', error);
-        // Em caso de erro, ainda assim grava o código com a imagem como null
         setImages(prevImages => [
           ...prevImages, 
-          {
-            codigo: CODIGO,
-            imagem: null
-          }
+          { codigo: CODIGO, imagem: null }
         ]);
       });
   }
-  
 
   const handleCategorySelect = (categoryName) => {
     setSelectedCategory(categoryName);
@@ -324,7 +368,7 @@ function Grid() {
           )}
         </Menu>
       </Drawer>
-      <Row gutter={[12, 12]}> {/* Reduzi o espaçamento entre os elementos */}
+      <Row gutter={[12, 12]}>
         <Col xs={0} lg={4}>
           <Menu>
             {isLoadingCategories ? (
@@ -343,43 +387,44 @@ function Grid() {
         <Col xs={24} lg={20}>
           <Input 
             placeholder="Buscar produto na página" 
-            style={{ marginBottom: 10 }} /* Reduzi o espaço inferior */
+            style={{ marginBottom: 10 }} 
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
-          <Row gutter={[12, 12]}> {/* Reduzi o espaçamento entre os elementos */}
+          <Row gutter={[12, 12]}>
             {isLoadingProducts ? (
               <Col span={24}>
                 <Spin />
               </Col>
             ) : currentProducts.length ? (
               currentProducts.map((product) => {
-                // Chama a função para carregar a imagem para o produto atual se não estiver carregada
                 if (!images.find(img => img.codigo === product.codigo)) {
                   carregaImagens(product.codigo);
                 }
-          
-                // Busca a imagem correspondente ao produto
                 const productImage = images.find(img => img.codigo === product.codigo);
-          
                 return (
                   <Col xxl={6} lg={8} sm={12} xs={24} key={product.id}>
                     <Badge.Ribbon text="Mais Vendidos" color="#f59e0b">
                       <CardProduct>
                         <ImageBox 
-  alt={product.name} 
-  src={productImage && productImage.imagem 
-    ? `data:image/png;base64,${productImage.imagem}` 
-    : 'https://via.placeholder.com/180x180.png?text=No+Image'} 
-/>
-                        <Title>{product.name}</Title>
+                          alt={product.name} 
+                          src={productImage && productImage.imagem 
+                            ? `data:image/png;base64,${productImage.imagem}` 
+                            : 'https://via.placeholder.com/180x180.png?text=No+Image'} 
+                        />
+                        <CodeSpan>{product.codigo}</CodeSpan>
                         <PriceSpan>R${product.price}</PriceSpan>
-                         
+                        <Subtitle>{product.name}</Subtitle>
                         <WrapperButtons>
-                          <AddCartButton icon={<SoundOutlined />} onClick={() => handleAnnounce(product)}>
-                            Anunciar
+                          <Btn icon={<SoundOutlined />} onClick={showPerguntaModal}>
+                            Fazer Pergunta
+                          </Btn>
+                          <ViewButton icon={<EyeOutlined />} onClick={showViewProductModal}>
+                            Visualizar Produto
+                          </ViewButton>
+                          <AddCartButton icon={<ShoppingCartOutlined />} onClick={showCadastroModal}>
+                            Cadastrar Mix Variedades - SP
                           </AddCartButton>
-                          <Btn onClick={() => showModal(product)}>Ver Detalhes</Btn>
                         </WrapperButtons>
                       </CardProduct>
                     </Badge.Ribbon>
@@ -401,19 +446,70 @@ function Grid() {
           />
         </Col>
       </Row>
+      
+      {/* Modal de perguntas */}
       <Modal
-        title={selectedProduct?.name}
-        visible={modalVisible}
-        onCancel={handleModalClose}
-        footer={null}
+        title="Faça sua pergunta"
+        visible={isPerguntaModalVisible}
+        onCancel={handlePerguntaModalClose}
+        footer={[
+          <Button key="back" onClick={handlePerguntaModalClose}>
+            Fechar
+          </Button>,
+        ]}
       >
-        <ImageBox 
-          alt={selectedProduct?.name} 
-          src={images[selectedProduct?.id] || 'https://via.placeholder.com/180x180.png?text=No+Image'} 
-        />
-        <p><strong>Preço:</strong> ${selectedProduct?.price}</p>
-        <p><strong>Categoria:</strong> {selectedProduct?.category}</p>
-        <p><strong>Descrição:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
+        <div>
+          <PerguntaInput
+            placeholder="Digite sua pergunta"
+            value={pergunta}
+            onChange={(e) => setPergunta(e.target.value)}
+          />
+          <EnviarButton onClick={handleEnviarPergunta}>Enviar Pergunta</EnviarButton>
+        </div>
+        <PerguntasBox>
+          <h3>Perguntas</h3>
+          {perguntas.length > 0 ? (
+            <List
+              bordered
+              dataSource={perguntas}
+              renderItem={(item) => (
+                <List.Item>
+                  {item}
+                </List.Item>
+              )}
+            />
+          ) : (
+            <p>Nenhuma pergunta ainda.</p>
+          )}
+        </PerguntasBox>
+      </Modal>
+
+      {/* Modal de Visualizar Produto */}
+      <Modal
+        title="Visualizar Produto"
+        visible={isViewProductModalVisible}
+        onCancel={handleViewProductModalClose}
+        footer={[
+          <Button key="back" onClick={handleViewProductModalClose}>
+            Fechar
+          </Button>,
+        ]}
+      >
+        <p>Informações detalhadas do produto aqui.</p>
+      </Modal>
+
+      {/* Modal de Cadastro */}
+      <Modal
+        title="Cadastrar Mix Variedades - SP"
+        visible={isCadastroModalVisible}
+        onCancel={handleCadastroModalClose}
+        footer={[
+          <Button key="back" onClick={handleCadastroModalClose}>
+            Fechar
+          </Button>,
+        ]}
+      >
+        <p>Detalhes do cadastro aqui.</p>
       </Modal>
     </div>
   );
