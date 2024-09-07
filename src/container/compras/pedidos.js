@@ -42,6 +42,11 @@ function Pedidos() {
   const [integracoes, setIntegracoes] = useState([]);
   const [integracoesDados, setIntegracoesDados] = useState([]);
 
+  const [isNovoPedidoModalVisible, setNovoPedidoModalVisible] = useState(false);
+  const [isGerarEtiquetaModalVisible, setGerarEtiquetaModalVisible] = useState(false);
+  const [isImprimirEtiquetaModalVisible, setImprimirEtiquetaModalVisible] = useState(false);
+  const [isAtualizarStatusModalVisible, setAtualizarStatusModalVisible] = useState(false);
+
   useEffect(() => {
     // Fetch dos pedidos da API
     const fetchPedidos = async () => {
@@ -352,13 +357,68 @@ function Pedidos() {
           </FilterSection>
 
           <ActionsSection>
-            <button type="button" className="primary">
+            <button type="button" className="primary" onClick={() => setNovoPedidoModalVisible(true)}>
               + Novo pedido Manual
             </button>
-            <button type="button">Gerar etiqueta(s)</button>
-            <button type="button">Imprimir Etiqueta(s)</button>
-            <button type="button">Atualizar Status MKTPLC</button>
+            <button type="button" onClick={() => setGerarEtiquetaModalVisible(true)}>
+              Gerar etiqueta(s)
+            </button>
+            <button type="button" onClick={() => setImprimirEtiquetaModalVisible(true)}>
+              Imprimir Etiqueta(s)
+            </button>
+            <button type="button" onClick={() => setAtualizarStatusModalVisible(true)}>
+              Atualizar Status MKTPLC
+            </button>
           </ActionsSection>
+
+          {/* Modals for each button */}
+          {isNovoPedidoModalVisible && (
+            <ModalOverlay onClick={() => setNovoPedidoModalVisible(false)}>
+              <Modal>
+                <ModalContent>
+                  <CloseButton onClick={() => setNovoPedidoModalVisible(false)}>X</CloseButton>
+                  <h2>Novo Pedido Manual</h2>
+                  <p>Conteúdo do modal para Novo Pedido Manual.</p>
+                </ModalContent>
+              </Modal>
+            </ModalOverlay>
+          )}
+
+          {isGerarEtiquetaModalVisible && (
+            <ModalOverlay onClick={() => setGerarEtiquetaModalVisible(false)}>
+              <Modal>
+                <ModalContent>
+                  <CloseButton onClick={() => setGerarEtiquetaModalVisible(false)}>X</CloseButton>
+                  <h2>Gerar Etiquetas</h2>
+                  <p>Conteúdo do modal para Gerar Etiquetas.</p>
+                </ModalContent>
+              </Modal>
+            </ModalOverlay>
+          )}
+
+          {isImprimirEtiquetaModalVisible && (
+            <ModalOverlay onClick={() => setImprimirEtiquetaModalVisible(false)}>
+              <Modal>
+                <ModalContent>
+                  <CloseButton onClick={() => setImprimirEtiquetaModalVisible(false)}>X</CloseButton>
+                  <h2>Imprimir Etiquetas</h2>
+                  <p>Conteúdo do modal para Imprimir Etiquetas.</p>
+                </ModalContent>
+              </Modal>
+            </ModalOverlay>
+          )}
+
+          {isAtualizarStatusModalVisible && (
+            <ModalOverlay onClick={() => setAtualizarStatusModalVisible(false)}>
+              <Modal>
+                <ModalContent>
+                  <CloseButton onClick={() => setAtualizarStatusModalVisible(false)}>X</CloseButton>
+                  <h2>Atualizar Status MKTPLC</h2>
+                  <p>Conteúdo do modal para Atualizar Status MKTPLC.</p>
+                </ModalContent>
+              </Modal>
+            </ModalOverlay>
+          )}
 
           <Table>
             <thead>
@@ -376,7 +436,6 @@ function Pedidos() {
                 <th>CANAL</th>
                 <th>DADOS DO PEDIDO</th>
                 <th>NOME</th>
-                <th>COD. RASTREIO</th>
                 <th>PRODUTO(S)</th>
                 <th>VALOR TOTAL</th>
                 <th>STATUS</th>
@@ -414,7 +473,6 @@ function Pedidos() {
                   </td>
                   <td>{pedido.titulo}</td>
                   <td>{pedido.nome}</td>
-                  <td>{pedido.codRastreio}</td>
                   <td>{pedido.Itens.map((item) => item.nomeProduto).join(', ')}</td>
                   <td>{`R$ ${parseFloat(pedido.total).toFixed(2)}`}</td>
                   <td>
@@ -440,9 +498,6 @@ function Pedidos() {
                   </p>
                   <p>
                     <strong>Dados do Pedido:</strong> {selectedPedido.titulo}
-                  </p>
-                  <p>
-                    <strong>Código de Rastreio:</strong> {selectedPedido.codRastreio || 'N/A'}
                   </p>
                   <p>
                     <strong>Status:</strong> {selectedPedido.status === 0 ? 'Não Pago' : 'Pago'}

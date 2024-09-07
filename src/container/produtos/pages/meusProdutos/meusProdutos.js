@@ -289,6 +289,7 @@ function MeusProdutos() {
         <p><strong>Preço:</strong> R${selectedProduct?.price}</p>
         <p><strong>Categoria:</strong> {selectedProduct?.category}</p>
         <p><strong>Descrição:</strong> Informações detalhadas do produto.</p>
+        <p><strong>Variações:</strong> .</p>
       </Modal>
     </div>
   );
