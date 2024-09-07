@@ -41,7 +41,6 @@ function Pedidos() {
   const [modalVisible, setModalVisible] = useState(false);
   const [integracoes, setIntegracoes] = useState([]);
   const [integracoesDados, setIntegracoesDados] = useState([]);
-
   const [isNovoPedidoModalVisible, setNovoPedidoModalVisible] = useState(false);
   const [isGerarEtiquetaModalVisible, setGerarEtiquetaModalVisible] = useState(false);
   const [isImprimirEtiquetaModalVisible, setImprimirEtiquetaModalVisible] = useState(false);
