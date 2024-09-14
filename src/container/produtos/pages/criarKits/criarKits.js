@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   MainContainer,
   SelectContainer,
@@ -11,8 +11,9 @@ import {
   CategorySelector,
   ProductSection,
 } from './styles.ts';
-import { Modal, message } from 'antd';
-import 'antd/dist/antd.css';  // Importando os estilos do Ant Design
+import { Modal, message, Pagination } from 'antd';
+import Cookies from 'js-cookie';
+import 'antd/dist/antd.css';
 
 const KitBuilder = () => {
   const [selectedDeposito, setSelectedDeposito] = useState('');
@@ -20,6 +21,12 @@ const KitBuilder = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1); // Estado da página atual
+  const [productsPerPage] = useState(5); // Número de produtos por página
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
   const handleAddProduct = (product) => {
     setSelectedProducts([...selectedProducts, product]);
@@ -41,6 +48,100 @@ const KitBuilder = () => {
       },
     });
   };
+
+  const handleCreateKit = () => {
+    message.success('Kit criado com sucesso!');
+  };
+
+  const handleEditKit = () => {
+    message.success('Kit editado com sucesso!');
+  };
+
+  const handleDeleteKit = () => {
+    Modal.confirm({
+      title: 'Deletar Kit',
+      content: 'Tem certeza de que deseja deletar o kit?',
+      okText: 'Sim, deletar',
+      okType: 'danger',
+      cancelText: 'Cancelar',
+      onOk: () => {
+        message.success('Kit deletado com sucesso!');
+      },
+    });
+  };
+
+  const carregaCategorias = () => {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/fornecedores/categorias/3`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        const mappedCategories = result.map(category => ({
+          hierarquia: category.Hierarquia,
+          nome: category.Nome,
+          descricao: category.Descricao,
+        }));
+        setCategories(mappedCategories);
+        setIsLoadingCategories(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setIsLoadingCategories(false);
+      });
+  };
+
+  const carregaProdutos = () => {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/fornecedores/produtos/3`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        const mappedProducts = result.map(product => ({
+          id: product.ID,
+          name: product.Nome,
+          codigo: product.Codigo,
+          price: product.PrecoVenda,
+          category: product.Categoria,
+        }));
+        setProducts(mappedProducts);
+        setIsLoadingProducts(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setIsLoadingProducts(false);
+      });
+  };
+
+  useEffect(() => {
+    carregaCategorias();
+    carregaProdutos();
+  }, []);
+
+  // Função para lidar com a mudança de página
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Lógica para calcular os produtos a serem exibidos na página atual
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
 
   return (
     <MainContainer>
@@ -72,12 +173,11 @@ const KitBuilder = () => {
 
       <CategorySelector>
         <label>Categoria Shopee</label>
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+        <select value={category} onChange={(e) => setCategory(e.target.value)} disabled={isLoadingCategories}>
           <option value="">- escolha a sua categoria -</option>
-          <option value="Acessórios de Moda">Acessórios de Moda</option>
-          <option value="Abotoaduras">Abotoaduras</option>
-          <option value="Amuletos">Amuletos, Pingentes e Ornamentos</option>
-          <option value="Broches">Broches e Alfinetes</option>
+          {categories.map((cat) => (
+            <option key={cat.hierarquia} value={cat.nome}>{cat.nome}</option>
+          ))}
         </select>
       </CategorySelector>
 
@@ -85,18 +185,16 @@ const KitBuilder = () => {
         <ProductSelectorContainer>
           <h2>Selecione os produtos</h2>
           <div className="product-list">
-            {[
-              { id: 1, name: 'Abajur desk preto led 5w', stock: 100, image: 'image1.png' },
-              { id: 2, name: 'Abajur new office preto', stock: 100, image: 'image2.png' },
-              { id: 3, name: 'Abajur new office prata', stock: 43, image: 'image3.png' },
-              { id: 4, name: 'Abajur desk branco led 5w', stock: 100, image: 'image4.png' },
-              { id: 5, name: 'LUSTRE PENDENTE DUAL VERMELHO', stock: 100, image: 'image5.png' },
-            ].map((product) => (
-              <ProductItem key={product.id}>
-                <p>{product.name}</p>
-                <Button onClick={() => handleAddProduct(product)}>Incluir</Button>
-              </ProductItem>
-            ))}
+            {isLoadingProducts ? (
+              <p>Carregando produtos...</p>
+            ) : (
+              currentProducts.map((product) => (
+                <ProductItem key={product.id}>
+                  <p>{product.name}</p>
+                  <Button onClick={() => handleAddProduct(product)}>Incluir</Button>
+                </ProductItem>
+              ))
+            )}
           </div>
         </ProductSelectorContainer>
 
@@ -111,21 +209,22 @@ const KitBuilder = () => {
         </SelectedProductsContainer>
       </ProductSection>
 
-      {/* <ImageContainer>
-        <h3>Imagens</h3>
-        <ImageGrid>
-          {selectedProducts.map((product) => (
-            <div key={product.id}>
-              <img src={product.image} alt={product.name} />
-              <Button onClick={() => handleRemoveProduct(product.id)}>Remover</Button>
-            </div>
-          ))}
-        </ImageGrid>
-        <Button>Adicionar Imagens</Button>
-      </ImageContainer> */}
+      <div style={{ marginTop: '20px' }}>
+        <Pagination
+          current={currentPage}
+          total={products.length}
+          pageSize={productsPerPage}
+          onChange={handlePageChange}
+        />
+      </div>
+
+      <div style={{ marginTop: '20px' }}>
+        <Button type="primary" onClick={handleCreateKit}>Criar Kit</Button>
+        <Button type="default" onClick={handleEditKit} style={{ marginLeft: '10px' }}>Editar Kit</Button>
+        <Button type="danger" onClick={handleDeleteKit} style={{ marginLeft: '10px' }}>Deletar Kit</Button>
+      </div>
     </MainContainer>
   );
 };
 
 export default KitBuilder;
-

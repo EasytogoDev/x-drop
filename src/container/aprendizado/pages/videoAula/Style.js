@@ -6,22 +6,36 @@ const Main = Styled.main`
   min-height: 100vh;
 `;
 
-const VideoGrid = Styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+export const VideoCard = Styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+
+  iframe {
+    border-radius: 8px;
+  }
+
+  h4 {
+    font-size: 1.2em;
+    margin-top: 10px;
+  }
+
+  p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #666;
+  }
 `;
 
-const VideoCard = Styled.div`
-  background-color: #ffffff; /* Cor de fundo dos cards clara */
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
-
-  &:hover {
-    transform: scale(1.05);
-  }
+export const VideoGrid = Styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-gap: 20px;
+  width: 100%;
 `;
 
 const VideoThumbnail = Styled.img`
@@ -46,4 +60,4 @@ const VideoDetails = Styled.div`
   }
 `;
 
-export { Main, VideoGrid, VideoCard, VideoThumbnail, VideoDetails };
+export { Main, VideoThumbnail, VideoDetails };

@@ -145,6 +145,13 @@ function MenuItems({ toggleCollapsed }) {
         null,
       ),
       getItem(
+        <NavLink onClick={toggleCollapsed} to={`${path}/compras/pedidosManuais`}>
+          {t('Pedido Manual')}
+        </NavLink>,
+        'pedidosManuais',
+        null,
+      ),
+      getItem(
         <NavLink onClick={toggleCollapsed} to={`${path}/compras/fornecedores`}>
           {/* /compras/catalogo */}
           {`${t('Fornecedores')}`}

@@ -1,133 +1,194 @@
 /* eslint-disable */
-import React, { useState } from 'react';
-import { Container, FormSection, InputGroup, Label, Input, FileInput, Button, CheckboxGroup, Checkbox, TermsLink } from './stylesList.ts';
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import Cookies from 'js-cookie';
 
-function Formulario() {
-  const [formData, setFormData] = useState({
-    nome: 'Artur',
-    sobrenome: 'Aguiar',
-    razaoSocial: 'Antonio Jose da Silva',
-    cnpj: '43197336000107',
-    ie: '131.808.241.111',
-    cpf: '05135128883',
-    rg: '476742468',
-    dataNascimento: '18051990',
-    celular: '11934322340',
-    email: 'artur.aparecido@gmail.com',
-    nomePai: 'José Fabilicio Neto',
-    nomeMae: 'Aparecida',
-    cep: '05185300',
-    endereco: 'Rua Balsamo da Horta',
-    numero: '69',
-    complemento: '',
-    bairro: 'Jardim Santa Lucrécia',
-    cidade: 'São Paulo',
-    estado: 'SP',
-  });
+function UserList() {
+    const [users, setUsers] = useState([]);
+    const [searchTerm, setSearchTerm] = useState(''); // Estado para armazenar o valor da busca
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+    // Função para carregar os dados da API
+    function carregaUsuarios() {
+        const accessToken = Cookies.get('access_token');
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${accessToken}`);
 
-  return (
-    <Container>
-      <FormSection>
-        <h3>Dados do responsável</h3>
-        <InputGroup>
-          <Label>Nome</Label>
-          <Input type="text" name="nome" value={formData.nome} onChange={handleInputChange} />
-          <Label>Sobrenome</Label>
-          <Input type="text" name="sobrenome" value={formData.sobrenome} onChange={handleInputChange} />
-        </InputGroup>
-        <InputGroup>
-          <Label>Razão Social</Label>
-          <Input type="text" name="razaoSocial" value={formData.razaoSocial} onChange={handleInputChange} />
-        </InputGroup>
-        <InputGroup>
-          <Label>CNPJ</Label>
-          <Input type="text" name="cnpj" value={formData.cnpj} onChange={handleInputChange} />
-          <Label>IE</Label>
-          <Input type="text" name="ie" value={formData.ie} onChange={handleInputChange} />
-        </InputGroup>
-        <InputGroup>
-          <Label>CPF</Label>
-          <Input type="text" name="cpf" value={formData.cpf} onChange={handleInputChange} />
-          <Label>RG</Label>
-          <Input type="text" name="rg" value={formData.rg} onChange={handleInputChange} />
-        </InputGroup>
-        <InputGroup>
-          <Label>Data de Nascimento</Label>
-          <Input type="text" name="dataNascimento" value={formData.dataNascimento} onChange={handleInputChange} />
-        </InputGroup>
-        <InputGroup>
-          <Label>Celular com DDD</Label>
-          <Input type="text" name="celular" value={formData.celular} onChange={handleInputChange} />
-          <Label>Email</Label>
-          <Input type="email" name="email" value={formData.email} onChange={handleInputChange} />
-        </InputGroup>
-        <InputGroup>
-          <Label>Nome Pai</Label>
-          <Input type="text" name="nomePai" value={formData.nomePai} onChange={handleInputChange} />
-          <Label>Nome Mãe</Label>
-          <Input type="text" name="nomeMae" value={formData.nomeMae} onChange={handleInputChange} />
-        </InputGroup>
-      </FormSection>
+        const requestOptions = {
+            method: "GET",
+            headers: myHeaders,
+            redirect: "follow"
+        };
 
-      <FormSection>
-        <h3>Endereço</h3>
-        <InputGroup>
-          <Label>CEP</Label>
-          <Input type="text" name="cep" value={formData.cep} onChange={handleInputChange} />
-          <Label>Endereço</Label>
-          <Input type="text" name="endereco" value={formData.endereco} onChange={handleInputChange} />
-        </InputGroup>
-        <InputGroup>
-          <Label>Número</Label>
-          <Input type="text" name="numero" value={formData.numero} onChange={handleInputChange} />
-          <Label>Complemento</Label>
-          <Input type="text" name="complemento" value={formData.complemento} onChange={handleInputChange} />
-          <Label>Bairro</Label>
-          <Input type="text" name="bairro" value={formData.bairro} onChange={handleInputChange} />
-        </InputGroup>
-        <InputGroup>
-          <Label>Cidade</Label>
-          <Input type="text" name="cidade" value={formData.cidade} onChange={handleInputChange} />
-          <Label>Estado</Label>
-          <Input type="text" name="estado" value={formData.estado} onChange={handleInputChange} />
-        </InputGroup>
-      </FormSection>
+        fetch("http://192.168.15.47:8080/api/usuarios", requestOptions)
+            .then((response) => response.json())
+            .then((result) => {
+                if (result && result.length > 0) {
+                    setUsers(result);
+                } else {
+                    console.error("Nenhum usuário encontrado.");
+                }
+            })
+            .catch((error) => console.error("Erro ao carregar usuários: ", error));
+    }
 
-      <FormSection>
-        <h3>Anexar documentos</h3>
-        <InputGroup>
-          <Label>RG - Frente</Label>
-          <FileInput type="file" />
-        </InputGroup>
-        <InputGroup>
-          <Label>RG - Costas</Label>
-          <FileInput type="file" />
-        </InputGroup>
-        <InputGroup>
-          <Label>Comprovante de residência</Label>
-          <FileInput type="file" />
-        </InputGroup>
-      </FormSection>
+    useEffect(() => {
+        carregaUsuarios();
+    }, []);
 
-      <CheckboxGroup>
-        <Checkbox type="checkbox" />
-        <TermsLink>
-          Li, concordo e estou ciente dos termos e políticas da empresa. <a href="#termos">Ler termos aqui.</a>
-        </TermsLink>
-      </CheckboxGroup>
+    // Função para lidar com a mudança no campo de busca
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
 
-      <Button>Atualizar</Button>
-    </Container>
-  );
+    // Filtra os usuários de acordo com o valor do campo de busca
+    const filteredUsers = users.filter((user) => 
+        user.nomeUSUARIO.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.emailUSUARIO.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    return (
+        <PageContainer>
+            <Header>
+                <Title>Lista De Usuários</Title>
+                <SearchInput 
+                    type="text" 
+                    placeholder="Procurar usuário" 
+                    value={searchTerm} 
+                    onChange={handleSearchChange}
+                />
+                <AddUserButton>+ Adicionar Usuário</AddUserButton>
+            </Header>
+            <ListContainer>
+                {filteredUsers.length > 0 ? (
+                    filteredUsers.map((user) => (
+                        <UserCard 
+                            key={user.idUSUARIO}
+                            nome={user.nomeUSUARIO}
+                            sobrenome={user.sobrenomeUSUARIO}
+                            email={user.emailUSUARIO}
+                            imagem={user.imagemUSUARIO}
+                        />
+                    ))
+                ) : (
+                    <p>Nenhum usuário encontrado.</p>
+                )}
+            </ListContainer>
+        </PageContainer>
+    );
 }
 
-export default Formulario;
+function UserCard({ nome, sobrenome, email, imagem }) {
+    return (
+        <CardContainer>
+            <MoreOptions>•••</MoreOptions>
+            {imagem ? (
+                <Avatar src={imagem} alt="Avatar do usuário" />
+            ) : (
+                <AvatarPlaceholder />
+            )}
+            <UserName>{nome} {sobrenome}</UserName>
+            <UserEmail>{email}</UserEmail>
+        </CardContainer>
+    );
+}
 
+// Estilização
+
+const PageContainer = styled.div`
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+`;
+
+const Title = styled.h1`
+  font-size: 24px;
+  color: #333;
+`;
+
+const SearchInput = styled.input`
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 250px;
+`;
+
+const AddUserButton = styled.button`
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const ListContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+`;
+
+const CardContainer = styled.div`
+  width: 250px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+`;
+
+const Avatar = styled.img`
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 20px;
+`;
+
+const AvatarPlaceholder = styled.div`
+  width: 80px;
+  height: 80px;
+  background-color: #ccc;
+  border-radius: 50%;
+  margin-bottom: 20px;
+`;
+
+const UserName = styled.h3`
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 5px;
+`;
+
+const UserEmail = styled.p`
+  font-size: 14px;
+  color: #777;
+`;
+
+const MoreOptions = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #777;
+`;
+
+export default UserList;

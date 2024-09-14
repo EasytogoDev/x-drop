@@ -68,22 +68,32 @@ function PesquisarTendencias() {
       redirect: "follow",
     };
 
+    console.log(`Buscando tendências para país: ${pais}, categoria: ${categoria}`);
+
     fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/meli/trends?codigo=${pais}&categoria=${categoria}`, requestOptions)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Erro: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((result) => {
         const trends = result.map(product => ({
           name: product.keyword,
           meli: product.url
         }));
 
-        setLoading(false);
         setTendencias(trends);
+        setError(null);  // Limpa erros anteriores se os dados forem recebidos corretamente
       })
       .catch((error) => {
-        console.error(error);
+        console.error(`Erro ao buscar as tendências: ${error.message}`);
         setError('Erro ao buscar as tendências. Tente novamente mais tarde.');
-        setLoading(false);
+      })
+      .finally(() => {
+        setLoading(false);  // Certifique-se de que o loading sempre será setado para false
       });
+
   }
 
   // Função para carregar categorias com base no país, tipo e valor anterior
@@ -124,6 +134,8 @@ function PesquisarTendencias() {
         setLoading(false);
       });
   }
+
+  console.log(categorias)
 
   // Carrega a lista de países ao iniciar
   function carregaPaises() {
@@ -204,6 +216,8 @@ function PesquisarTendencias() {
     carregaCategorias(paisSelecionado, 4, valor)
     carregaTendencias(paisSelecionado, valor);
   }
+
+  console.log('Tendências:', tendencias);
 
   return (
     <>
@@ -297,6 +311,8 @@ function PesquisarTendencias() {
           <StyledLoading>Carregando tendências...</StyledLoading>
         ) : error ? (
           <StyledError>{error}</StyledError>
+        ) : tendencias.length === 0 ? (
+          <StyledError>Nenhuma tendência encontrada para este país e categoria.</StyledError>
         ) : (
           <TendenciasList as="ol">
             {tendencias.map((tendencia, index) => (

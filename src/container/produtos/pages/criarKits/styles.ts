@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export const MainContainer = styled.div`
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: ${({ theme }) => theme[theme.mainContent]['white-background']}; /* Ajustável conforme o tema */
   border-radius: 8px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   margin: 20px;
@@ -11,6 +11,7 @@ export const MainContainer = styled.div`
   h1 {
     font-size: 24px;
     margin-bottom: 20px;
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
   }
 `;
 
@@ -22,12 +23,17 @@ export const SelectContainer = styled.div`
     margin-bottom: 8px;
     font-size: 16px;
     font-weight: bold;
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
   }
 
   select {
     width: 100%;
     padding: 8px;
     font-size: 16px;
+    border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']}; /* Ajustável conforme o tema */
+    background-color: ${({ theme }) => theme[theme.mainContent]['white-background']}; /* Ajustável conforme o tema */
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
+    border-radius: 4px;
   }
 `;
 
@@ -39,6 +45,7 @@ export const InputContainer = styled.div`
     margin-bottom: 8px;
     font-size: 16px;
     font-weight: bold;
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
 
     span {
       color: red;
@@ -49,7 +56,9 @@ export const InputContainer = styled.div`
     width: 100%;
     padding: 8px;
     font-size: 16px;
-    border: 1px solid #ddd;
+    border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']}; /* Ajustável conforme o tema */
+    background-color: ${({ theme }) => theme[theme.mainContent]['white-background']}; /* Ajustável conforme o tema */
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
     border-radius: 4px;
   }
 
@@ -71,6 +80,7 @@ export const ProductSelectorContainer = styled.div`
   h2 {
     font-size: 20px;
     margin-bottom: 10px;
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
   }
 
   .product-list {
@@ -85,6 +95,7 @@ export const SelectedProductsContainer = styled.div`
   h2 {
     font-size: 20px;
     margin-bottom: 10px;
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
   }
 `;
 
@@ -93,11 +104,12 @@ export const ProductItem = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']}; /* Ajustável conforme o tema */
 
   p {
     margin: 0;
     font-size: 16px;
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
   }
 `;
 
@@ -107,6 +119,7 @@ export const ImageContainer = styled.div`
   h3 {
     font-size: 18px;
     margin-bottom: 10px;
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
   }
 `;
 
@@ -122,14 +135,14 @@ export const ImageGrid = styled.div`
     img {
       max-width: 100px;
       margin-bottom: 5px;
-      border: 1px solid #ddd;
+      border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']}; /* Ajustável conforme o tema */
       border-radius: 4px;
     }
   }
 `;
 
 export const Button = styled.button`
-  background-color: #28a745;
+  background-color: #28a745; /* Verde fixo */
   color: white;
   padding: 5px 10px;
   border: none;
@@ -137,13 +150,13 @@ export const Button = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #218838;
+    background-color: #218838; /* Verde fixo */
   }
 
   &.ant-btn-dangerous {
-    background-color: #dc3545;
+    background-color: #dc3545; /* Vermelho fixo */
     &:hover {
-      background-color: #c82333;
+      background-color: #c82333; /* Vermelho fixo */
     }
   }
 `;
@@ -156,11 +169,16 @@ export const CategorySelector = styled.div`
     margin-bottom: 8px;
     font-size: 16px;
     font-weight: bold;
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
   }
 
   select {
     width: 100%;
     padding: 8px;
     font-size: 16px;
+    border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']}; /* Ajustável conforme o tema */
+    background-color: ${({ theme }) => theme[theme.mainContent]['white-background']}; /* Ajustável conforme o tema */
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
+    border-radius: 4px;
   }
 `;

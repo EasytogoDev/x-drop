@@ -8,8 +8,10 @@ const ProductDetails = lazy(() => import('../../container/compras/product/Produc
 const Compras = lazy(() => import('../../container/compras'));
 const Solicitacoes = lazy(() => import('../../container/compras/solicitacoes'));
 const Pedidos = lazy(() => import('../../container/compras/pedidos'));
+const PedidosManuais = lazy(() => import('../../container/compras/pedidoManual/pedidosManuais'));
 const Fornecedores = lazy(() => import('../../container/compras/fornecedores'));
 const NovoPedido = lazy(() => import('../../container/compras/novoPedido'));
+// const PedidosManuais = lazy(() => import('../../container/compras/pedidosManuais'));
 
 function ComprasRoutes() {
   return (
@@ -23,6 +25,7 @@ function ComprasRoutes() {
       <Route exact path="pedidos" element={<Pedidos />} />
       <Route exact path="fornecedores" element={<Fornecedores />} />
       <Route exact path="novoPedido" element={<NovoPedido />} />
+      <Route path="pedidosManuais" element={<PedidosManuais />} />
     </Routes>
   );
 }

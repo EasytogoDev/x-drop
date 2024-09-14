@@ -1,312 +1,359 @@
 /* eslint-disable */
 import React, { useState, useEffect } from 'react';
+import dayjs from 'dayjs';
+import Cookies from 'js-cookie';
 import styled from 'styled-components';
-import { PageHeader } from '../../components/page-headers/page-headers';
-import { Main } from '../styled';
+
+// Estilos utilizando Styled Components
+const Main = styled.main`
+  padding: 20px;
+`;
 
 const Container = styled.div`
-  max-width: 1400px;
-  margin: 40px auto;
-  padding: 20px;
-  background: ${({ theme }) => theme[theme.mainContent]['white-background']};
-  border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color-default']}
+  background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 `;
 
-const FiltersContainer = styled.div`
+const SearchSection = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-bottom: 30px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+
+  input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 300px;
+  }
+
+  button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
 `;
 
-const FilterItem = styled.div`
-  flex: 1 1 220px;
-`;
+const FilterSection = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
 
-const Label = styled.label`
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-`;
+  div {
+    display: flex;
+    flex-direction: column;
 
-const Input = styled.input`
-  width: 100%;
-  padding: 12px;
-  background: ${({ theme }) => theme[theme.mainContent]['white-background']};
-  color: ${({ theme }) => theme[theme.mainContent]['dark-text']};
-  border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color-default']};
-  border-radius: 4px;
-  font-size: 16px;
-`;
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
 
-const Select = styled.select`
-  width: 100%;
-  padding: 12px;
-  background: ${({ theme }) => theme[theme.mainContent]['white-background']};
-  color: ${({ theme }) => theme[theme.mainContent]['dark-text']};
-  border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color-default']};
-  border-radius: 4px;
-  font-size: 16px;
-`;
+    input, select {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  }
 
-const TableContainer = styled.div`
-  overflow-x: auto;
+  .filter-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .primary {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
 `;
 
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
-  font-size: 16px;
-`;
 
-const Th = styled.th`
-  padding: 12px;
-  background-color: #007bff;
-  color: #fff;
-  text-align: left;
-  border-bottom: 2px solid ${({ theme }) => theme[theme.mainContent]['border-color-default']};
-`;
-
-const Td = styled.td`
-  padding: 12px;
-  border-bottom: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color-default']};
-`;
-
-const Tr = styled.tr`
-  &:hover {
-    background-color: ${({ theme }) => theme[theme.mainContent]['border-color-default']};
+  thead th {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    text-align: left;
   }
-  cursor: pointer;
+
+  tbody tr {
+    border-bottom: 1px solid #ddd;
+
+    &:hover {
+      background-color: #f1f1f1;
+    }
+  }
+
+  td {
+    padding: 10px;
+    text-align: left;
+  }
+
+  td input[type="checkbox"] {
+    cursor: pointer;
+  }
+
+  button {
+    background-color: #001f3f;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 11px;
+    font-weight: bold;
+    width: 116px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #004080;
+    }
+  }
 `;
 
-const NFDetailWrapper = styled.div`
-  padding: 30px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
-  margin: 40px auto;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-`;
-
-const Button = styled.button`
-  background-color: ${(props) => props.color || '#007bff'};
-  color: #fff;
-  border: none;
-  padding: 12px 24px;
+const StatusButton = styled.span`
+  padding: 5px 10px;
   border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  &:hover {
-    background-color: ${(props) => props.hoverColor || '#0056b3'};
-  }
+  color: ${(props) => (props.status === 'Pago' ? '#28a745' : '#dc3545')};
+  background-color: ${(props) => (props.status === 'Pago' ? '#e9f5ec' : '#f8d7da')};
 `;
 
-const NFTitle = styled.h3`
-  margin: 0;
-  font-size: 24px;
-  color: #333;
-`;
+function Pedidos() {
+  const [allChecked, setAllChecked] = useState(false);
+  const [originalPedidos, setOriginalPedidos] = useState([]);
+  const [filteredPedidos, setFilteredPedidos] = useState([]);
 
-const NFDetails = styled.p`
-  margin: 10px 0;
-  font-size: 16px;
-  color: #666;
-`;
-
-const NFList = ({ onSelectNF }) => {
-  const [nfs, setNFs] = useState([]);
+  const [filters, setFilters] = useState({
+    status: 'Todos',
+    dataInicio: '',
+    dataFim: '',
+    search: '',
+  });
 
   useEffect(() => {
-    // Mocking fetch of NF-E data
-    setNFs([
-      {
-        id: 1,
-        number: '001',
-        date: '2024-01-01',
-        recipient: 'STEVE JOBS',
-        total: '85,00',
-        status: 'AUTORIZADO',
-        details: 'Detalhes da NF-E 001',
-      },
-      {
-        id: 2,
-        number: '002',
-        date: '2024-02-01',
-        recipient: 'CONSUMIDOR',
-        total: '188,25',
-        status: 'AUTORIZADO',
-        details: 'Detalhes da NF-E 002',
-      },
-      {
-        id: 3,
-        number: '003',
-        date: '2024-03-01',
-        recipient: 'CONSUMIDOR',
-        total: '168,25',
-        status: 'AUTORIZADO',
-        details: 'Detalhes da NF-E 003',
-      },
-    ]);
+    // Fetch dos pedidos da API
+    const fetchPedidos = async () => {
+      const accessToken = Cookies.get('access_token');
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/meli/pedidos`, {
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        const data = await response.json();
+        setFilteredPedidos(data || []); // Garante que `filteredPedidos` seja uma array
+        setOriginalPedidos(data || []); // Garante que `originalPedidos` seja uma array
+      } catch (error) {
+        console.error('Erro ao buscar pedidos:', error);
+      }
+    };
+    fetchPedidos();
   }, []);
 
-  return (
-    <TableContainer>
-      <Table>
-        <thead>
-          <tr>
-            <Th>ID</Th>
-            <Th>Nota Fiscal</Th>
-            <Th>Série</Th>
-            <Th>Data Emissão</Th>
-            <Th>Destinatário</Th>
-            <Th>Total</Th>
-            <Th>Status</Th>
-            <Th>Funcionário</Th>
-          </tr>
-        </thead>
-        <tbody>
-          {nfs.map((nf) => (
-            <Tr key={nf.id} onClick={() => onSelectNF(nf)}>
-              <Td>{nf.id}</Td>
-              <Td>{nf.number}</Td>
-              <Td>1</Td>
-              <Td>{nf.date}</Td>
-              <Td>{nf.recipient}</Td>
-              <Td>{nf.total}</Td>
-              <Td>{nf.status}</Td>
-              <Td>ADMINIS</Td>
-            </Tr>
-          ))}
-        </tbody>
-      </Table>
-    </TableContainer>
-  );
-};
-
-const states = [
-  { value: 'AC', label: 'Acre' },
-  { value: 'AL', label: 'Alagoas' },
-  { value: 'AP', label: 'Amapá' },
-  { value: 'AM', label: 'Amazonas' },
-  { value: 'BA', label: 'Bahia' },
-  { value: 'CE', label: 'Ceará' },
-  { value: 'DF', label: 'Distrito Federal' },
-  { value: 'ES', label: 'Espírito Santo' },
-  { value: 'GO', label: 'Goiás' },
-  { value: 'MA', label: 'Maranhão' },
-  { value: 'MT', label: 'Mato Grosso' },
-  { value: 'MS', label: 'Mato Grosso do Sul' },
-  { value: 'MG', label: 'Minas Gerais' },
-  { value: 'PA', label: 'Pará' },
-  { value: 'PB', label: 'Paraíba' },
-  { value: 'PR', label: 'Paraná' },
-  { value: 'PE', label: 'Pernambuco' },
-  { value: 'PI', label: 'Piauí' },
-  { value: 'RJ', label: 'Rio de Janeiro' },
-  { value: 'RN', label: 'Rio Grande do Norte' },
-  { value: 'RS', label: 'Rio Grande do Sul' },
-  { value: 'RO', label: 'Rondônia' },
-  { value: 'RR', label: 'Roraima' },
-  { value: 'SC', label: 'Santa Catarina' },
-  { value: 'SP', label: 'São Paulo' },
-  { value: 'SE', label: 'Sergipe' },
-  { value: 'TO', label: 'Tocantins' },
-];
-
-const GerenciadorNfe = () => {
-  const [selectedNF, setSelectedNF] = useState(null);
-
-  const PageRoutes = [
-    {
-      path: '/admin/fiscal',
-      breadcrumbName: 'Fiscal',
-    },
-    {
-      path: '',
-      breadcrumbName: 'Gerenciador de Nfe',
-    },
-  ];
-
-  const handlePrint = () => {
-    window.print();
+  const handleCheckboxChange = () => {
+    setAllChecked(!allChecked);
+    setFilteredPedidos((prevPedidos) =>
+      prevPedidos.map((pedido) => ({ ...pedido, checked: !allChecked }))
+    );
   };
 
-  return (
-    <>
-      <PageHeader className="ninjadash-page-header-main" title="Gerenciador de NFe" routes={PageRoutes} />
-      <Main>
-        <Container>
-          <FiltersContainer>
-            <FilterItem>
-              <Label>Período Inicial</Label>
-              <Input type="date" />
-            </FilterItem>
-            <FilterItem>
-              <Label>Período Final</Label>
-              <Input type="date" />
-            </FilterItem>
-            <FilterItem>
-              <Label>Destinatário</Label>
-              <Input type="text" placeholder="Digite o destinatário" />
-            </FilterItem>
-            <FilterItem>
-              <Label>Vendedor</Label>
-              <Select>
-                <option value="all">Todos</option>
-                <option value="vendedor1">Vendedor 1</option>
-              </Select>
-            </FilterItem>
-            <FilterItem>
-              <Label>Status</Label>
-              <Select>
-                <option value="emitidas">NFes Emitidas</option>
-              </Select>
-            </FilterItem>
-            <FilterItem>
-              <Label>Nota Fiscal</Label>
-              <Input type="text" placeholder="Número da Nota Fiscal" />
-            </FilterItem>
-            <FilterItem>
-              <Label>UF</Label>
-              <Select>
-                {states.map((state) => (
-                  <option key={state.value} value={state.value}>
-                    {state.label}
-                  </option>
-                ))}
-              </Select>
-            </FilterItem>
-          </FiltersContainer>
-          {!selectedNF ? (
-            <NFList onSelectNF={setSelectedNF} />
-          ) : (
-            <NFDetailWrapper>
-              <NFTitle>Nota Fiscal: {selectedNF.number}</NFTitle>
-              <NFDetails>Data: {selectedNF.date}</NFDetails>
-              <NFDetails>Destinatário: {selectedNF.recipient}</NFDetails>
-              <NFDetails>Total: {selectedNF.total}</NFDetails>
-              <NFDetails>Status: {selectedNF.status}</NFDetails>
-              <NFDetails>{selectedNF.details}</NFDetails>
-              <ButtonContainer>
-                <Button onClick={handlePrint}>Imprimir Nota Fiscal</Button>
-                <Button color="#ff0000" hoverColor="#cc0000" onClick={() => setSelectedNF(null)}>
-                  Fechar
-                </Button>
-              </ButtonContainer>
-            </NFDetailWrapper>
-          )}
-        </Container>
-      </Main>
-    </>
-  );
-};
+  const handleIndividualCheckboxChange = (id) => {
+    setFilteredPedidos((prevPedidos) =>
+      prevPedidos.map((pedido) =>
+        pedido.codigo === id ? { ...pedido, checked: !pedido.checked } : pedido
+      )
+    );
+  };
 
-export default GerenciadorNfe;
+  const handleFilterChange = () => {
+    let pedidosFiltrados = [...originalPedidos];
+
+    if (filters.status && filters.status !== 'Todos') {
+      pedidosFiltrados = pedidosFiltrados.filter((pedido) => pedido.status === filters.status);
+    }
+
+    if (filters.dataInicio) {
+      pedidosFiltrados = pedidosFiltrados.filter((pedido) =>
+        dayjs(pedido.data).isAfter(dayjs(filters.dataInicio).subtract(1, 'day'))
+      );
+    }
+
+    if (filters.dataFim) {
+      pedidosFiltrados = pedidosFiltrados.filter((pedido) =>
+        dayjs(pedido.data).isBefore(dayjs(filters.dataFim).add(1, 'day'))
+      );
+    }
+
+    if (filters.search) {
+      pedidosFiltrados = pedidosFiltrados.filter(
+        (pedido) =>
+          pedido.cliente.toLowerCase().includes(filters.search.toLowerCase()) ||
+          pedido.codigo.toString().includes(filters.search)
+      );
+    }
+
+    setFilteredPedidos(pedidosFiltrados);
+  };
+
+  const handleSearchChange = (e) => {
+    setFilters({ ...filters, search: e.target.value });
+    handleFilterChange();
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      status: 'Todos',
+      dataInicio: '',
+      dataFim: '',
+      search: '',
+    });
+    setFilteredPedidos(originalPedidos);
+  };
+
+  useEffect(() => {
+    handleFilterChange();
+  }, [filters.status, filters.dataInicio, filters.dataFim, filters.search]);
+
+  return (
+    <Main>
+      <Container>
+        {/* Barra de pesquisa */}
+        <SearchSection>
+          <input
+            type="text"
+            placeholder="Buscar por Nome do Cliente ou ID Do Pedido"
+            value={filters.search}
+            onChange={handleSearchChange}
+          />
+          <button type="button" onClick={handleFilterChange}>
+            Buscar
+          </button>
+        </SearchSection>
+
+        {/* Filtros por data e status */}
+        <FilterSection>
+          <div>
+            <label htmlFor="dataInicio">Data Inicial:</label>
+            <input
+              id="dataInicio"
+              type="date"
+              value={filters.dataInicio}
+              onChange={(e) => setFilters({ ...filters, dataInicio: e.target.value })}
+            />
+          </div>
+          <div>
+            <label htmlFor="dataFim">Data Final:</label>
+            <input
+              id="dataFim"
+              type="date"
+              value={filters.dataFim}
+              onChange={(e) => setFilters({ ...filters, dataFim: e.target.value })}
+            />
+          </div>
+          <div>
+            <label htmlFor="statusPedido">Status do Pedido:</label>
+            <select
+              id="statusPedido"
+              value={filters.status}
+              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+            >
+              <option value="Todos">Todos</option>
+              <option value="Pago">Pago</option>
+              <option value="Não Pago">Não Pago</option>
+            </select>
+          </div>
+          <div className="filter-buttons">
+            <button type="button" className="primary" onClick={handleFilterChange}>
+              Filtrar
+            </button>
+            <button type="button" className="primary" onClick={handleClearFilters}>
+              Limpar Filtros
+            </button>
+          </div>
+        </FilterSection>
+
+        {/* Tabela de pedidos */}
+        <Table>
+          <thead>
+            <tr>
+              <th>
+                <input
+                  type="checkbox"
+                  checked={allChecked}
+                  onChange={handleCheckboxChange}
+                  aria-label="CheckBox"
+                />
+              </th>
+              <th>#PEDIDO</th>
+              <th>CLIENTE</th>
+              <th>STATUS</th>
+              <th>DATA</th>
+              <th>AÇÃO</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.isArray(filteredPedidos) && filteredPedidos.length > 0 ? (
+              filteredPedidos.map((pedido) => (
+                <tr
+                  key={pedido.codigo}
+                  onClick={() => console.log(`Selecionado: ${pedido.codigo}`)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={pedido.checked || allChecked}
+                      onChange={() => handleIndividualCheckboxChange(pedido.codigo)}
+                    />
+                  </td>
+                  <td>{pedido.codigo}</td>
+                  <td>{pedido.cliente}</td>
+                  <td>
+                    <StatusButton status={pedido.status === 0 ? 'Pago' : 'Não Pago'}>
+                      {pedido.status === 0 ? 'Pago' : 'Não Pago'}
+                    </StatusButton>
+                  </td>
+                  <td>{dayjs(pedido.datacriacao).format('DD/MM/YYYY')}</td>
+                  <td>
+                    <button
+                      onClick={() => console.log(`Ação para pedido: ${pedido.codigo}`)}
+                    >
+                      Ação
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center' }}>
+                  Nenhum pedido encontrado.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      </Container>
+    </Main>
+  );
+}
+
+export default Pedidos;

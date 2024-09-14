@@ -304,6 +304,36 @@ function Grid() {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  function addNewProduct() {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/produtos`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        const mappedProducts = result.map(product => ({
+          id: product.ID,
+          name: product.Nome,
+          codigo: product.Codigo,
+          price: product.PrecoVenda,
+          category: product.Categoria,
+        }));
+        setProducts(mappedProducts);
+        setIsLoadingProducts(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setIsLoadingProducts(false);
+      });
+  }
+
   return (
     <div className="container">
       <MobileMenuButton icon={<MenuOutlined />} onClick={showDrawer}>

@@ -5,9 +5,10 @@ import { NotificationOutlined, EyeOutlined, ShoppingCartOutlined, MenuOutlined }
 import styled from 'styled-components';
 import Cookies from 'js-cookie';
 import { PageHeader } from '../../../../components/page-headers/page-headers';
-import { AddCartButton, Btn, CardProduct, CodeSpan, ImageBox, Menu, MenuItem, MenuLink, MobileMenuButton, PriceSpan, Subtitle, Title, ViewButton, WrapperButtons } from './styles.ts';
+import { AddCartButton, Btn, CardProduct, CodeSpan, ImageBox, Menu, MenuItem, MenuLink, MobileMenuButton, PriceSpan, Subtitle, Title, ViewButton, WrapperButtons } from './styles.ts'
 
 // Estilos personalizados
+
 
 function MeusProdutos() {
   const [products, setProducts] = useState([]);
@@ -75,11 +76,10 @@ function MeusProdutos() {
       .then((response) => response.json())
       .then((result) => {
         const mappedProducts = result.map(product => ({
-          id: product.codigoPRODUTO, // Mapeia o código do produto
-          name: product.nomePRODUTO, // Mapeia o nome do produto
-          price: parseFloat(product.precoPRODUTO).toFixed(2), // Converte o preço para o formato correto
-          category: product.categoriaPRODUTO, // Mapeia a categoria do produto
-          image: product.imagemPRODUTO, // Mapeia a imagem do produto
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          category: product.category,
         }));
         setProducts(mappedProducts);
         setIsLoadingProducts(false);
@@ -237,7 +237,7 @@ function MeusProdutos() {
                           Visualizar Produto
                         </ViewButton>
                         <AddCartButton icon={<ShoppingCartOutlined />}>
-                          Cadastrar X-Drop - SP
+                          Cadastrar Mix Variedades - SP
                         </AddCartButton>
                       </WrapperButtons>
                     </CardProduct>

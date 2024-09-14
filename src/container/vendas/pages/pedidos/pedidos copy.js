@@ -18,7 +18,6 @@ import {
   ItemTable,
 } from './styles.ts';
 import { PageHeader } from '../../../../components/page-headers/page-headers';
-import { redirect } from 'react-router-dom';
 
 function Pedidos() {
   const PageRoutes = [
@@ -55,13 +54,13 @@ function Pedidos() {
           },
         });
         const data = await response.json();
-
+        
         console.log('----------------------------------');
         console.log(data);
         console.log('----------------------------------');
         setFilteredPedidos(data);
         setOriginalPedidos(data);
-
+        
       } catch (error) {
         console.error('Erro ao buscar pedidos:', error);
       }
@@ -133,54 +132,6 @@ function Pedidos() {
       )
     );
   };
-
-  //   // Função para emitir a nota fiscal e atualizar o status no estado
-  // const handleImprimirNotaFiscal = (codigoPedido) => {
-  //   console.log(`Emitir Nota Fiscal para o pedido ${codigoPedido}`);
-
-  //   // Aqui entra a lógica de emissão da nota fiscal (ex: chamada para a API)
-  //   // Atualiza o estado para marcar que a nota fiscal foi emitida
-  //   setNotaFiscalEmitida((prevState) => ({
-  //     ...prevState,
-  //     [codigoPedido]: true, // Marca como emitida para esse pedido específico
-  //   }));
-  // };
-
-  // Função para gerar e imprimir etiqueta
-  const handleGerarEtiqueta = (codigoPedido) => {
-    console.log({codigoPedido});
-    const accessToken = Cookies.get("access_token");
-    const myHeaders = new Headers();
-    myHeaders.append('Authorization', `Bearer ${accessToken}`);
-    const requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: 'follow'
-    };
-    fetch(`http://192.168.15.47:8080/api/meli/etiquetas/${codigoPedido}`, requestOptions)
-      .then(response => response.blob()) // Converte a resposta para Blob (necessário para arquivos)
-      .then(blob => {
-        // Cria um URL temporário para o Blob
-        const url = window.URL.createObjectURL(new Blob([blob]));
-
-        // Cria um link temporário para baixar o arquivo
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `etiqueta_${codigoPedido}.pdf`); // Define o nome do arquivo para download
-
-        // Adiciona o link temporário ao DOM, clica nele e depois remove
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode.removeChild(link);
-
-        // Libera o objeto URL temporário
-        window.URL.revokeObjectURL(url);
-      })
-      .catch(error => {
-        console.error('Erro ao gerar etiqueta:', error);
-      });
-  };
-  
 
   const handleFilterChange = () => {
     let pedidosFiltrados = [...originalPedidos];
@@ -394,7 +345,7 @@ function Pedidos() {
               <button type="button" className="primary" onClick={handleFilterChange}>
                 Filtrar
               </button>
-              <button type="button" className="primary" onClick={handleClearFilters}>
+              <button type="button" className="clear" onClick={handleClearFilters}>
                 Limpar Filtros
               </button>
             </div>
@@ -430,8 +381,8 @@ function Pedidos() {
                 <th>VALOR TOTAL</th>
                 <th>STATUS</th>
                 <th>DATA</th>
-                {/* <th>NFE ERP</th> */}
-                <th>AÇÃO</th> {/* Coluna para os botões de ação */}
+                <th>NFE ERP</th>
+                
               </tr>
             </thead>
             <tbody>
@@ -467,41 +418,16 @@ function Pedidos() {
                   <td>{pedido.Itens.map((item) => item.nomeProduto).join(', ')}</td>
                   <td>{`R$ ${parseFloat(pedido.total).toFixed(2)}`}</td>
                   <td>
-                    <StatusButton status={pedido.status === 0 ? 'Pago' : 'Pago'}>
-                      {pedido.status === 0 ? 'Pago' : 'Pago'}
-                    </StatusButton>
+                  <StatusButton status={pedido.status === 0 ? 'Não Pago' : 'Pago'}>
+                  {pedido.status === 0 ? 'Não Pago' : 'Pago'}
+                  </StatusButton>
                   </td>
                   <td>{dayjs(pedido.datacriacao).format('DD/MM/YYYY')}</td>
-                  {/* <td>{pedido.nfeErp || 'N/A'}</td> */}
-                  <td>
-                    {/* Lógica para os botões de ações */}
-
-                    <button onClick={() => handleGerarEtiqueta(pedido.referenciaexterna)}
-                      style={{ backgroundColor: '#001f3f', color: '#fff', padding: '10px 20px', borderRadius: '5px', border: 'none', fontSize: '11px', fontWeight: 'bold', width: '116px' }}>
-                      Gerar Etiqueta
-                    </button>
-
-                    {/* {pedido.nfeErp ? (
-            pedido.notaFiscalImpressa ? (
-              <button onClick={() => handleImprimirNotaFiscal(pedido.codigo)}>
-               Acompanhar Pedido
-              </button>
-            ) : (
-              <button onClick={() => handleGerarEtiqueta(pedido.codigo)}
-  style={{ backgroundColor: '#001f3f', color: '#fff', padding: '10px 20px', borderRadius: '5px', border: 'none', fontSize: '11px', fontWeight: 'bold', width: '116px' }}>
-  Gerar Etiqueta
-</button>
-            )
-          ) : (
-            <span>N/P</span>
-          )} */}
-
-                  </td>
+                  <td>{pedido.nfeErp || 'N/A'}</td>
                 </tr>
               ))}
             </tbody>
           </Table>
-
 
           {modalVisible && selectedPedido && (
             <ModalOverlay onClick={handleOverlayClick}>

@@ -1,23 +1,23 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable jsx-a11y/alt-text */
-/* eslint-disable react/jsx-no-bind */
+/* eslint-disable */
 import { Badge } from 'antd';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Scrollbars } from '@pezhmanparsaee/react-custom-scrollbars';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { ReactSVG } from 'react-svg';
+import Cookies from 'js-cookie';
 import { UserActionDropDown } from './auth-info-style';
 import Heading from '../../heading/heading';
 import { Popover } from '../../popup/popup';
 
-const MessageBox = React.memo(() => {
+function MessageBox() {
   const { rtl } = useSelector((state) => {
     return {
       rtl: state.ChangeLayoutMode.rtlData,
     };
   });
+
+  const [chamados, setChamados] = useState([]);
 
   function renderThumb({ style }) {
     const thumbStyle = {
@@ -57,11 +57,44 @@ const MessageBox = React.memo(() => {
     style: PropTypes.shape(PropTypes.object),
   };
 
+  function carregaChamados() {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow"
+    };
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/chamados`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        const mappedChamados = result.map(chamado => ({
+          title: chamado.tituloCHAMADO,
+          content: chamado.descricaoCHAMADO,
+          status: chamado.statusCHAMADO,
+          prioridade: chamado.prioridadeCHAMADO,
+          empresa: chamado.empresaCHAMADO,
+          image: chamado.logo,
+        }));
+        setChamados(mappedChamados);
+      })
+      .catch((error) => console.error(error));
+  }
+
+  useEffect(() => {
+    carregaChamados();
+  }, []);
+
+  console.log(`Lista de chamados: ${chamados}`)
+
   const content = (
     <UserActionDropDown className="ninjadash-top-dropdown">
       <Heading className="ninjadash-top-dropdown__title" as="h5">
         <span className="title-text">Messages</span>
-        <Badge className="badge-success" count={3} />
+        <Badge className="badge-success" count={chamados.length} />
       </Heading>
       <Scrollbars
         autoHeight
@@ -73,102 +106,46 @@ const MessageBox = React.memo(() => {
       >
         <div className="ninjadash-top-dropdown-menu">
           <ul className="ninjadash-top-dropdown__nav">
-            <li>
-              <Link to="#">
-                <figure className="ninjadash-top-dropdown__content">
-                  <img src='https://github.com/ViniAguiar1.png'/>
-                  <figcaption>
-                    <Heading as="h5">
-                      Software <span className="color-success">3 hrs ago</span>
-                    </Heading>
-                    <div>
-                      <span className="ninjadash-top-dropdownText">Olha aqui kkkkk</span>
-                      <span>
-                        <Badge className="badge-success" count={3} />
-                      </span>
+            {chamados.length > 0 ? (
+              chamados.map((chamado, index) => (
+                <li key={index}>
+                  <Link to="#">
+                    <figure className="ninjadash-top-dropdown__content">
+                      <img src={chamado.image} alt={chamado.empresa} />
+                      <figcaption>
+                        <Heading as="h5">
+                          {chamado.title} - {chamado.empresa}
+                        </Heading>
+                        <div>
+                          <span className="ninjadash-top-dropdownText">
+                            {chamado.content}
+                          </span>
+                          <div>
+                            <Badge className="badge-priority" count={chamado.prioridade} />
+                            <Badge className="badge-status" count={chamado.status} />
+                          </div>
+                        </div>
+                      </figcaption>
+                    </figure>
+                  </Link>
+                </li>
+              ))
+            ) : (
+              <li>
+                <div className="ninjadash-top-dropdown__content notifications">
+                  <div className="notification-content d-flex">
+                    <div className="notification-text">
+                      <Heading as="h5">Sem chamados</Heading>
                     </div>
-                  </figcaption>
-                </figure>
-              </Link>
-            </li>
-            <li>
-              <Link to="#">
-                <figure className="ninjadash-top-dropdown__content">
-                  <img src='https://github.com/ViniAguiar1.png'/>
-                  <figcaption>
-                    <Heading as="h5">
-                      Software <span className="color-success">3 hrs ago</span>
-                    </Heading>
-                    <div>
-                      <span className="ninjadash-top-dropdownText">Lorem ipsum dolor amet cosec...</span>
-                      <span>
-                        <Badge className="badge-success" count={3} />
-                      </span>
-                    </div>
-                  </figcaption>
-                </figure>
-              </Link>
-            </li>
-            <li>
-              <Link to="#">
-                <figure className="ninjadash-top-dropdown__content">
-                  <img src={require('../../../static/img/avatar/NoPath.png')} alt="" />
-                  <figcaption>
-                    <Heading as="h5">
-                      Software <span className="color-success">3 hrs ago</span>
-                    </Heading>
-                    <div>
-                      <span className="ninjadash-top-dropdownText">Lorem ipsum dolor amet cosec...</span>
-                      <span>
-                        <Badge className="badge-success" count={3} />
-                      </span>
-                    </div>
-                  </figcaption>
-                </figure>
-              </Link>
-            </li>
-            <li>
-              <Link to="#">
-                <figure className="ninjadash-top-dropdown__content">
-                  <img src={require('../../../static/img/avatar/NoPath.png')} alt="" />
-                  <figcaption>
-                    <Heading as="h5">
-                      Software <span className="color-success">3 hrs ago</span>
-                    </Heading>
-                    <div>
-                      <span className="ninjadash-top-dropdownText">Lorem ipsum dolor amet cosec...</span>
-                      <span>
-                        <Badge className="badge-success" count={3} />
-                      </span>
-                    </div>
-                  </figcaption>
-                </figure>
-              </Link>
-            </li>
-            <li>
-              <Link to="#">
-                <figure className="ninjadash-top-dropdown__content">
-                  <img src={require('../../../static/img/avatar/NoPath.png')} alt="" />
-                  <figcaption>
-                    <Heading as="h5">
-                      Software <span className="color-success">3 hrs ago</span>
-                    </Heading>
-                    <div>
-                      <span className="ninjadash-top-dropdownText">Lorem ipsum dolor amet cosec...</span>
-                      <span>
-                        <Badge className="badge-success" count={3} />
-                      </span>
-                    </div>
-                  </figcaption>
-                </figure>
-              </Link>
-            </li>
-            <ul />
+                  </div>
+                </div>
+              </li>
+            )}
           </ul>
         </div>
       </Scrollbars>
       <Link className="btn-seeAll" to="#">
-        Ver todas as mensagens
+        See all messages
       </Link>
     </UserActionDropDown>
   );
@@ -178,13 +155,17 @@ const MessageBox = React.memo(() => {
       <Popover placement="bottomLeft" content={content} action="click">
         <Badge dot offset={[-8, -5]}>
           <Link to="#" className="ninjadash-nav-action-link">
-            <ReactSVG src={require('../../../static/img/icon/envelope.svg').default} />
+            <img
+              src="/static/icons/shope-mobile.png"
+              alt="icon"
+              style={{ width: '48px', height: '48px' }}
+            />
           </Link>
         </Badge>
       </Popover>
     </div>
   );
-});
+}
 
 MessageBox.propTypes = {
   rtl: PropTypes.bool,

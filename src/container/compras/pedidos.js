@@ -18,7 +18,6 @@ import {
   ItemTable,
 } from './styles.ts';
 import { PageHeader } from '../../components/page-headers/page-headers';
-
 function Pedidos() {
   const PageRoutes = [
     { path: '/admin', breadcrumbName: 'Dashboard' },
@@ -237,8 +236,8 @@ function Pedidos() {
               value={filters.search}
               onChange={handleSearchChange}
             />
-            <button type="button" onClick={handleFilterChange}>
-              Buscar
+             <button type="button" className="primary" onClick={handleFilterChange}>
+              Buscar 
             </button>
           </SearchSection>
           <label htmlFor="error-checkbox" className="error-checkbox">
@@ -349,7 +348,7 @@ function Pedidos() {
               <button type="button" className="primary" onClick={handleFilterChange}>
                 Filtrar
               </button>
-              <button type="button" className="clear" onClick={handleClearFilters}>
+              <button type="button" className="primary" onClick={handleClearFilters}>
                 Limpar Filtros
               </button>
             </div>
@@ -378,6 +377,7 @@ function Pedidos() {
                   <CloseButton onClick={() => setNovoPedidoModalVisible(false)}>X</CloseButton>
                   <h2>Novo Pedido Manual</h2>
                   <p>Conteúdo do modal para Novo Pedido Manual.</p>
+                  
                 </ModalContent>
               </Modal>
             </ModalOverlay>
@@ -475,10 +475,11 @@ function Pedidos() {
                   <td>{pedido.Itens.map((item) => item.nomeProduto).join(', ')}</td>
                   <td>{`R$ ${parseFloat(pedido.total).toFixed(2)}`}</td>
                   <td>
-                    <StatusButton status={pedido.status}>
-                      {pedido.status === 0 ? 'Não Pago' : 'Pago'}
-                    </StatusButton>
-                  </td>
+  <StatusButton status={pedido.status === 0 ? 'Não Pago' : 'Pago'}>
+    {pedido.status === 0 ? 'Não Pago' : 'Pago'}
+  </StatusButton>
+</td>
+
                   <td>{dayjs(pedido.datacriacao).format('DD/MM/YYYY')}</td>
                   <td>{pedido.nfeErp || 'N/A'}</td>
                 </tr>

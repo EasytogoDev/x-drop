@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export const Main = styled.main`
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: ${({ theme }) => theme[theme.mainContent]['background-color']}; /* Ajustável conforme o tema */
 `;
 
 export const DashboardWrapper = styled.div`
@@ -19,7 +19,7 @@ export const StatsWrapper = styled.div`
 `;
 
 export const StatsCard = styled.div`
-  background-color: white;
+  background-color: ${({ theme }) => theme[theme.mainContent]['white-background']}; /* Ajustável conforme o tema */
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -32,13 +32,13 @@ export const StatsCard = styled.div`
     margin: 0;
     font-size: 24px;
     font-weight: bold;
-    color: #333;
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
   }
 
   p {
     margin: 5px 0 0;
     font-size: 14px;
-    color: #777;
+    color: ${({ theme }) => theme[theme.mainContent]['light-text']}; /* Ajustável conforme o tema */
   }
 `;
 
@@ -49,7 +49,7 @@ export const ChartWrapper = styled.div`
 `;
 
 export const Card = styled.div`
-  background-color: white;
+  background-color: ${({ theme }) => theme[theme.mainContent]['white-background']}; /* Ajustável conforme o tema */
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -57,7 +57,7 @@ export const Card = styled.div`
 `;
 
 export const TableWrapper = styled.div`
-  background-color: white;
+  background-color: ${({ theme }) => theme[theme.mainContent]['white-background']}; /* Ajustável conforme o tema */
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -69,11 +69,12 @@ export const TableWrapper = styled.div`
     th, td {
       padding: 10px;
       text-align: left;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']}; /* Ajustável conforme o tema */
     }
 
     th {
-      background-color: #f5f5f5;
+      background-color: ${({ theme }) => theme[theme.mainContent]['table-header-background']}; /* Ajustável conforme o tema */
+      color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
     }
   }
 `;

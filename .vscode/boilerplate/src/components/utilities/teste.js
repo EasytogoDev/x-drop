@@ -89,8 +89,6 @@ function MessageBox() {
         carregaChamados();
     }, []);
 
-    console.log(`Lista de chamados: ${chamados}`)
-
     const content = (
         <UserActionDropDown className="ninjadash-top-dropdown">
             <Heading className="ninjadash-top-dropdown__title" as="h5">
@@ -156,7 +154,7 @@ function MessageBox() {
             <Popover placement="bottomLeft" content={content} action="click">
                 <Badge dot offset={[-8, -5]}>
                     <Link to="#" className="ninjadash-nav-action-link">
-                        <ReactSVG src={'/static/icons/shopee-mobile.png'} />
+                        <ReactSVG src={require('../../../static/img/icon/envelope.svg').default} />
                     </Link>
                 </Badge>
             </Popover>

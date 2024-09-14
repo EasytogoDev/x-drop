@@ -176,7 +176,7 @@ function Integracoes() {
             ))}
           </IntegrationGrid>
         </Section>
-
+{/* 
         <Section>
           <Title>Lista de Integrações Ativas</Title>
           <IntegrationList>
@@ -190,7 +190,6 @@ function Integracoes() {
               </tr>
             </thead>
             <tbody>
-              {/* Linhas de dados */}
             </tbody>
           </IntegrationList>
         </Section>
@@ -208,10 +207,9 @@ function Integracoes() {
               </tr>
             </thead>
             <tbody>
-              {/* Linhas de dados */}
             </tbody>
           </IntegrationList>
-        </Section>
+        </Section> */}
 
         {isModalOpen && selectedIntegration && (
           <Modal isOpen={isModalOpen}>

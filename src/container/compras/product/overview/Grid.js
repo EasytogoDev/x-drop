@@ -181,7 +181,7 @@ function Grid() {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
 
-  // Para o modal de perguntas
+  // Modal de perguntas
   const [isPerguntaModalVisible, setIsPerguntaModalVisible] = useState(false);
   const [isViewProductModalVisible, setIsViewProductModalVisible] = useState(false);
   const [isCadastroModalVisible, setIsCadastroModalVisible] = useState(false);
@@ -244,8 +244,53 @@ function Grid() {
   useEffect(() => {
     carregaProdutos();
     carregaCategorias();
-    carregaImagens();
   }, []);
+
+  useEffect(() => {
+    if (products.length > 0) {
+      products.forEach((product) => {
+        if (!images.find(img => img.codigo === product.codigo)) {
+          carregaImagens(product.codigo);
+        }
+      });
+    }
+  }, [products]);
+
+  function cadastrarProduto(product) {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+    myHeaders.append("Content-Type", "application/json");
+  
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: JSON.stringify({
+        sku: product.sku || "",            
+        nome: product.name,           
+        descricao: product.name,
+        preco: product.price,         
+        quantidade: product.quantidade || "", 
+        alerta: product.alerta || "",      
+        categoria: product.category, 
+        localizacao: product.localizacao || "", 
+        imagem: product.imagem || "",     
+        tipo: product.tipo || "",           
+        acesso: product.acesso || "",     
+        ativo: product.ativoPRODUTO || 1        
+      }),
+      redirect: "follow",
+    };
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/produtos`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        message.success(`Produto "${product.name}" cadastrado com sucesso!`);
+      })
+      .catch((error) => {
+        console.error('Erro ao cadastrar produto:', error);
+      });
+  }
 
   function carregaProdutos() {
     const accessToken = Cookies.get('access_token');
@@ -309,26 +354,26 @@ function Grid() {
     const accessToken = Cookies.get('access_token');
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
-  
+
     const requestOptions = {
       method: "GET",
       headers: myHeaders,
       redirect: "follow",
     };
-  
+
     fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/fornecedores/imagens/3?produto=${CODIGO}`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         const imagem = result && result.imagem && result.imagem[0] ? result.imagem[0] : null;
         setImages(prevImages => [
-          ...prevImages, 
-          { codigo: CODIGO, imagem: imagem }
+          ...prevImages.filter(img => img.codigo !== CODIGO),  // Remova qualquer imagem anterior com o mesmo código
+          { codigo: CODIGO, imagem: imagem }  // Adicione a nova imagem
         ]);
       })
       .catch((error) => {
         console.error('Erro ao carregar imagem:', error);
         setImages(prevImages => [
-          ...prevImages, 
+          ...prevImages,
           { codigo: CODIGO, imagem: null }
         ]);
       });
@@ -385,9 +430,9 @@ function Grid() {
           </Menu>
         </Col>
         <Col xs={24} lg={20}>
-          <Input 
-            placeholder="Buscar produto na página" 
-            style={{ marginBottom: 10 }} 
+          <Input
+            placeholder="Buscar produto na página"
+            style={{ marginBottom: 10 }}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
@@ -398,19 +443,16 @@ function Grid() {
               </Col>
             ) : currentProducts.length ? (
               currentProducts.map((product) => {
-                if (!images.find(img => img.codigo === product.codigo)) {
-                  carregaImagens(product.codigo);
-                }
                 const productImage = images.find(img => img.codigo === product.codigo);
                 return (
                   <Col xxl={6} lg={8} sm={12} xs={24} key={product.id}>
                     <Badge.Ribbon text="Mais Vendidos" color="#f59e0b">
                       <CardProduct>
-                        <ImageBox 
-                          alt={product.name} 
-                          src={productImage && productImage.imagem 
-                            ? `data:image/png;base64,${productImage.imagem}` 
-                            : 'https://via.placeholder.com/180x180.png?text=No+Image'} 
+                        <ImageBox
+                          alt={product.name}
+                          src={productImage && productImage.imagem
+                            ? `data:image/png;base64,${productImage.imagem}`
+                            : 'https://via.placeholder.com/180x180.png?text=No+Image'}
                         />
                         <CodeSpan>{product.codigo}</CodeSpan>
                         <PriceSpan>R${product.price}</PriceSpan>
@@ -422,8 +464,8 @@ function Grid() {
                           <ViewButton icon={<EyeOutlined />} onClick={showViewProductModal}>
                             Visualizar Produto
                           </ViewButton>
-                          <AddCartButton icon={<ShoppingCartOutlined />} onClick={showCadastroModal}>
-                            Cadastrar Mix Variedades - SP
+                          <AddCartButton icon={<ShoppingCartOutlined />} onClick={() => cadastrarProduto(product)}>
+                            Cadastrar X-Drop - SP
                           </AddCartButton>
                         </WrapperButtons>
                       </CardProduct>
@@ -446,7 +488,7 @@ function Grid() {
           />
         </Col>
       </Row>
-      
+
       {/* Modal de perguntas */}
       <Modal
         title="Faça sua pergunta"
@@ -500,7 +542,7 @@ function Grid() {
 
       {/* Modal de Cadastro */}
       <Modal
-        title="Cadastrar Mix Variedades - SP"
+        title="Cadastrar X-Drop - SP"
         visible={isCadastroModalVisible}
         onCancel={handleCadastroModalClose}
         footer={[

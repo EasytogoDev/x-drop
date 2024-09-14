@@ -54,7 +54,9 @@ function Encurtador() {
       });
   }
 
-  const handleEncurtarLink = () => {
+  function handleEncurtarLink() {
+    const accessToken = Cookies.get('access_token');
+  
     if (!link) {
       Swal.fire({
         icon: 'warning',
@@ -65,15 +67,22 @@ function Encurtador() {
       });
       return;
     }
-
-    axios.post('http://192.168.15.35:8080/api/links', {
-      valorLINK: link,
-      logLINK: 'Log de criação',
-      ativoLINK: true
-    })
-    .then(response => {
-      setLinks([...links, response.data]);
-      setLink('');
+  
+    // Headers e configurações da requisição
+    const requestOptions = {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json', // Certificando-se de que a requisição esteja no formato correto
+      },
+    };
+  
+    axios.post('http://192.168.15.47:8080/api/encurtador/shorten', {
+      originalURL: link,
+    }, requestOptions)
+    .then(response => {console.log(response)
+      // Atualiza a lista de links com o novo link encurtado
+      setLinks(prevLinks => [...prevLinks, response.data]);
+      setLink(''); // Reseta o campo de link
     })
     .catch(error => {
       console.error('Erro ao encurtar o link:', error);
@@ -85,7 +94,8 @@ function Encurtador() {
         confirmButtonColor: '#6f42c1',
       });
     });
-  };
+  }
+  
 
   return (
     <>
@@ -113,8 +123,12 @@ function Encurtador() {
               <tbody>
                 {links.map((item, index) => (
                   <tr key={index}>
-                    <td>{item.url}</td>
-                    <td>{item.log}</td>
+                    <td>{item.originalURL}</td>
+                    <td>
+                    <a href={item.shortURL} target="_blank" rel="noopener noreferrer">
+                    {item.shortURL}
+                    </a>
+                    </td>
                   </tr>
                 ))}
               </tbody>

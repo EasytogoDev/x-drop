@@ -1,10 +1,11 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Main, Button, Table, FormContainer, Select, FormGroup, Label } from './styled.ts';
+import Cookies from 'js-cookie'
 
 function Chamados() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -79,6 +80,37 @@ function Chamados() {
     });
   };
 
+  function carregaChamados() {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow"
+    };
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/chamados`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        const mappedChamados = result.map(chamado => ({
+          protocolo: chamado.protocoloCHAMADO,
+          topico: chamado.topicoCHAMADO,
+          descricao: chamado.descricaoCHAMADO,
+          status: chamado.statusCHAMADO,
+          dataAbertura: new Date(chamado.dataAberturaCHAMADO).toLocaleDateString(),
+          dataAtualizado: new Date(chamado.dataAtualizadoCHAMADO).toLocaleDateString(),
+        }));
+        setChamados(mappedChamados);
+      })
+      .catch((error) => console.error('Erro ao carregar chamados:', error));
+  }
+
+
+  useEffect(() => {
+    carregaChamados();
+  }, []);
 
   return (
     <>

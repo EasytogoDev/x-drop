@@ -1,8 +1,6 @@
 /* eslint-disable */
-
 import styled from 'styled-components';
-import { Row, Col, Spin, Badge, Button, Card, Input, Drawer, Pagination, Modal, message } from 'antd';
-
+import { Button, Card } from 'antd';
 
 export const Btn = styled(Button)`
   color: #fff;
@@ -13,7 +11,7 @@ export const Btn = styled(Button)`
   margin-bottom: 8px;
 
   &:hover {
-    background-color: #5a3a9d;
+    background-color: #5a3a9d; /* Cor roxa mais escura ao passar o mouse */
   }
 `;
 
@@ -25,12 +23,12 @@ export const ViewButton = styled(Button)`
   margin-bottom: 8px;
 
   &:hover {
-    background-color: #f97316;
+    background-color: #f97316; /* Cor laranja mais escura ao passar o mouse */
   }
 `;
 
 export const AddCartButton = styled(Button)`
-  color: #6b46c1;
+  color: #6b46c1; /* Cor roxa do texto no botão */
   background-color: transparent;
   border: none;
   width: 100%;
@@ -44,7 +42,7 @@ export const CardProduct = styled(Card)`
   border-radius: 12px;
   overflow: hidden;
   text-align: center;
-  background-color: #ffffff;
+  background-color: ${({ theme }) => theme[theme.mainContent]['white-background']}; /* Ajustável conforme o tema */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
   height: auto;
@@ -66,13 +64,13 @@ export const Title = styled.h2`
   font-size: 16px;
   font-weight: bold;
   margin: 0;
-  color: #111827;
+  color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Ajustável conforme o tema */
 `;
 
 export const PriceSpan = styled.span`
   display: block;
   font-size: 18px;
-  color: #10b981;
+  color: ${({ theme }) => theme[theme.mainContent]['success-color']}; /* Ajustável conforme o tema */
   font-weight: bold;
   margin-top: 8px;
 `;
@@ -80,13 +78,13 @@ export const PriceSpan = styled.span`
 export const CodeSpan = styled.span`
   display: block;
   font-size: 14px;
-  color: #6b7280;
+  color: ${({ theme }) => theme[theme.mainContent]['muted-text']}; /* Ajustável conforme o tema */
   margin-bottom: 8px;
 `;
 
 export const Subtitle = styled.p`
   font-size: 12px;
-  color: #6b7280;
+  color: ${({ theme }) => theme[theme.mainContent]['muted-text']}; /* Ajustável conforme o tema */
   margin-top: 4px;
 `;
 
@@ -109,8 +107,8 @@ export const Menu = styled.ul`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  background-color: #ffffff;
-  border: 1px solid #d1d5db;
+  background-color: ${({ theme }) => theme[theme.mainContent]['white-background']}; /* Ajustável conforme o tema */
+  border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']}; /* Ajustável conforme o tema */
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 20px;
@@ -133,10 +131,10 @@ export const MenuItem = styled.li`
 export const MenuLink = styled.a`
   cursor: pointer;
   text-decoration: none;
-  color: #6d6d6d;
+  color: ${({ theme }) => theme[theme.mainContent]['link-color']}; /* Ajustável conforme o tema */
   transition: color 0.5s ease-in-out;
 
   &:hover {
-    color: #8231d3;
+    color: ${({ theme }) => theme[theme.mainContent]['primary-hover-color']}; /* Ajustável conforme o tema */
   }
 `;

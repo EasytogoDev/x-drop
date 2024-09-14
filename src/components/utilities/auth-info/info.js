@@ -140,7 +140,6 @@ const AuthInfo = React.memo(() => {
           <img src={User.foto} width={100} />
           <figcaption>
             <Heading as="h5">{User.nome}</Heading>
-            <p>Front-End Developer</p>
           </figcaption>
         </figure>
         <ul className="user-dropdwon__links">
@@ -165,8 +164,8 @@ const AuthInfo = React.memo(() => {
             </Link>
           </li>
           <li>
-            <Link to="#">
-              <UilBell /> Ajuda
+            <Link to="/aprendizado/video-aulas">
+              <UilBell /> Video Aulas
             </Link>
           </li>
         </ul>

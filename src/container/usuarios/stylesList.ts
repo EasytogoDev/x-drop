@@ -38,10 +38,10 @@ export const InputGroup = styled.div`
 `;
 
 export const Label = styled.label`
-  font-size: 14px;
+  font-size: 18px;
   color: ${({ theme }) => theme.textSecondary};
-  margin-bottom: 5px;
-  flex: 1 1 100px;
+  margin-bottom: -1px;
+  flex: 1 1 -16px;
 `;
 
 export const Input = styled.input`

@@ -1,12 +1,14 @@
+/* eslint-disable */
 import styled from 'styled-components';
 
+// Definindo os estilos existentes, ajustados para usar o tema
 export const Main = styled.main`
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: ${({ theme }) => theme[theme.mainContent]['white-background']};
 `;
 
 export const Container = styled.div`
-  background-color: #fff;
+  background-color: ${({ theme }) => theme[theme.mainContent]['white-background']};
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -21,14 +23,16 @@ export const SearchSection = styled.div`
   input[type='text'] {
     flex: 1;
     padding: 10px;
-    border: 1px solid #dcdcdc;
+    border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']};
     border-radius: 4px;
     font-size: 14px;
+    background-color: ${({ theme }) => theme[theme.mainContent]['white-background']};
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']};
   }
 
   button {
     padding: 10px 20px;
-    background-color: #7d70e7;
+    background-color: #6c63ff; /* Cor roxa fixa */
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -36,7 +40,7 @@ export const SearchSection = styled.div`
     font-size: 14px;
 
     &:hover {
-      background-color: #6755cc;
+      background-color: #5a53cc; /* Cor roxa mais escura ao passar o mouse */
     }
   }
 `;
@@ -55,14 +59,17 @@ export const FilterSection = styled.div`
       margin-bottom: 5px;
       font-size: 14px;
       font-weight: bold;
+      color: ${({ theme }) => theme[theme.mainContent]['dark-text']};
     }
 
     input[type='date'],
     select {
       padding: 10px;
-      border: 1px solid #dcdcdc;
+      border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']};
       border-radius: 4px;
       font-size: 14px;
+      background-color: ${({ theme }) => theme[theme.mainContent]['white-background']};
+      color: ${({ theme }) => theme[theme.mainContent]['dark-text']};
       width: 100%;
     }
   }
@@ -78,23 +85,23 @@ export const FilterSection = styled.div`
       border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
-    }
 
-    .primary {
-      background-color: #7d70e7;
-      color: #fff;
+      &.primary {
+        background-color: #6c63ff; /* Cor roxa fixa */
+        color: #fff;
 
-      &:hover {
-        background-color: #6755cc;
+        &:hover {
+          background-color: #5a53cc; /* Cor roxa mais escura ao passar o mouse */
+        }
       }
-    }
 
-    .clear {
-      background-color: #bfbfbf;
-      color: #fff;
+      &.clear {
+        background-color: ${({ theme }) => theme[theme.mainContent]['secondary-color']};
+        color: #fff;
 
-      &:hover {
-        background-color: #9e9e9e;
+        &:hover {
+          background-color: ${({ theme }) => theme[theme.mainContent]['secondary-hover-color']};
+        }
       }
     }
   }
@@ -111,16 +118,16 @@ export const ActionsSection = styled.div`
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    background-color: #7d70e7;
+    background-color: #6c63ff; /* Cor roxa fixa */
     color: #fff;
     transition: background-color 0.3s ease;
 
     &:hover {
-      background-color: #6755cc;
+      background-color: #5a53cc; /* Cor roxa mais escura ao passar o mouse */
     }
 
     &.primary {
-      background-color: #6c63ff;
+      background-color: #6c63ff; /* Cor roxa fixa */
     }
   }
 `;
@@ -131,14 +138,15 @@ export const Table = styled.table`
 
   thead {
     tr {
-      background-color: #f5f5f5;
+      background-color: ${({ theme }) => theme[theme.mainContent]['table-header-background']};
     }
 
     th {
       padding: 10px;
-      border-bottom: 1px solid #dcdcdc;
+      border-bottom: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']};
       font-weight: bold;
       text-align: left;
+      color: ${({ theme }) => theme[theme.mainContent]['dark-text']};
     }
 
     th:first-child {
@@ -148,15 +156,16 @@ export const Table = styled.table`
 
   tbody {
     tr {
-      border-bottom: 1px solid #dcdcdc;
+      border-bottom: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']};
 
       &:hover {
-        background-color: #f5f5f5;
+        background-color: ${({ theme }) => theme[theme.mainContent]['hover-background']};
       }
     }
 
     td {
       padding: 10px;
+      color: ${({ theme }) => theme[theme.mainContent]['dark-text']};
     }
 
     td:first-child {
@@ -165,35 +174,23 @@ export const Table = styled.table`
   }
 `;
 
-export const StatusButton = styled.span`
+export const StatusButton = styled.span<{ status: string }>`
   padding: 5px 10px;
   border-radius: 4px;
-  background-color: ${({ status }) => (status === 'Pago' ? '#4CAF50' : status === 'Não Pago' ? '#F44336' : '#FFEB3B')};
+  background-color: ${({ status }) => {
+    if (status.toLowerCase() === 'pago') {
+      return '#4CAF50'; // Verde fixo para "Pago"
+    } else if (status.toLowerCase() === 'não pago' || status.toLowerCase() === 'nao pago') {
+      return '#F44336'; // Vermelho fixo para "Não Pago"
+    } else {
+      return '#FFEB3B'; // Amarelo fixo para outros status
+    }
+  }};
   color: #fff;
   font-size: 12px;
   font-weight: bold;
   text-align: center;
   display: inline-block;
-`;
-
-export const Icon = styled.span`
-  width: 24px;
-  height: 24px;
-  display: inline-block;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-image: ${({ canal }) =>
-    canal === 'Magalu'
-      ? "url('/static/icons/magalu.png')"
-      : canal === 'Shopee'
-      ? "url('/static/icons/shopee.png')"
-      : canal === 'Shein'
-      ? "url('/static/icons/shein.png')"
-      : canal === 'Meli'
-      ? "url('/static/icons/meli.png')"
-      : canal === 'Shopify'
-      ? "url('/static/icons/shopify.png')"
-      : "url('/static/icons/default.png')"};
 `;
 
 export const ModalOverlay = styled.div`
@@ -210,13 +207,14 @@ export const ModalOverlay = styled.div`
 `;
 
 export const Modal = styled.div`
-  background-color: #fff;
+  background-color: ${({ theme }) => theme[theme.mainContent]['white-background']};
   padding: 20px;
   border-radius: 8px;
   width: 600px;
   max-width: 90%;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   position: relative;
+  
 `;
 
 export const ModalContent = styled.div`
@@ -237,6 +235,26 @@ export const CloseButton = styled.button`
   }
 `;
 
+export const Icon = styled.span<{ canal: string }>`
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: ${({ canal }) =>
+    canal === 'Magalu'
+      ? "url('/static/icons/magalu.png')"
+      : canal === 'Shopee'
+      ? "url('/static/icons/shopee.png')"
+      : canal === 'Shein'
+      ? "url('/static/icons/shein.png')"
+      : canal === 'Meli'
+      ? "url('/static/icons/meli.png')"
+      : canal === 'Shopify'
+      ? "url('/static/icons/shopify.png')"
+      : "url('/static/icons/default.png')"};
+`;
+
 export const ItemTable = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -245,40 +263,12 @@ export const ItemTable = styled.table`
   th,
   td {
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']};
     text-align: left;
   }
 
   th {
-    background-color: #f8f8f8;
+    background-color: ${({ theme }) => theme[theme.mainContent]['table-header-background']};
     font-weight: bold;
-  }
-`;
-
-export const ClearButtonWrapper = styled.div`
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-  justify-content: flex-start;
-`;
-
-export const FilterButton = styled.button`
-  padding: 10px;
-  background-color: #7d70e7;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &.clear {
-    background-color: #bfbfbf;
-  }
-
-  &:hover {
-    background-color: #6755cc;
-  }
-
-  &.clear:hover {
-    background-color: #9e9e9e;
   }
 `;

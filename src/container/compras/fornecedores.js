@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 // Estilos usando styled-components
 const Container = styled.div`
   padding: 20px;
+  margin-bottom: 15%;
   font-family: Arial, sans-serif;
 `;
 
