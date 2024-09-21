@@ -82,93 +82,51 @@ const ProductPrice = styled.p`
 
 const ActiveUser = React.memo(() => {
   const [products, setProducts] = useState([]);
-  const [isLoadingProducts, setIsLoadingProducts] = useState([]);
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const slideWidth = 300; // Largura do slide, ajuste conforme necessário
 
   const carouselRef = useRef(null);
-  let isDragging = false;
-  let startPos = 0;
-  let currentTranslate = 0;
-  let prevTranslate = 0;
 
   const prevSlide = () => {
-    setCurrentIndex(currentIndex === 0 ? slides.length - 1 : currentIndex - 1);
+    setCurrentIndex(currentIndex === 0 ? products.length - 1 : currentIndex - 1);
   };
 
   const nextSlide = () => {
-    setCurrentIndex(currentIndex === slides.length - 1 ? 0 : currentIndex + 1);
+    setCurrentIndex(currentIndex === products.length - 1 ? 0 : currentIndex + 1);
   };
 
-  const handleMouseDown = (e) => {
-    isDragging = true;
-    startPos = e.pageX;
-    carouselRef.current.style.cursor = 'grabbing';
-  };
+  const carregaProdutos = () => {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
 
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    const currentPosition = e.pageX;
-    const diff = currentPosition - startPos;
-    currentTranslate = prevTranslate + diff;
-    carouselRef.current.style.transform = `translateX(${currentTranslate}px)`;
-  };
+    const requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    };
 
-  const handleMouseUp = () => {
-    isDragging = false;
-    prevTranslate = currentTranslate;
-    carouselRef.current.style.cursor = 'grab';
-
-    // Logic to snap to the closest slide
-    const newIndex = Math.round(-currentTranslate / slideWidth);
-    setCurrentIndex(newIndex);
-    currentTranslate = -newIndex * slideWidth;
-    prevTranslate = currentTranslate;
-    carouselRef.current.style.transform = `translateX(${currentTranslate}px)`;
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/painel/top-products`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        const mappedProducts = result.products.map((product) => ({
+          id: product.codigoITEMPEDIDO,
+          name: product.nomeProdutoITEMPEDIDO,
+          category: product.origemITEMPEDIDO,
+          price: parseFloat(product.precoITEMPEDIDO).toFixed(2),
+          image: product.image || null, // Verificar se o produto tem imagem
+        }));
+        setProducts(mappedProducts);
+      })
+      .catch((error) => {
+        console.error('Erro ao carregar produtos:', error);
+      });
   };
 
   useEffect(() => {
     carregaProdutos();
   }, []);
 
-  useEffect(() => {
-    console.log("Products state: ", products); // Verifique se o estado está sendo atualizado
-  }, [products]);
-
-
-  function carregaProdutos() {
-    const accessToken = Cookies.get('access_token');
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${accessToken}`);
-
-    const requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/fornecedores/produtos/3`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        console.log("API Result: ", result); // Adicione este log para ver o resultado
-        const mappedProducts = result.map(product => ({
-          id: product.ID,
-          name: product.Nome,
-          price: product.PrecoVenda,
-          category: product.Categoria,
-          image: product.Imagem || '/path/to/default/image.png', // Adicione a URL da imagem
-        }));
-        setProducts(mappedProducts);
-        setIsLoadingProducts(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setIsLoadingProducts(false);
-      });
-  }
-
-console.log(isLoadingProducts);
   return (
     <div className="full-width-table">
       <BorderLessHeading>
@@ -178,16 +136,16 @@ console.log(isLoadingProducts);
         >
           {products.length > 0 ? (
             <CarouselContainer>
-              <CarouselTrack style={{ transform: `translateX(-${currentIndex * 250}px)` }}>
+              <CarouselTrack style={{ transform: `translateX(-${currentIndex * 250}px)` }} ref={carouselRef}>
                 {products.map((product) => (
                   <ProductContainer key={product.id}>
                     <StyledImage
-                      src={product.image || 'https://user-images.githubusercontent.com/24848110/33519396-7e56363c-d79d-11e7-969b-09782f5ccbab.png'}
+                      src={product.image || 'https://user-images.githubusercontent.com/24848110/33519396-7e56363c-d79d-11e7-969b-09782f5ccbab.png'} // Imagem padrão caso não tenha
                       alt={product.name}
                     />
                     <ProductTitle>{product.name}</ProductTitle>
-                    <ProductDescription>{product.category}</ProductDescription>
-                    <ProductPrice>{product.price}</ProductPrice>
+                    <ProductDescription>{`Origem: ${product.category}`}</ProductDescription>
+                    <ProductPrice>{`R$ ${product.price}`}</ProductPrice>
                   </ProductContainer>
                 ))}
               </CarouselTrack>

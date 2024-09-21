@@ -7,7 +7,6 @@ import {
   Container,
   SearchSection,
   FilterSection,
-  ActionsSection,
   Table,
   StatusButton,
   Icon,
@@ -18,7 +17,6 @@ import {
   ItemTable,
 } from './styles.ts';
 import { PageHeader } from '../../../../components/page-headers/page-headers';
-import { redirect } from 'react-router-dom';
 
 function Pedidos() {
   const PageRoutes = [
@@ -27,7 +25,7 @@ function Pedidos() {
   ];
 
   const [allChecked, setAllChecked] = useState(false);
-  const [originalPedidos, setOriginalPedidos] = useState([]);
+  const [pedidosMeli, setPedidosMeli] = useState([]);
   const [filteredPedidos, setFilteredPedidos] = useState([]);
   const [filters, setFilters] = useState({
     status: 'Todos',
@@ -44,34 +42,8 @@ function Pedidos() {
   const [integracoesDados, setIntegracoesDados] = useState([]);
 
   useEffect(() => {
-    // Fetch dos pedidos da API
-    const fetchPedidos = async () => {
-      const accessToken = Cookies.get('access_token');
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/pedidos`, {
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        const data = await response.json();
-
-        console.log('----------------------------------');
-        console.log(data);
-        console.log('----------------------------------');
-        setFilteredPedidos(data);
-        setOriginalPedidos(data);
-
-      } catch (error) {
-        console.error('Erro ao buscar pedidos:', error);
-      }
-    };
-
-    fetchPedidos();
-  }, []);
-
-  useEffect(() => {
     carregaIntegracoes();
+    carregaPedidosMeli();
     carregaIntegracoesDados();
   }, []);
 
@@ -80,13 +52,11 @@ function Pedidos() {
     const myHeaders = new Headers();
     myHeaders.append('Authorization', `Bearer ${accessToken}`);
 
-    const requestOptions = {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/integracoes`, {
       method: 'GET',
       headers: myHeaders,
       redirect: 'follow',
-    };
-
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/integracoes`, requestOptions)
+    })
       .then((response) => response.json())
       .then((result) => {
         const baseUrl = process.env.REACT_APP_API_ENDPOINT;
@@ -104,19 +74,49 @@ function Pedidos() {
     const myHeaders = new Headers();
     myHeaders.append('Authorization', `Bearer ${accessToken}`);
 
-    const requestOptions = {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/vinculos-integracoes`, {
       method: 'GET',
       headers: myHeaders,
       redirect: 'follow',
-    };
-
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/vinculos-integracoes`, requestOptions)
+    })
       .then((response) => response.json())
       .then((result) => {
-        console.log('Dados recebidos:', result);
-        setIntegracoesDados(result); // Apenas carregando os dados sem modificá-los
+        setIntegracoesDados(result);
       })
       .catch((error) => console.error('Erro ao carregar integrações:', error));
+  }
+
+  function carregaPedidosMeli() {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/meli/pedidos`, {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result && result.pedidos) {
+          const pedidos = result.pedidos.map((pedido) => ({
+            id: pedido.id,
+            status: pedido.status,
+            totalAmount: pedido.total_amount,
+            buyerNickname: pedido.buyer.nickname,
+            sellerNickname: pedido.seller.nickname,
+            codRastreio: pedido.shipping.id || 'N/A',
+            dateCreated: pedido.date_created,
+            items: pedido.order_items.map(item => item.item.title).join(', '),
+          }));
+
+          setPedidosMeli(pedidos);
+          setFilteredPedidos(pedidos); // Define o estado de pedidos filtrados também
+        } else {
+          console.error('Nenhum pedido encontrado:', result);
+        }
+      })
+      .catch((error) => console.error('Erro ao carregar pedidos:', error));
   }
 
   const handleCheckboxChange = () => {
@@ -129,61 +129,39 @@ function Pedidos() {
   const handleIndividualCheckboxChange = (id) => {
     setFilteredPedidos((prevPedidos) =>
       prevPedidos.map((pedido) =>
-        pedido.codigo === id ? { ...pedido, checked: !pedido.checked } : pedido
+        pedido.id === id ? { ...pedido, checked: !pedido.checked } : pedido
       )
     );
   };
 
-  //   // Função para emitir a nota fiscal e atualizar o status no estado
-  // const handleImprimirNotaFiscal = (codigoPedido) => {
-  //   console.log(`Emitir Nota Fiscal para o pedido ${codigoPedido}`);
-
-  //   // Aqui entra a lógica de emissão da nota fiscal (ex: chamada para a API)
-  //   // Atualiza o estado para marcar que a nota fiscal foi emitida
-  //   setNotaFiscalEmitida((prevState) => ({
-  //     ...prevState,
-  //     [codigoPedido]: true, // Marca como emitida para esse pedido específico
-  //   }));
-  // };
-
-  // Função para gerar e imprimir etiqueta
   const handleGerarEtiqueta = (codigoPedido) => {
-    console.log({codigoPedido});
-    const accessToken = Cookies.get("access_token");
+    const accessToken = Cookies.get('access_token');
     const myHeaders = new Headers();
     myHeaders.append('Authorization', `Bearer ${accessToken}`);
-    const requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: 'follow'
-    };
-    fetch(`http://192.168.15.47:8080/api/meli/etiquetas/${codigoPedido}`, requestOptions)
-      .then(response => response.blob()) // Converte a resposta para Blob (necessário para arquivos)
-      .then(blob => {
-        // Cria um URL temporário para o Blob
-        const url = window.URL.createObjectURL(new Blob([blob]));
 
-        // Cria um link temporário para baixar o arquivo
+    fetch(`http://192.168.15.47:8080/api/meli/etiquetas/${codigoPedido}`, {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    })
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', `etiqueta_${codigoPedido}.pdf`); // Define o nome do arquivo para download
-
-        // Adiciona o link temporário ao DOM, clica nele e depois remove
+        link.setAttribute('download', `etiqueta_${codigoPedido}.pdf`);
         document.body.appendChild(link);
         link.click();
         link.parentNode.removeChild(link);
-
-        // Libera o objeto URL temporário
         window.URL.revokeObjectURL(url);
       })
       .catch(error => {
         console.error('Erro ao gerar etiqueta:', error);
       });
   };
-  
 
   const handleFilterChange = () => {
-    let pedidosFiltrados = [...originalPedidos];
+    let pedidosFiltrados = [...pedidosMeli];
 
     if (filters.status && filters.status !== 'Todos') {
       pedidosFiltrados = pedidosFiltrados.filter((pedido) => pedido.status === filters.status);
@@ -191,7 +169,7 @@ function Pedidos() {
 
     if (filters.canal) {
       pedidosFiltrados = pedidosFiltrados.filter(
-        (pedido) => pedido.vinculo.canal === filters.canal
+        (pedido) => pedido.vinculo && pedido.vinculo.canal === filters.canal
       );
     }
 
@@ -241,7 +219,7 @@ function Pedidos() {
       dataFim: '',
       search: '',
     });
-    setFilteredPedidos(originalPedidos);
+    setFilteredPedidos(pedidosMeli);
   };
 
   useEffect(() => {
@@ -286,10 +264,6 @@ function Pedidos() {
               Buscar
             </button>
           </SearchSection>
-          <label htmlFor="error-checkbox" className="error-checkbox">
-            <input id="error-checkbox" type="checkbox" /> Com erros na nota
-          </label>
-
           <FilterSection>
             <div>
               <label htmlFor="dataInicio">
@@ -386,8 +360,6 @@ function Pedidos() {
                       );
                     })}
                 </select>
-
-
               </label>
             </div>
             <div className="filter-buttons">
@@ -399,15 +371,6 @@ function Pedidos() {
               </button>
             </div>
           </FilterSection>
-
-          {/* <ActionsSection>
-            <button type="button" className="primary">
-              + Novo pedido Manual
-            </button>
-            <button type="button">Gerar etiqueta(s)</button>
-            <button type="button">Imprimir Etiqueta(s)</button>
-            <button type="button">Atualizar Status MKTPLC</button>
-          </ActionsSection> */}
 
           <Table>
             <thead>
@@ -430,87 +393,71 @@ function Pedidos() {
                 <th>VALOR TOTAL</th>
                 <th>STATUS</th>
                 <th>DATA</th>
-                {/* <th>NFE ERP</th> */}
-                <th>AÇÃO</th> {/* Coluna para os botões de ação */}
+                <th>AÇÃO</th>
               </tr>
             </thead>
             <tbody>
-              {filteredPedidos.map((pedido) => (
-                <tr
-                  key={pedido.codigo}
-                  onClick={() => openModal(pedido)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <td>
-                    <label htmlFor={`checkbox[${pedido.codigo}]`}>
-                      <input
-                        id={`checkbox[${pedido.codigo}]`}
-                        type="checkbox"
-                        checked={pedido.checked || allChecked}
-                        onChange={() => handleIndividualCheckboxChange(pedido.codigo)}
-                        aria-label={`checkbox[${pedido.codigo}]`}
-                      />
-                    </label>
-                  </td>
-                  <td>{pedido.codigo}</td>
-                  <td>({pedido.vinculo.conta})</td>
-                  <td>
-                    <Icon
-                      id={`icon-${pedido.codigo}`}
-                      canal={pedido.vinculo.canal}
-                      aria-label={`icon-${pedido.codigo}`}
-                    />
-                  </td>
-                  <td>{pedido.titulo}</td>
-                  <td>{pedido.nome}</td>
-                  <td>{pedido.codRastreio}</td>
-                  <td>{pedido.Itens.map((item) => item.nomeProduto).join(', ')}</td>
-                  <td>{`R$ ${parseFloat(pedido.total).toFixed(2)}`}</td>
-                  <td>
-                    <StatusButton status={pedido.status === 0 ? 'Pago' : 'Pago'}>
-                      {pedido.status === 0 ? 'Pago' : 'Pago'}
-                    </StatusButton>
-                  </td>
-                  <td>{dayjs(pedido.datacriacao).format('DD/MM/YYYY')}</td>
-                  {/* <td>{pedido.nfeErp || 'N/A'}</td> */}
-                  <td>
-                    {/* Lógica para os botões de ações */}
-
-                    <button onClick={() => handleGerarEtiqueta(pedido.referenciaexterna)}
-                      style={{ backgroundColor: '#001f3f', color: '#fff', padding: '10px 20px', borderRadius: '5px', border: 'none', fontSize: '11px', fontWeight: 'bold', width: '116px' }}>
-                      Gerar Etiqueta
-                    </button>
-
-                    {/* {pedido.nfeErp ? (
-            pedido.notaFiscalImpressa ? (
-              <button onClick={() => handleImprimirNotaFiscal(pedido.codigo)}>
-               Acompanhar Pedido
-              </button>
-            ) : (
-              <button onClick={() => handleGerarEtiqueta(pedido.codigo)}
-  style={{ backgroundColor: '#001f3f', color: '#fff', padding: '10px 20px', borderRadius: '5px', border: 'none', fontSize: '11px', fontWeight: 'bold', width: '116px' }}>
-  Gerar Etiqueta
-</button>
-            )
-          ) : (
-            <span>N/P</span>
-          )} */}
-
-                  </td>
+              {filteredPedidos.length > 0 ? (
+                filteredPedidos.map((pedido) => (
+                  <tr key={pedido.id} onClick={() => openModal(pedido)} style={{ cursor: 'pointer' }}>
+                    <td>
+                      <label htmlFor={`checkbox[${pedido.id}]`}>
+                        <input
+                          id={`checkbox[${pedido.id}]`}
+                          type="checkbox"
+                          checked={pedido.checked || allChecked}
+                          onChange={() => handleIndividualCheckboxChange(pedido.id)}
+                          aria-label={`checkbox[${pedido.id}]`}
+                        />
+                      </label>
+                    </td>
+                    <td>{pedido.id}</td>
+                    <td>{pedido.sellerNickname}</td>
+                    <td>({pedido.buyerNickname})</td>
+                    <td>{pedido.items}</td>
+                    <td>{pedido.codRastreio}</td>
+                    <td>{`R$ ${parseFloat(pedido.totalAmount).toFixed(2)}`}</td>
+                    <td>
+                      <StatusButton status={pedido.status === 'cancelled' ? 'Cancelado' : 'Pago'}>
+                        {pedido.status === 'cancelled' ? 'Cancelado' : 'Pago'}
+                      </StatusButton>
+                    </td>
+                    <td>{dayjs(pedido.dateCreated).format('DD/MM/YYYY')}</td>
+                    <td>
+                      <button
+                        onClick={() => handleGerarEtiqueta(pedido.id)}
+                        style={{
+                          backgroundColor: '#001f3f',
+                          color: '#fff',
+                          padding: '10px 20px',
+                          borderRadius: '5px',
+                          border: 'none',
+                          fontSize: '11px',
+                          fontWeight: 'bold',
+                          width: '116px',
+                        }}
+                      >
+                        Gerar Etiqueta
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="12">Nenhum pedido encontrado</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </Table>
-
 
           {modalVisible && selectedPedido && (
             <ModalOverlay onClick={handleOverlayClick}>
               <Modal>
                 <ModalContent>
                   <CloseButton onClick={closeModal}>X</CloseButton>
-                  <h2>Detalhes do Pedido #{selectedPedido.codigo}</h2>
+                  <h2>Detalhes do Pedido #{selectedPedido.id}</h2>
                   <p>
-                    <strong>Conta:</strong> {selectedPedido.vinculo.numeroPEDIDO}
+                    <strong>Conta:</strong> {selectedPedido.vinculo ? selectedPedido.vinculo.numeroPEDIDO || 'N/A' : 'N/A'}
                   </p>
                   <p>
                     <strong>Dados do Pedido:</strong> {selectedPedido.titulo}
@@ -522,10 +469,10 @@ function Pedidos() {
                     <strong>Status:</strong> {selectedPedido.status === 0 ? 'Não Pago' : 'Pago'}
                   </p>
                   <p>
-                    <strong>Canal:</strong> {selectedPedido.vinculo.numeroPEDIDO}
+                    <strong>Canal:</strong> {selectedPedido.vinculo ? selectedPedido.vinculo.numeroPEDIDO || 'N/A' : 'N/A'}
                   </p>
                   <p>
-                    <strong>Data:</strong> {dayjs(selectedPedido.datacriacao).format('DD/MM/YYYY')}
+                    <strong>Data:</strong> {dayjs(selectedPedido.dateCreated).format('DD/MM/YYYY')}
                   </p>
                   <p>
                     <strong>Produtos:</strong>
@@ -539,11 +486,12 @@ function Pedidos() {
                       </tr>
                     </thead>
                     <tbody>
-                      {selectedPedido.Itens.map((item) => (
-                        <tr key={item.codigo}>
-                          <td>{item.nomeProduto}</td>
-                          <td>{item.quantidade}</td>
-                          <td>{`R$ ${parseFloat(item.preco).toFixed(2)}`}</td>
+                      {/* Verifique se items é um array antes de aplicar o map */}
+                      {(Array.isArray(selectedPedido.items) ? selectedPedido.items : []).map((item, index) => (
+                        <tr key={index}>
+                          <td>{item}</td>
+                          <td>1</td> {/* Ajuste conforme necessário */}
+                          <td>{`R$ ${parseFloat(selectedPedido.totalAmount).toFixed(2)}`}</td>
                         </tr>
                       ))}
                     </tbody>

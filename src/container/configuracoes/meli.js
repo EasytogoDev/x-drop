@@ -3,19 +3,24 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Main } from '../styled';
+import Cookies from 'js-cookie';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
 function Meli() {
-  const query = useQuery();
-  const myParam = query.get('code'); // Substitua 'myParam' pelo nome do seu parâmetro
-
+const [tokenTG, setTokenTG] = useState('');
+const query = useQuery();
+const myParam = query.get('code'); // Substitua 'myParam' pelo nome do seu parâmetro
 
   useEffect(() => {
-    buscaAccessToken(); 
-  }, []);
+    
+  
+    setTokenTG(myParam);
+    buscaAccessToken(myParam); 
+
+  }, [myParam]);
 
 
 
@@ -30,60 +35,59 @@ function Meli() {
     },
   ];
 
-  function buscaAccessToken() {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+  function buscaAccessToken(tokenTG) {
 
-    const raw = JSON.stringify({
-        "grant_type": "authorization_code",
-        "client_id": "6836702047440130",
-        "client_secret": "y5nX6hZlL3G4tFLd3DIS90oJr2OGkDoc",
-        "code": myParam,
-        "redirect_uri": "https://app.xdrop.com.br/configuracoes/meli",
-    });
+  
 
-    const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow"
-    };
+      const myHeaders = new Headers();
+      const accessToken = Cookies.get('access_token');
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Authorization", `Bearer ${accessToken}`)
 
-    fetch("https://api.mercadolibre.com/oauth/token", requestOptions)
-        .then((response) => {
-            if (response.status === 200) {
-                return response.json();
-            } else if (response.status === 400) {
-                return response.json().then(error => {
-                    // Redireciona com o payload do erro na URL
-                    const errorDescription = encodeURIComponent(error.error_description);
-                    window.location.href = `/configuracoes/integracoes?status=erro&integracao=mercadolivre&erro=${errorDescription}`;
-                });
-            } else {
-                throw new Error("Unexpected response status: " + response.status);
-            }
-        })
-        .then((result) => {
-            if (result) {
-                const data = new Date().toISOString();
-                localStorage.setItem('data_retorno_meli', data);
-                localStorage.setItem('access_token_meli', result.access_token);
-                localStorage.setItem('token_type_meli', result.token_type);
-                localStorage.setItem('expires_in_meli', result.expires_in);
-                localStorage.setItem('scope_meli', result.scope);
-                localStorage.setItem('user_id_meli', result.user_id);
-                localStorage.setItem('refresh_token_meli', result.refresh_token);
-                localStorage.setItem('refresh_token_tg_meli', TOKEN);
+      const raw = JSON.stringify({
+        "code": tokenTG
+      });
 
-                // Redireciona para a página de sucesso
-                window.location.href = "/configuracoes/integracoes?status=sucesso&integracao=mercadolivre";
-            }
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-            // Caso aconteça um erro inesperado
-            window.location.href = `/configuracoes/integracoes?status=erro&integracao=mercadolivre&erro=${encodeURIComponent(error.message)}`;
-        });
+const requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw,
+  redirect: "follow"
+};
+
+console.log(requestOptions);
+
+fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/meli/code-to-token`, requestOptions)
+  .then((response) => response.json())
+  .then((result) => {
+    
+    const data = new Date().toISOString();
+
+    console.log('DATASSSSS');
+    console.log(data);
+    console.log('RESULTADOS');
+    console.log(result);
+
+ 
+    localStorage.setItem('data_retorno_meli', data);
+    localStorage.setItem('access_token_meli', result.postResponse.access_token);
+    localStorage.setItem('token_type_meli', result.postResponse.token_type);
+    localStorage.setItem('expires_in_meli', result.postResponse.expires_in);
+    localStorage.setItem('scope_meli', result.postResponse.scope);
+    localStorage.setItem('user_id_meli', result.postResponse.user_id);
+    localStorage.setItem('refresh_token_meli', result.postResponse.refresh_token);
+    localStorage.setItem('refresh_token_tg_meli', tokenTG);
+
+    // Redireciona para a página de sucesso
+    window.location.href = "/configuracoes/integracoes?status=sucesso&integracao=mercadolivre";
+
+  })
+  .catch((error) => {
+    
+    alert(error.error);
+    console.error(error)
+  
+  });
 }
 
   return (
@@ -91,7 +95,7 @@ function Meli() {
       <PageHeader className="ninjadash-page-header-main" title="Meli" routes={PageRoutes} />
       <Main>
         <p>Hello World</p>
-        <p>Valor do parâmetro: {myParam}</p> {/* Exibindo o valor do parâmetro na tela */}
+        <p>Valor do parâmetro: {tokenTG}</p> {/* Exibindo o valor do parâmetro na tela */}
       </Main>
     </>
   );

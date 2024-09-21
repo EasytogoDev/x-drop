@@ -18,6 +18,7 @@ import {
   ItemTable,
 } from './styles.ts';
 import { PageHeader } from '../../components/page-headers/page-headers';
+
 function Pedidos() {
   const PageRoutes = [
     { path: '/admin', breadcrumbName: 'Dashboard' },
@@ -25,7 +26,7 @@ function Pedidos() {
   ];
 
   const [allChecked, setAllChecked] = useState(false);
-  const [originalPedidos, setOriginalPedidos] = useState([]);
+  const [pedidosMeli, setPedidosMeli] = useState([]);
   const [filteredPedidos, setFilteredPedidos] = useState([]);
   const [filters, setFilters] = useState({
     status: 'Todos',
@@ -46,34 +47,8 @@ function Pedidos() {
   const [isAtualizarStatusModalVisible, setAtualizarStatusModalVisible] = useState(false);
 
   useEffect(() => {
-    // Fetch dos pedidos da API
-    const fetchPedidos = async () => {
-      const accessToken = Cookies.get('access_token');
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/pedidos`, {
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        const data = await response.json();
-        
-        console.log('----------------------------------');
-        console.log(data);
-        console.log('----------------------------------');
-        setFilteredPedidos(data);
-        setOriginalPedidos(data);
-        
-      } catch (error) {
-        console.error('Erro ao buscar pedidos:', error);
-      }
-    };
-
-    fetchPedidos();
-  }, []);
-
-  useEffect(() => {
     carregaIntegracoes();
+    carregaPedidosMeli();
     carregaIntegracoesDados();
   }, []);
 
@@ -82,13 +57,11 @@ function Pedidos() {
     const myHeaders = new Headers();
     myHeaders.append('Authorization', `Bearer ${accessToken}`);
 
-    const requestOptions = {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/integracoes`, {
       method: 'GET',
       headers: myHeaders,
       redirect: 'follow',
-    };
-
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/integracoes`, requestOptions)
+    })
       .then((response) => response.json())
       .then((result) => {
         const baseUrl = process.env.REACT_APP_API_ENDPOINT;
@@ -106,19 +79,49 @@ function Pedidos() {
     const myHeaders = new Headers();
     myHeaders.append('Authorization', `Bearer ${accessToken}`);
 
-    const requestOptions = {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/vinculos-integracoes`, {
       method: 'GET',
       headers: myHeaders,
       redirect: 'follow',
-    };
-
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/vinculos-integracoes`, requestOptions)
+    })
       .then((response) => response.json())
       .then((result) => {
-        console.log('Dados recebidos:', result);
-        setIntegracoesDados(result); // Apenas carregando os dados sem modificá-los
+        setIntegracoesDados(result);
       })
       .catch((error) => console.error('Erro ao carregar integrações:', error));
+  }
+
+  function carregaPedidosMeli() {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/meli/pedidos`, {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result && result.pedidos) {
+          const pedidos = result.pedidos.map((pedido) => ({
+            id: pedido.id,
+            status: pedido.status,
+            totalAmount: pedido.total_amount,
+            buyerNickname: pedido.buyer.nickname,
+            sellerNickname: pedido.seller.nickname,
+            codRastreio: pedido.shipping.id || 'N/A',
+            dateCreated: pedido.date_created,
+            items: pedido.order_items.map(item => item.item.title).join(', '),
+          }));
+
+          setPedidosMeli(pedidos);
+          setFilteredPedidos(pedidos); // Define o estado de pedidos filtrados também
+        } else {
+          console.error('Nenhum pedido encontrado:', result);
+        }
+      })
+      .catch((error) => console.error('Erro ao carregar pedidos:', error));
   }
 
   const handleCheckboxChange = () => {
@@ -131,13 +134,13 @@ function Pedidos() {
   const handleIndividualCheckboxChange = (id) => {
     setFilteredPedidos((prevPedidos) =>
       prevPedidos.map((pedido) =>
-        pedido.codigo === id ? { ...pedido, checked: !pedido.checked } : pedido
+        pedido.id === id ? { ...pedido, checked: !pedido.checked } : pedido
       )
     );
   };
 
   const handleFilterChange = () => {
-    let pedidosFiltrados = [...originalPedidos];
+    let pedidosFiltrados = [...pedidosMeli];
 
     if (filters.status && filters.status !== 'Todos') {
       pedidosFiltrados = pedidosFiltrados.filter((pedido) => pedido.status === filters.status);
@@ -145,7 +148,7 @@ function Pedidos() {
 
     if (filters.canal) {
       pedidosFiltrados = pedidosFiltrados.filter(
-        (pedido) => pedido.vinculo.canal === filters.canal
+        (pedido) => pedido.vinculo && pedido.vinculo.canal === filters.canal
       );
     }
 
@@ -195,7 +198,7 @@ function Pedidos() {
       dataFim: '',
       search: '',
     });
-    setFilteredPedidos(originalPedidos);
+    setFilteredPedidos(pedidosMeli);
   };
 
   useEffect(() => {
@@ -222,6 +225,33 @@ function Pedidos() {
     if (e.target === e.currentTarget) {
       closeModal();
     }
+  };
+
+  // Função para imprimir a etiqueta
+  const handleImprimirEtiqueta = (codigoPedido) => {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+
+    fetch(`http://192.168.15.47:8080/api/meli/etiquetas/${codigoPedido}`, {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    })
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = url;
+        document.body.appendChild(iframe);
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+        console.error('Erro ao imprimir etiqueta:', error);
+      });
   };
 
   return (
@@ -340,8 +370,6 @@ function Pedidos() {
                       );
                     })}
                 </select>
-
-
               </label>
             </div>
             <div className="filter-buttons">
@@ -369,56 +397,6 @@ function Pedidos() {
             </button>
           </ActionsSection>
 
-          {/* Modals for each button */}
-          {isNovoPedidoModalVisible && (
-            <ModalOverlay onClick={() => setNovoPedidoModalVisible(false)}>
-              <Modal>
-                <ModalContent>
-                  <CloseButton onClick={() => setNovoPedidoModalVisible(false)}>X</CloseButton>
-                  <h2>Novo Pedido Manual</h2>
-                  <p>Conteúdo do modal para Novo Pedido Manual.</p>
-                  
-                </ModalContent>
-              </Modal>
-            </ModalOverlay>
-          )}
-
-          {isGerarEtiquetaModalVisible && (
-            <ModalOverlay onClick={() => setGerarEtiquetaModalVisible(false)}>
-              <Modal>
-                <ModalContent>
-                  <CloseButton onClick={() => setGerarEtiquetaModalVisible(false)}>X</CloseButton>
-                  <h2>Gerar Etiquetas</h2>
-                  <p>Conteúdo do modal para Gerar Etiquetas.</p>
-                </ModalContent>
-              </Modal>
-            </ModalOverlay>
-          )}
-
-          {isImprimirEtiquetaModalVisible && (
-            <ModalOverlay onClick={() => setImprimirEtiquetaModalVisible(false)}>
-              <Modal>
-                <ModalContent>
-                  <CloseButton onClick={() => setImprimirEtiquetaModalVisible(false)}>X</CloseButton>
-                  <h2>Imprimir Etiquetas</h2>
-                  <p>Conteúdo do modal para Imprimir Etiquetas.</p>
-                </ModalContent>
-              </Modal>
-            </ModalOverlay>
-          )}
-
-          {isAtualizarStatusModalVisible && (
-            <ModalOverlay onClick={() => setAtualizarStatusModalVisible(false)}>
-              <Modal>
-                <ModalContent>
-                  <CloseButton onClick={() => setAtualizarStatusModalVisible(false)}>X</CloseButton>
-                  <h2>Atualizar Status MKTPLC</h2>
-                  <p>Conteúdo do modal para Atualizar Status MKTPLC.</p>
-                </ModalContent>
-              </Modal>
-            </ModalOverlay>
-          )}
-
           <Table>
             <thead>
               <tr>
@@ -435,78 +413,143 @@ function Pedidos() {
                 <th>CANAL</th>
                 <th>DADOS DO PEDIDO</th>
                 <th>NOME</th>
+                <th>COD. RASTREIO</th>
                 <th>PRODUTO(S)</th>
                 <th>VALOR TOTAL</th>
                 <th>STATUS</th>
                 <th>DATA</th>
-                <th>NFE ERP</th>
-                
+                <th>AÇÃO</th>
               </tr>
             </thead>
             <tbody>
-              {filteredPedidos.map((pedido) => (
-                <tr
-                  key={pedido.codigo}
-                  onClick={() => openModal(pedido)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <td>
-                    <label htmlFor={`checkbox[${pedido.codigo}]`}>
-                      <input
-                        id={`checkbox[${pedido.codigo}]`}
-                        type="checkbox"
-                        checked={pedido.checked || allChecked}
-                        onChange={() => handleIndividualCheckboxChange(pedido.codigo)}
-                        aria-label={`checkbox[${pedido.codigo}]`}
-                      />
-                    </label>
-                  </td>
-                  <td>{pedido.codigo}</td>
-                  <td>({pedido.vinculo.conta})</td>
-                  <td>
-                    <Icon
-                      id={`icon-${pedido.codigo}`}
-                      canal={pedido.vinculo.canal}
-                      aria-label={`icon-${pedido.codigo}`}
-                    />
-                  </td>
-                  <td>{pedido.titulo}</td>
-                  <td>{pedido.nome}</td>
-                  <td>{pedido.Itens.map((item) => item.nomeProduto).join(', ')}</td>
-                  <td>{`R$ ${parseFloat(pedido.total).toFixed(2)}`}</td>
-                  <td>
-  <StatusButton status={pedido.status === 0 ? 'Não Pago' : 'Pago'}>
-    {pedido.status === 0 ? 'Não Pago' : 'Pago'}
-  </StatusButton>
-</td>
-
-                  <td>{dayjs(pedido.datacriacao).format('DD/MM/YYYY')}</td>
-                  <td>{pedido.nfeErp || 'N/A'}</td>
+              {filteredPedidos.length > 0 ? (
+                filteredPedidos.map((pedido) => (
+                  <tr key={pedido.id} onClick={() => openModal(pedido)} style={{ cursor: 'pointer' }}>
+                    <td>
+                      <label htmlFor={`checkbox[${pedido.id}]`}>
+                        <input
+                          id={`checkbox[${pedido.id}]`}
+                          type="checkbox"
+                          checked={pedido.checked || allChecked}
+                          onChange={() => handleIndividualCheckboxChange(pedido.id)}
+                          aria-label={`checkbox[${pedido.id}]`}
+                        />
+                      </label>
+                    </td>
+                    <td>{pedido.id}</td>
+                    <td>{pedido.sellerNickname}</td>
+                    <td>({pedido.buyerNickname})</td>
+                    <td>{pedido.items}</td>
+                    <td>{pedido.codRastreio}</td>
+                    <td>{`R$ ${parseFloat(pedido.totalAmount).toFixed(2)}`}</td>
+                    <td>
+                      <StatusButton status={pedido.status === 'cancelled' ? 'Cancelado' : 'Pago'}>
+                        {pedido.status === 'cancelled' ? 'Cancelado' : 'Pago'}
+                      </StatusButton>
+                    </td>
+                    <td>{dayjs(pedido.dateCreated).format('DD/MM/YYYY')}</td>
+                    <td>
+                      <button
+                        onClick={() => handleImprimirEtiqueta(pedido.id)} // Chama a função de imprimir etiqueta
+                        style={{
+                          backgroundColor: '#001f3f',
+                          color: '#fff',
+                          padding: '10px 20px',
+                          borderRadius: '5px',
+                          border: 'none',
+                          fontSize: '11px',
+                          fontWeight: 'bold',
+                          width: '116px',
+                        }}
+                      >
+                        Imprimir Etiqueta
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="12">Nenhum pedido encontrado</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </Table>
+
+          {/* Modal para Novo Pedido Manual */}
+          {isNovoPedidoModalVisible && (
+            <ModalOverlay onClick={() => setNovoPedidoModalVisible(false)}>
+              <Modal>
+                <ModalContent>
+                  <CloseButton onClick={() => setNovoPedidoModalVisible(false)}>X</CloseButton>
+                  <h2>Novo Pedido Manual</h2>
+                  {/* Conteúdo do modal */}
+                </ModalContent>
+              </Modal>
+            </ModalOverlay>
+          )}
+
+          {/* Modal para Gerar Etiquetas */}
+          {isGerarEtiquetaModalVisible && (
+            <ModalOverlay onClick={() => setGerarEtiquetaModalVisible(false)}>
+              <Modal>
+                <ModalContent>
+                  <CloseButton onClick={() => setGerarEtiquetaModalVisible(false)}>X</CloseButton>
+                  <h2>Gerar Etiquetas</h2>
+                  {/* Conteúdo do modal */}
+                </ModalContent>
+              </Modal>
+            </ModalOverlay>
+          )}
+
+          {/* Modal para Imprimir Etiquetas */}
+          {isImprimirEtiquetaModalVisible && (
+            <ModalOverlay onClick={() => setImprimirEtiquetaModalVisible(false)}>
+              <Modal>
+                <ModalContent>
+                  <CloseButton onClick={() => setImprimirEtiquetaModalVisible(false)}>X</CloseButton>
+                  <h2>Imprimir Etiquetas</h2>
+                  {/* Conteúdo do modal */}
+                </ModalContent>
+              </Modal>
+            </ModalOverlay>
+          )}
+
+          {/* Modal para Atualizar Status */}
+          {isAtualizarStatusModalVisible && (
+            <ModalOverlay onClick={() => setAtualizarStatusModalVisible(false)}>
+              <Modal>
+                <ModalContent>
+                  <CloseButton onClick={() => setAtualizarStatusModalVisible(false)}>X</CloseButton>
+                  <h2>Atualizar Status MKTPLC</h2>
+                  {/* Conteúdo do modal */}
+                </ModalContent>
+              </Modal>
+            </ModalOverlay>
+          )}
 
           {modalVisible && selectedPedido && (
             <ModalOverlay onClick={handleOverlayClick}>
               <Modal>
                 <ModalContent>
                   <CloseButton onClick={closeModal}>X</CloseButton>
-                  <h2>Detalhes do Pedido #{selectedPedido.codigo}</h2>
+                  <h2>Detalhes do Pedido #{selectedPedido.id}</h2>
                   <p>
-                    <strong>Conta:</strong> {selectedPedido.vinculo.numeroPEDIDO}
+                    <strong>Conta:</strong> {selectedPedido.vinculo ? selectedPedido.vinculo.numeroPEDIDO || 'N/A' : 'N/A'}
                   </p>
                   <p>
                     <strong>Dados do Pedido:</strong> {selectedPedido.titulo}
                   </p>
                   <p>
+                    <strong>Código de Rastreio:</strong> {selectedPedido.codRastreio || 'N/A'}
+                  </p>
+                  <p>
                     <strong>Status:</strong> {selectedPedido.status === 0 ? 'Não Pago' : 'Pago'}
                   </p>
                   <p>
-                    <strong>Canal:</strong> {selectedPedido.vinculo.numeroPEDIDO}
+                    <strong>Canal:</strong> {selectedPedido.vinculo ? selectedPedido.vinculo.numeroPEDIDO || 'N/A' : 'N/A'}
                   </p>
                   <p>
-                    <strong>Data:</strong> {dayjs(selectedPedido.datacriacao).format('DD/MM/YYYY')}
+                    <strong>Data:</strong> {dayjs(selectedPedido.dateCreated).format('DD/MM/YYYY')}
                   </p>
                   <p>
                     <strong>Produtos:</strong>
@@ -520,11 +563,12 @@ function Pedidos() {
                       </tr>
                     </thead>
                     <tbody>
-                      {selectedPedido.Itens.map((item) => (
-                        <tr key={item.codigo}>
-                          <td>{item.nomeProduto}</td>
-                          <td>{item.quantidade}</td>
-                          <td>{`R$ ${parseFloat(item.preco).toFixed(2)}`}</td>
+                      {/* Verifique se items é um array antes de aplicar o map */}
+                      {(Array.isArray(selectedPedido.items) ? selectedPedido.items : []).map((item, index) => (
+                        <tr key={index}>
+                          <td>{item}</td>
+                          <td>1</td> {/* Ajuste conforme necessário */}
+                          <td>{`R$ ${parseFloat(selectedPedido.totalAmount).toFixed(2)}`}</td>
                         </tr>
                       ))}
                     </tbody>

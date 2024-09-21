@@ -1,163 +1,178 @@
 /*eslint-disable*/
-/*eslint-disable*/
 import React, { useState } from 'react';
-import { PageHeader } from '../../components/page-headers/page-headers';
-import { Layout, Table, Button, Upload, Space, Tooltip } from 'antd';
+import { Layout, Table, Button, Row, Col, Typography } from 'antd';
 import {
-  UploadOutlined,
-  FilePdfOutlined,
-  DeleteOutlined,
-  InboxOutlined,
-  EyeInvisibleOutlined,
+  CheckOutlined,
+  ExclamationCircleOutlined,
+  FileSearchOutlined,
 } from '@ant-design/icons';
-import * as XLSX from 'xlsx';
 
 const { Header, Content } = Layout;
+const { Title, Text } = Typography;
 
 const initialData = [
   {
     key: '1',
-    codigo: '001',
-    descricao: 'Tenis Adidas',
-    quantidade: '1000',
-    valorUnitario: '50.00',
-    valorTotal: '50000.00',
+    empresa: 'XDROP',
+    codigo: '480',
+    vencimento: '01/08/2024 - 00:02',
+    tipo: 'Receita',
+    previsto: 'R$ 46,63',
+    realizado: 'R$ 46,63',
+    situacao: 'Foi Pago',
+    planoConta: '10.01.02 — REVENDA DE MERCADORIAS',
+    clienteFornecedor: '28103156809 — Maria Clara Alves',
   },
   {
     key: '2',
-    codigo: '002',
-    descricao: 'Tenis Nike',
-    quantidade: '500',
-    valorUnitario: '75.00',
-    valorTotal: '37500.00',
+    empresa: 'XDROP',
+    codigo: '481',
+    vencimento: '01/08/2024 - 09:07',
+    tipo: 'Receita',
+    previsto: 'R$ 274,94',
+    realizado: 'R$ 274,94',
+    situacao: 'Foi Pago',
+    planoConta: '10.01.02 — REVENDA DE MERCADORIAS',
+    clienteFornecedor: '42901022391 — Manuel Carlos Gomes Reinaldo',
   },
   {
     key: '3',
-    codigo: '003',
-    descricao: 'Tenis Puma',
-    quantidade: '500',
-    valorUnitario: '75.00',
-    valorTotal: '37500.00',
+    empresa: 'XDROP',
+    codigo: '482',
+    vencimento: '01/08/2024 - 11:24',
+    tipo: 'Receita',
+    previsto: 'R$ 59,17',
+    realizado: 'R$ 0,00',
+    situacao: 'Vencido',
+    planoConta: '10.01.02 — REVENDA DE MERCADORIAS',
+    clienteFornecedor: '07699720717 — Amanda Costa Sales',
   },
-  // Adicione mais dados fictícios conforme necessário
 ];
 
 const Entradas = () => {
-  const PageRoutes = [
-    {
-      path: '/admin',
-      breadcrumbName: 'Financeiro',
-    },
-    {
-      path: '',
-      breadcrumbName: 'Entradas',
-    },
-  ];
-
-  const [data, setData] = useState(initialData);
-
-  const handleExcelUpload = ({ file }) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const data = new Uint8Array(event.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const json = XLSX.utils.sheet_to_json(worksheet);
-      const formattedData = json.map((item, index) => ({
-        key: index.toString(),
-        codigo: item['Código'],
-        descricao: item['Descrição'],
-        quantidade: item['Quantidade'],
-        valorUnitario: item['Valor Unitário'],
-        valorTotal: item['Valor Total'],
-      }));
-      setData(formattedData);
-    };
-    reader.readAsArrayBuffer(file);
-  };
-
-  const handlePdfUpload = ({ file }) => {
-    // Aqui você pode adicionar o código para lidar com o upload de PDFs
-    console.log('Arquivo PDF carregado:', file);
-  };
-
-  const handleDelete = (key) => {
-    setData((prevData) => prevData.filter((item) => item.key !== key));
-  };
-
-  const handleArchive = (key) => {
-    console.log('Arquivar item:', key);
-    // Adicione a lógica para arquivar o item
-  };
-
-  const handleHide = (key) => {
-    console.log('Esconder item:', key);
-    // Adicione a lógica para esconder o item
-  };
+  const [data] = useState(initialData);
 
   const columns = [
+    {
+      title: 'Empresa',
+      dataIndex: 'empresa',
+      key: 'empresa',
+    },
     {
       title: 'Código',
       dataIndex: 'codigo',
       key: 'codigo',
     },
     {
-      title: 'Descrição',
-      dataIndex: 'descricao',
-      key: 'descricao',
+      title: 'Vencimento',
+      dataIndex: 'vencimento',
+      key: 'vencimento',
     },
     {
-      title: 'Quantidade',
-      dataIndex: 'quantidade',
-      key: 'quantidade',
+      title: 'Tipo',
+      dataIndex: 'tipo',
+      key: 'tipo',
     },
     {
-      title: 'Valor Unitário',
-      dataIndex: 'valorUnitario',
-      key: 'valorUnitario',
+      title: 'Previsto',
+      dataIndex: 'previsto',
+      key: 'previsto',
     },
     {
-      title: 'Valor Total',
-      dataIndex: 'valorTotal',
-      key: 'valorTotal',
+      title: 'Realizado',
+      dataIndex: 'realizado',
+      key: 'realizado',
     },
     {
-      title: 'Ações',
-      key: 'acoes',
-      render: (text, record) => (
-        <Space size="middle">
-          <Tooltip title="Excluir">
-            <Button type="link" icon={<DeleteOutlined />} onClick={() => handleDelete(record.key)} />
-          </Tooltip>
-          <Tooltip title="Arquivar">
-            <Button type="link" icon={<InboxOutlined />} onClick={() => handleArchive(record.key)} />
-          </Tooltip>
-          <Tooltip title="Esconder">
-            <Button type="link" icon={<EyeInvisibleOutlined />} onClick={() => handleHide(record.key)} />
-          </Tooltip>
-        </Space>
+      title: 'Situação',
+      dataIndex: 'situacao',
+      key: 'situacao',
+      render: (text) => (
+        <span style={{ color: text === 'Vencido' ? 'red' : 'green' }}>
+          {text}
+        </span>
       ),
+    },
+    {
+      title: 'Plano de Conta',
+      dataIndex: 'planoConta',
+      key: 'planoConta',
+    },
+    {
+      title: 'Cliente / Fornecedor',
+      dataIndex: 'clienteFornecedor',
+      key: 'clienteFornecedor',
     },
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ minHeight: '100vh', background: '#f0f2f5' }}>
       <Layout>
-        <Header className="site-layout-background" style={{ padding: 0 }}>
-          <PageHeader className="ninjadash-page-header-main" title="Entradas" routes={PageRoutes} />
+        <Header className="site-layout-background" style={{ padding: 0, background: '#fff' }}>
+          <Title level={3} style={{ margin: '16px', color: '#333' }}>Financeiro - Lançamentos</Title>
         </Header>
         <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
           <div className="site-layout-content" style={{ padding: 24, background: '#fff', minHeight: 360 }}>
-            <Space style={{ marginBottom: 16 }}>
-              <Upload beforeUpload={() => false} onChange={handleExcelUpload}>
-                <Button icon={<UploadOutlined />}>Importar Excel</Button>
-              </Upload>
-              <Upload beforeUpload={() => false} onChange={handlePdfUpload}>
-                <Button icon={<FilePdfOutlined />}>Importar PDF</Button>
-              </Upload>
-            </Space>
-            <Table columns={columns} dataSource={data} />
+
+            {/* Box único com todos os elementos */}
+            <div style={{ backgroundColor: '#f7f7f7', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', textAlign: 'center' }}>
+              
+              {/* Botões e Resumo do Período */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <Button icon={<FileSearchOutlined />} size="large" style={{ backgroundColor: '#555', border: 'none', color: '#fff', display: 'block' }}>
+                    Período
+                  </Button>
+                  <Text style={{ color: '#555', marginTop: '5px', fontWeight: 'bold' }}>R$ 0,00</Text>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <Button icon={<ExclamationCircleOutlined />} size="large" style={{ backgroundColor: 'red', border: 'none', color: '#fff', display: 'block' }}>
+                    Contas a pagar
+                  </Button>
+                  <Text style={{ color: 'red', marginTop: '5px', fontWeight: 'bold' }}>R$ 0,00</Text>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <Button icon={<CheckOutlined />} size="large" style={{ backgroundColor: 'green', border: 'none', color: '#fff', display: 'block' }}>
+                    Contas a receber
+                  </Button>
+                  <Text style={{ color: 'green', marginTop: '5px', fontWeight: 'bold' }}>R$ 28.612,17</Text>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <Button icon={<CheckOutlined />} size="large" style={{ backgroundColor: '#607D8B', border: 'none', color: '#fff', display: 'block' }}>
+                    Saldo
+                  </Button>
+                  <Text style={{ color: '#607D8B', marginTop: '5px', fontWeight: 'bold' }}>R$ 28.612,17</Text>
+                </div>
+              </div>
+
+              {/* Resumo Financeiro */}
+              <div style={{ textAlign: 'left', padding: '10px' }}>
+                <Row justify="space-between" style={{ marginBottom: '8px' }}>
+                  <Col><Text style={{ fontSize: '16px', fontWeight: 'bold' }}>Previsão do período</Text></Col>
+                  <Col><Text style={{ fontSize: '16px', fontWeight: 'bold', color: 'green' }}>R$ 28.612,17</Text></Col>
+                </Row>
+                <Row justify="space-between" style={{ marginBottom: '8px' }}>
+                  <Col><Text style={{ fontSize: '16px', fontWeight: 'bold' }}>Realizado período</Text></Col>
+                  <Col><Text style={{ fontSize: '16px', fontWeight: 'bold', color: 'green' }}>R$ 22.730,25</Text></Col>
+                </Row>
+                <Row justify="space-between">
+                  <Col><Text style={{ fontSize: '16px', fontWeight: 'bold' }}>Não pago período</Text></Col>
+                  <Col><Text style={{ fontSize: '16px', fontWeight: 'bold', color: 'green' }}>R$ 5.881,92</Text></Col>
+                </Row>
+                <Row justify="end">
+                  <Col>
+                    <Text style={{ fontStyle: 'italic', marginTop: '12px' }}>
+                      Totais atualizados em: 16/09/2024 - 16:30
+                    </Text>
+                  </Col>
+                </Row>
+              </div>
+
+            </div>
+
+            {/* Tabela de Lançamentos */}
+            <Table columns={columns} dataSource={data} pagination={false} style={{ marginTop: '24px', borderRadius: '8px', overflow: 'hidden' }} />
+
           </div>
         </Content>
       </Layout>

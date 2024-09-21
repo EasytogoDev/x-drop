@@ -11,6 +11,7 @@ function Chamados() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isFormFilled, setIsFormFilled] = useState(false);
   const [chamados, setChamados] = useState([]);
+  const [chamadosEncerrados, setChamadosEncerrados] = useState([]); // Novo estado
 
   const PageRoutes = [
     {
@@ -69,12 +70,16 @@ function Chamados() {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Atualiza o status do chamado para "Encerrado"
         setChamados(chamados.map(chamado =>
           chamado.protocolo === protocolo ? { ...chamado, status: 'Encerrado' } : chamado
         ));
 
-        // Exibe a mensagem de sucesso
+        // Adicionar o chamado encerrado à lista de chamados encerrados
+        const chamadoEncerrado = chamados.find(chamado => chamado.protocolo === protocolo);
+        if (chamadoEncerrado) {
+          setChamadosEncerrados([...chamadosEncerrados, { ...chamadoEncerrado, status: 'Encerrado' }]);
+        }
+
         toast.success(`Chamado ${protocolo} encerrado com sucesso!`);
       }
     });
@@ -106,7 +111,6 @@ function Chamados() {
       })
       .catch((error) => console.error('Erro ao carregar chamados:', error));
   }
-
 
   useEffect(() => {
     carregaChamados();
@@ -154,6 +158,36 @@ function Chamados() {
                     </tr>
                   ))
                 )}
+              </tbody>
+            </Table>
+          </>
+        )}
+
+        {chamadosEncerrados.length > 0 && (
+          <>
+            <h3>Histórico de Chamados Encerrados</h3>
+            <Table>
+              <thead>
+                <tr>
+                  <th>PROTOCOLO</th>
+                  <th>TOPICO</th>
+                  <th>DESCRICAO</th>
+                  <th>STATUS</th>
+                  <th>DATA ABERTURA</th>
+                  <th>DATA ATUALIZADO</th>
+                </tr>
+              </thead>
+              <tbody>
+                {chamadosEncerrados.map((chamado, index) => (
+                  <tr key={index}>
+                    <td>{chamado.protocolo}</td>
+                    <td>{chamado.topico}</td>
+                    <td>{chamado.descricao}</td>
+                    <td>{chamado.status}</td>
+                    <td>{chamado.dataAbertura}</td>
+                    <td>{chamado.dataAtualizado}</td>
+                  </tr>
+                ))}
               </tbody>
             </Table>
           </>

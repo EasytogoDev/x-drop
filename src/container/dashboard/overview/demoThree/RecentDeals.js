@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
+/* eslint-disable */
+import React, { useState, useEffect } from 'react';
 import { Table } from 'antd';
+import Cookies from 'js-cookie'; // Para obter o token de acesso
 import { Link } from 'react-router-dom';
 import { Cards } from '../../../../components/cards/frame/cards-frame';
 import { BorderLessHeading, TableDefaultStyle } from '../../../styled';
-
-import tableData from '../../../../demoData/table-data.json';
-
-const { recentDeal } = tableData;
 
 const dealColumns = [
   {
     title: 'Nome do produto',
     dataIndex: 'productname',
-    key: 'prroductname',
+    key: 'productname',
   },
   {
     title: 'Preço',
@@ -23,6 +21,34 @@ const dealColumns = [
 
 const RecentDeal = React.memo(() => {
   const [dealTab, setDealTab] = useState('today');
+  const [pedidosMeli, setPedidosMeli] = useState([]);
+
+  function carregaPedidosMeli() {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/meli/pedidos`, {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result && result.pedidos) {
+          const pedidos = result.pedidos.map((pedido) => ({
+            key: pedido.id,
+            productname: pedido.order_items.map(item => item.item.title).join(', '),
+            price: pedido.total_amount,
+          }));
+
+          setPedidosMeli(pedidos);
+        } else {
+          console.error('Nenhum pedido encontrado:', result);
+        }
+      })
+      .catch((error) => console.error('Erro ao carregar pedidos:', error));
+  }
 
   /* Tab Activation */
   const handleTabActivation = (value, e) => {
@@ -30,21 +56,9 @@ const RecentDeal = React.memo(() => {
     setDealTab(value);
   };
 
-  const dealTableData = [];
-
-  recentDeal[dealTab].map((value) => {
-    const { key, img, name, price } = value;
-    return dealTableData.push({
-      key,
-      productname: (
-        <div className="ninjadash-info-element align-center-v">
-          <img src={require(`../../../../static/img/products/electronics/${img}`)} alt="ninjadash Product" />
-          <span className="ninjadash-info-element__text">{name}</span>
-        </div>
-      ),
-      price: <span className="medium-text">{price}</span>,
-    });
-  });
+  useEffect(() => {
+    carregaPedidosMeli();
+  }, []);
 
   return (
     <div className="full-width-table">
@@ -58,16 +72,6 @@ const RecentDeal = React.memo(() => {
                     Hoje
                   </Link>
                 </li>
-                {/* <li className={dealTab === 'week' ? 'ninjadash-active' : 'ninjadash-week'}>
-                  <Link onClick={(event) => handleTabActivation('week', event)} to="#">
-                    Semana
-                  </Link>
-                </li> */}
-                {/* <li className={dealTab === 'month' ? 'ninjadash-active' : 'ninjadash-month'}>
-                  <Link onClick={(event) => handleTabActivation('month', event)} to="#">
-                    Mês
-                  </Link>
-                </li> */}
               </ul>
             </div>
           }
@@ -76,7 +80,7 @@ const RecentDeal = React.memo(() => {
         >
           <TableDefaultStyle className="ninjadash-having-header-bg">
             <div className="ninjadash-recent-deals table-responsive">
-              <Table columns={dealColumns} dataSource={dealTableData} pagination={false} />
+              <Table columns={dealColumns} dataSource={pedidosMeli} pagination={false} />
             </div>
           </TableDefaultStyle>
         </Cards>

@@ -1,14 +1,15 @@
+/* eslint-disable */
 import UilDown from '@iconscout/react-unicons/icons/uil-arrow-down';
 import UilUp from '@iconscout/react-unicons/icons/uil-arrow-up';
 import { Col, Row } from 'antd';
-import React from 'react';
+import React, { useState, useEffect} from 'react';
 import { Cards } from '../../../../components/cards/frame/cards-frame';
 import DashboardChart from '../../../../components/charts/DashboardChart';
 import { ChartContainer, TotalChartStyleWrap } from '../../Style';
 
 import totalChartData from '../../../../demoData/TotalEarning.json';
 
-const TotalEarning = React.memo(() => {
+function TotalEarning() {
   return (
     <Row gutter={25}>
       {totalChartData.map((item, i) => {
@@ -107,6 +108,6 @@ const TotalEarning = React.memo(() => {
       })}
     </Row>
   );
-});
+};
 
 export default TotalEarning;

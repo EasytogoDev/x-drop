@@ -1,13 +1,9 @@
 /* eslint-disable */
-import React from 'react';
-import { PageHeader } from '../../../../components/page-headers/page-headers';
-import { Main, DashboardWrapper, Card, StatsWrapper, StatsCard, ChartWrapper, TableWrapper } from './styles.ts';
+import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 import { Line, Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { FaMoneyBillWave, FaShoppingCart, FaDollarSign, FaChartLine } from 'react-icons/fa'; // Ícones
-
-// Registrar os componentes necessários
-ChartJS.register(
+import {
+  Chart as ChartJS,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -15,8 +11,14 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
-);
+  Legend,
+} from 'chart.js';
+import { FaMoneyBillWave, FaShoppingCart, FaDollarSign, FaChartLine } from 'react-icons/fa'; // Ícones
+import { Main, DashboardWrapper, Card, StatsWrapper, StatsCard, ChartWrapper, TableWrapper } from './styles.ts';
+import { PageHeader } from '../../../../components/page-headers/page-headers';
+
+// Registrar os componentes necessários
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
 function PainelAnalitico() {
   const PageRoutes = [
@@ -30,18 +32,23 @@ function PainelAnalitico() {
     },
   ];
 
-  const lineData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+  const [pedidosHoje, setPedidosHoje] = useState(0);
+  const [somaHoje, setSomaHoje] = useState(0);
+  const [somaMes, setSomaMes] = useState(0);
+  const [saldoAtual, setSaldoAtual] = useState(0);
+  const [topProducts, setTopProducts] = useState([]);
+  const [lineData, setLineData] = useState({
+    labels: [],
     datasets: [
       {
         label: 'Vendas',
-        data: [30000, 50000, 40000, 60000, 70000, 80000, 90000, 100000, 110000, 120000],
+        data: [],
         fill: false,
         backgroundColor: 'rgba(75,192,192,0.4)',
         borderColor: 'rgba(75,192,192,1)',
       },
     ],
-  };
+  });
 
   const barData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
@@ -64,6 +71,106 @@ function PainelAnalitico() {
     },
   };
 
+  function carregaPedidos() {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+
+    const requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    };
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/painel`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        setPedidosHoje(result.total_hoje || 0);
+        setSomaHoje(result.soma_hoje || 0);
+        setSomaMes(result.total_mes || 0);
+        setSaldoAtual(result.saldo_atual || 0);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  function carregaTopProducts() {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+
+    const requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    };
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/painel/top-products`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        const mappedTopProducts = result.products.map((product) => ({
+          id: product.produtoITEMPEDIDO,
+          codigo: product.codigoITEMPEDIDO,
+          origem: product.origemITEMPEDIDO,
+          price: parseFloat(product.precoITEMPEDIDO).toFixed(2),
+          quantity: parseInt(product.quantidadeITEMPEDIDO, 10),
+          total: parseFloat(product.totalITEMPEDIDO).toFixed(2),
+          name: product.nomeProdutoITEMPEDIDO,
+        }));
+        setTopProducts(mappedTopProducts);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  function carregaTopSales() {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+
+    const requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    };
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/painel/total-sales`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        const labels = result.totalPerMonth.map((item) => {
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          return monthNames[item.month - 1];
+        });
+
+        const salesData = result.totalPerMonth.map((item) => parseFloat(item.totalSales));
+
+        // Atualizar os dados do gráfico com os dados da API
+        setLineData({
+          labels: labels,
+          datasets: [
+            {
+              label: 'Vendas',
+              data: salesData,
+              fill: false,
+              backgroundColor: 'rgba(75,192,192,0.4)',
+              borderColor: 'rgba(75,192,192,1)',
+            },
+          ],
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  useEffect(() => {
+    carregaPedidos();
+    carregaTopProducts();
+    carregaTopSales();
+  }, []);
+
   return (
     <>
       <PageHeader className="ninjadash-page-header-main" title="Pedidos" routes={PageRoutes} />
@@ -71,38 +178,41 @@ function PainelAnalitico() {
         <DashboardWrapper>
           <StatsWrapper>
             <StatsCard>
-              <FaMoneyBillWave size={40} color="#8a4af3" />
+              <FaShoppingCart size={40} color="#5cb85c" />
               <div>
-                <h3>70</h3>
+                <h3>{pedidosHoje}</h3>
                 <p>Pedidos Hoje</p>
               </div>
             </StatsCard>
+
             <StatsCard>
               <FaDollarSign size={40} color="#5bc0de" />
               <div>
-                <h3>R$50.00K</h3>
+                <h3>{`R$${somaHoje.toFixed(2)}`}</h3>
                 <p>Faturados Hoje</p>
               </div>
             </StatsCard>
+
             <StatsCard>
-              <FaShoppingCart size={40} color="#5cb85c" />
+              <FaMoneyBillWave size={40} color="#8a4af3" />
               <div>
-                <h3>R$900K</h3>
+                <h3>{`R$${somaMes.toFixed(2)}`}</h3>
                 <p>Faturados no Mês</p>
               </div>
             </StatsCard>
+
             <StatsCard>
-              <FaChartLine size={40} color="#f0ad4e" />
+              <FaChartLine size={20} color="#f0ad4e" />
               <div>
-                <h3>R$1B</h3>
+                <h3>{`R$${saldoAtual.toFixed(2)}`}</h3>
                 <p>Saldo Atual</p>
               </div>
             </StatsCard>
           </StatsWrapper>
-
           <ChartWrapper>
             <Card>
               <h4>Todas as vendas</h4>
+              {/* O gráfico agora utiliza o estado lineData, que é atualizado dinamicamente */}
               <Line data={lineData} options={options} />
             </Card>
             <Card>
@@ -123,12 +233,19 @@ function PainelAnalitico() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Samsung Galaxy S8 256GB</td>
-                    <td>R$280</td>
-                    <td>126</td>
-                  </tr>
-                  {/* Mais linhas de exemplo */}
+                  {topProducts.length > 0 ? (
+                    topProducts.map((product, index) => (
+                      <tr key={index}>
+                        <td>{product.name}</td>
+                        <td>{`R$${product.price}`}</td>
+                        <td>{product.quantity}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="3">Nenhum produto encontrado</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </Card>

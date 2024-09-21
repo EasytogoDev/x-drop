@@ -3,26 +3,27 @@ import styled from 'styled-components';
 
 export const Main = styled.div`
   padding: 20px;
-  background: #fff;
+  background-color: ${({ theme }) => theme[theme.mainContent]['white-background']};
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 `;
 
 export const Button = styled.button`
-  background-color: ${({ cancel }) => (cancel ? '#ff6b6b' : '#6a74f8')};
-  color: #fff;
+  background-color: ${({ cancel, theme }) => (cancel ? theme[theme.mainContent]['secondary-color'] : theme[theme.mainContent]['primary-color'])};
+  color: ${({ theme }) => theme[theme.mainContent]['button-text']}; /* Usando a cor do texto do tema */
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   margin: 10px 0;
+  transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: ${({ cancel }) => (cancel ? '#ff4c4c' : '#575ed8')};
+    background-color: ${({ cancel, theme }) => (cancel ? theme[theme.mainContent]['secondary-hover-color'] : theme[theme.mainContent]['primary-hover-color'])};
   }
 
   &:disabled {
-    background-color: #ccc;
+    background-color: ${({ theme }) => theme[theme.mainContent]['disabled-color']};
     cursor: not-allowed;
   }
 `;
@@ -35,24 +36,25 @@ export const Table = styled.table`
 
   th, td {
     padding: 12px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']};
     text-align: left;
   }
 
   th {
-    background-color: #f5f5f5;
+    background-color: ${({ theme }) => theme[theme.mainContent]['table-header-background']};
+    color: ${({ theme }) => theme[theme.mainContent]['dark-text']};
   }
 
   tbody tr {
     &:nth-child(even) {
-      background-color: #fafafa;
+      background-color: ${({ theme }) => theme[theme.mainContent]['hover-background']};
     }
   }
 
   thead {
     position: sticky;
     top: 0;
-    background: white;
+    background-color: ${({ theme }) => theme[theme.mainContent]['white-background']};
     z-index: 1;
   }
 `;
@@ -71,12 +73,15 @@ export const Label = styled.label`
   display: block;
   margin-bottom: 5px;
   font-weight: 600;
+  color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Usando cor do texto do tema */
 `;
 
 export const Select = styled.select`
   width: 100%;
   padding: 10px;
   border-radius: 5px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']};
   font-size: 16px;
+  background-color: ${({ theme }) => theme[theme.mainContent]['white-background']};
+  color: ${({ theme }) => theme[theme.mainContent]['dark-text']}; /* Cor do texto conforme o tema */
 `;

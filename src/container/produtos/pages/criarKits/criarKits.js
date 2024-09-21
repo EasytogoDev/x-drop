@@ -27,6 +27,7 @@ const KitBuilder = () => {
   const [productsPerPage] = useState(5); // Número de produtos por página
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [depositos, setDepositos] = useState([]);
 
   const handleAddProduct = (product) => {
     setSelectedProducts([...selectedProducts, product]);
@@ -128,17 +129,40 @@ const KitBuilder = () => {
       });
   };
 
+  const carregaDepositos = () => {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/fornecedores/lista/3`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result); // Verificar o retorno da API
+        // Como o retorno da API é um único objeto, basta colocar ele diretamente
+        const mappedDepositos = [{
+          endereco: result.enderecoFORNECEDOR,
+        }];
+        setDepositos(mappedDepositos);
+      })
+      .catch((error) => console.error(error));
+  };
+
   useEffect(() => {
     carregaCategorias();
     carregaProdutos();
+    carregaDepositos();
   }, []);
 
-  // Função para lidar com a mudança de página
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  // Lógica para calcular os produtos a serem exibidos na página atual
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -151,13 +175,15 @@ const KitBuilder = () => {
         <label>Depósito</label>
         <select value={selectedDeposito} onChange={(e) => setSelectedDeposito(e.target.value)}>
           <option value="">- Escolha um depósito -</option>
-          <option value="Drop Auto Peças - SP">Drop Auto Peças - SP</option>
-          <option value="Mix Variedades - SP">Mix Variedades - SP</option>
-          <option value="Quadros - SP">Quadros - SP</option>
-          <option value="DropeLuz - RS">DropeLuz - RS</option>
-          <option value="Drop Luz - SP">Drop Luz - SP</option>
-          <option value="Ibitinga - SP">Ibitinga - SP</option>
-          <option value="Envio Nacional - RJ">Envio Nacional - RJ</option>
+          {depositos.length === 0 ? (
+            <option value="">Carregando depósitos...</option>
+          ) : (
+            depositos.map((deposito) => (
+              <option key={deposito.endereco} value={deposito.endereco}>
+                {deposito.endereco}
+              </option>
+            ))
+          )}
         </select>
       </SelectContainer>
 

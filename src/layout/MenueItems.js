@@ -289,17 +289,17 @@ function MenuItems({ toggleCollapsed }) {
         'painel',
       ),
       getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/financeiro/entradas`}>
-          {t('entradas')}
+        <NavLink onClick={toggleCollapsed} to={`${path}/financeiro/lancamentos`}>
+          {t('lancamentos')}
         </NavLink>,
-        'entradas',
+        'Lançamentos',
       ),
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/financeiro/saidas`}>
-          {t('saidas')}
-        </NavLink>,
-        'saidas',
-      ),
+      // getItem(
+      //   <NavLink onClick={toggleCollapsed} to={`${path}/financeiro/saidas`}>
+      //     {t('saidas')}
+      //   </NavLink>,
+      //   'saidas',
+      // ),
       // getItem(
       //   <NavLink onClick={toggleCollapsed} to={`${path}/financeiro/fluxo`}>
       //     {`${t('Fluxo')} ${t('de')} ${t('Caixa')}`}
