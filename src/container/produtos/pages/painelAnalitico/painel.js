@@ -37,6 +37,11 @@ function PainelAnalitico() {
   const [somaMes, setSomaMes] = useState(0);
   const [saldoAtual, setSaldoAtual] = useState(0);
   const [topProducts, setTopProducts] = useState([]);
+  const [barData, setBarData] = useState([]);
+
+  
+
+
   const [lineData, setLineData] = useState({
     labels: [],
     datasets: [
@@ -50,7 +55,7 @@ function PainelAnalitico() {
     ],
   });
 
-  const barData = {
+/*   const barData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
     datasets: [
       {
@@ -61,7 +66,7 @@ function PainelAnalitico() {
         borderWidth: 1,
       },
     ],
-  };
+  }; */
 
   const options = {
     scales: {
@@ -95,6 +100,30 @@ function PainelAnalitico() {
       });
   }
 
+
+  function carregaVendasMes() {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+
+    const requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    };
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/painel/vendas-mes`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        if (result && result.labels && result.datasets) {
+          setBarData(result); // Atualizar os dados com o payload da API
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
   function carregaTopProducts() {
     const accessToken = Cookies.get('access_token');
     const myHeaders = new Headers();
@@ -114,7 +143,7 @@ function PainelAnalitico() {
           codigo: product.codigoITEMPEDIDO,
           origem: product.origemITEMPEDIDO,
           price: parseFloat(product.precoITEMPEDIDO).toFixed(2),
-          quantity: parseInt(product.quantidadeITEMPEDIDO, 10),
+          quantity: parseInt(product.quantidade, 10),
           total: parseFloat(product.totalITEMPEDIDO).toFixed(2),
           name: product.nomeProdutoITEMPEDIDO,
         }));
@@ -169,6 +198,7 @@ function PainelAnalitico() {
     carregaPedidos();
     carregaTopProducts();
     carregaTopSales();
+    carregaVendasMes();
   }, []);
 
   return (
@@ -196,7 +226,7 @@ function PainelAnalitico() {
             <StatsCard>
               <FaMoneyBillWave size={40} color="#8a4af3" />
               <div>
-                <h3>{`R$${somaMes.toFixed(2)}`}</h3>
+                <h3>{`R$${saldoAtual.toFixed(2)}`}</h3>
                 <p>Faturados no Mês</p>
               </div>
             </StatsCard>
@@ -204,20 +234,24 @@ function PainelAnalitico() {
             <StatsCard>
               <FaChartLine size={20} color="#f0ad4e" />
               <div>
-                <h3>{`R$${saldoAtual.toFixed(2)}`}</h3>
+                <h3>{`R$ 0`}</h3>
                 <p>Saldo Atual</p>
               </div>
             </StatsCard>
           </StatsWrapper>
           <ChartWrapper>
             <Card>
-              <h4>Todas as vendas</h4>
+              <h4>Vendas do Mês</h4>
               {/* O gráfico agora utiliza o estado lineData, que é atualizado dinamicamente */}
               <Line data={lineData} options={options} />
             </Card>
             <Card>
-              <h4>Lucro Líquido</h4>
-              <Bar data={barData} options={options} />
+              <h4>Vendas do Ano</h4>
+              {barData && barData?.labels?.length > 0 ? (
+                <Bar data={barData} options={options} />
+              ) : (
+                <p>Carregando dados...</p>
+              )}
             </Card>
           </ChartWrapper>
 
@@ -234,7 +268,9 @@ function PainelAnalitico() {
                 </thead>
                 <tbody>
                   {topProducts.length > 0 ? (
-                    topProducts.map((product, index) => (
+                    topProducts
+                    .sort((a, b) => b.quantity - a.quantity)
+                    .map((product, index) => (
                       <tr key={index}>
                         <td>{product.name}</td>
                         <td>{`R$${product.price}`}</td>

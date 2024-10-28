@@ -2,7 +2,7 @@ import { ConfigProvider } from 'antd';
 import 'antd/dist/antd.less';
 import React, { useEffect, useState, lazy } from 'react';
 import { Provider, useSelector } from 'react-redux';
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import { ThemeProvider } from 'styled-components';
 import ProtectedRoute from './components/utilities/protectedRoute';
@@ -29,37 +29,52 @@ function ProviderConfig() {
 
   const [path, setPath] = useState(window.location.pathname);
 
+  const location = useLocation(); // Hook para obter a localização
+
   useEffect(() => {
-    let unmounted = false;
-    if (!unmounted) {
-      setPath(window.location.pathname);
+    const searchParams = new URLSearchParams(location.search);
+    const code = searchParams.get('code');
+    const shopid = searchParams.get('shop_id');
+
+    if (code && shopid) {
+      // Armazena no localStorage
+      localStorage.setItem('CodeShopee', code);
+      localStorage.setItem('IdShopee', shopid);
     }
-    return () => {
-      unmounted = true;
-    };
-  }, [setPath]);
+
+    // Chame essa função após o login ou quando o token JWT estiver disponível
+    sendTokenToReactNative();
+
+    setPath(window.location.pathname);
+  }, [location]);
+
+  // Função para enviar o token JWT para o React Native
+  function sendTokenToReactNative() {
+    const jwtToken = localStorage.getItem('access_token'); // Captura o token do localStorage
+    if (jwtToken && window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ token: jwtToken })); // Envia o token para o React Native
+    }
+  }
 
   return (
     <ConfigProvider direction={rtl ? 'rtl' : 'ltr'}>
       <ThemeProvider theme={{ ...themeColor, rtl, topMenu, mainContent }}>
         <>
-          <Router basename={process.env.PUBLIC_URL}>
-            {!isLoggedIn ? (
-              <Routes>
-                <Route path="/*" element={<Auth />} />{' '}
-              </Routes>
-            ) : (
-              <Routes>
-                <Route path="/*" element={<ProtectedRoute path="/*" Component={Admin} />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            )}
-            {isLoggedIn && (path === process.env.PUBLIC_URL || path === `${process.env.PUBLIC_URL}/`) && (
-              <Routes>
-                <Route path="/" element={<Navigate to="/" />} />
-              </Routes>
-            )}
-          </Router>
+          {!isLoggedIn ? (
+            <Routes>
+              <Route path="/*" element={<Auth />} />
+            </Routes>
+          ) : (
+            <Routes>
+              <Route path="/*" element={<ProtectedRoute path="/*" Component={Admin} />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          )}
+          {isLoggedIn && (path === process.env.PUBLIC_URL || path === `${process.env.PUBLIC_URL}/`) && (
+            <Routes>
+              <Route path="/" element={<Navigate to="/" />} />
+            </Routes>
+          )}
         </>
       </ThemeProvider>
     </ConfigProvider>
@@ -69,7 +84,9 @@ function ProviderConfig() {
 function App() {
   return (
     <Provider store={store}>
-      <ProviderConfig />
+      <Router basename={process.env.PUBLIC_URL}>
+        <ProviderConfig />
+      </Router>
     </Provider>
   );
 }

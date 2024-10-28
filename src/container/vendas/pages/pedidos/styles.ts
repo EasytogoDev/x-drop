@@ -15,12 +15,11 @@ export const Container = styled.div`
 
 export const SearchSection = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 
-  input[type='text'] {
-    flex: 1;
+  input {
     padding: 10px;
     border: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']};
     border-radius: 4px;
@@ -29,20 +28,22 @@ export const SearchSection = styled.div`
     color: ${({ theme }) => theme[theme.mainContent]['dark-text']};
   }
 
-  button {
-    padding: 10px 20px;
-    background-color: #7d70e7; /* Roxo fixo */
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
+  .ant-picker, .ant-select {
+    width: 100%;
+  }
 
-    &:hover {
-      background-color: #6755cc; /* Roxo mais escuro ao passar o mouse */
-    }
+  .ant-btn-primary {
+    background-color: #7d70e7;
+    border: none;
+  }
+
+  .ant-btn {
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
   }
 `;
+
 
 export const FilterSection = styled.div`
   display: grid;
@@ -74,36 +75,48 @@ export const FilterSection = styled.div`
   }
 
   .filter-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
 
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
+  button {
+    display: inline-flex; /* Usar flex para alinhar o conteúdo */
+    align-items: center;  /* Centraliza verticalmente o texto */
+    justify-content: center; /* Centraliza horizontalmente o texto */
+    padding: 12px 24px; /* Ajusta o padding para melhor espaçamento */
+    height: 44px; /* Altura consistente para o botão */
+    border: none;
+    border-radius: 8px; /* Bordas arredondadas */
+    cursor: pointer;
+    font-size: 16px; /* Tamanho da fonte */
+    font-weight: 500; /* Fonte com peso intermediário */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    transition: all 0.3s ease;
 
-      &.primary {
-        background-color: #7d70e7; /* Roxo fixo */
-        color: #fff;
+    &.primary {
+      background-color: #7d70e7;
+      color: #fff;
 
-        &:hover {
-          background-color: #6755cc; /* Roxo mais escuro ao passar o mouse */
-        }
+      &:hover {
+        background-color: #6755cc;
+        transform: translateY(-2px);
+        box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
       }
+    }
 
-      &.clear {
-        background-color: ${({ theme }) => theme[theme.mainContent]['secondary-color']};
-        color: #fff;
+    &.clear {
+      background-color: ${({ theme }) => theme[theme.mainContent]['secondary-color']};
+      color: #fff;
 
-        &:hover {
-          background-color: ${({ theme }) => theme[theme.mainContent]['secondary-hover-color']};
-        }
+      &:hover {
+        background-color: ${({ theme }) => theme[theme.mainContent]['secondary-hover-color']};
+        transform: translateY(-2px);
+        box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
       }
     }
   }
+}
+
 `;
 
 export const ActionsSection = styled.div`
@@ -134,58 +147,54 @@ export const ActionsSection = styled.div`
 export const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
+  margin-top: 20px;
 
   thead {
     tr {
-      background-color: ${({ theme }) => theme[theme.mainContent]['table-header-background']};
+      background-color: #f0f0f0; /* Cor de fundo do cabeçalho */
     }
 
     th {
       padding: 10px;
-      border-bottom: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']};
+      border-bottom: 2px solid #ddd;
       font-weight: bold;
       text-align: left;
-      color: ${({ theme }) => theme[theme.mainContent]['dark-text']};
-    }
-
-    th:first-child {
-      width: 40px;
+      color: #333;
     }
   }
 
   tbody {
     tr {
-      border-bottom: 1px solid ${({ theme }) => theme[theme.mainContent]['border-color']};
+      border-bottom: 1px solid #ddd;
 
       &:hover {
-        background-color: ${({ theme }) => theme[theme.mainContent]['hover-background']};
+        background-color: #f9f9f9; /* Cor de fundo ao passar o mouse */
       }
     }
 
     td {
       padding: 10px;
-      color: ${({ theme }) => theme[theme.mainContent]['dark-text']};
-    }
-
-    td:first-child {
-      width: 40px;
+      color: #333;
     }
   }
 `;
 
-export const StatusButton = styled.span<{ status: string }>`
-  padding: 5px;
-  width: 100px; /* Define uma largura fixa */
-  border-radius: 5px;
-  background-color: ${({ status }) =>
-    status === 'Pago' ? '#4CAF50' : status === 'Não Pago' ? '#F44336' : '#FFEB3B'};
-  color: #fff;
-  font-size: 12px;
-  font-weight: bold;
-  text-align: center;
-  display: inline-block;
-  line-height: 20px; /* Centraliza o texto verticalmente */
+
+export const StatusButton = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: ${({ status }) =>
+    status === 'pending'
+      ? '#FFEB3B'  // Amarelo para pendente
+      : status === 'pre-invoiced'
+      ? '#FFA500'  // Laranja para pré-faturado
+      : status === 'paid'
+      ? '#4CAF50'  // Verde para pago
+      : '#F44336'}; // Vermelho para cancelado
 `;
+
 
 export const Icon = styled.span<{ canal: string }>`
   width: 24px;
@@ -194,17 +203,15 @@ export const Icon = styled.span<{ canal: string }>`
   background-size: contain;
   background-repeat: no-repeat;
   background-image: ${({ canal }) =>
-    canal === 'Magalu'
-      ? "url('/static/icons/magalu.png')"
-      : canal === 'Shopee'
+    canal === 'Shopee'
       ? "url('/static/icons/shopee.png')"
+      : canal === 'Mercado Livre'
+      ? "url('/static/icons/meli.png')"
       : canal === 'Shein'
       ? "url('/static/icons/shein.png')"
-      : canal === 'Meli'
-      ? "url('/static/icons/meli.png')"
-      : canal === 'Shopify'
-      ? "url('/static/icons/shopify.png')"
-      : "url('/static/icons/default.png')"};
+      : "url('/static/icons/default.png')"}; /* Define as imagens de ícones baseadas no canal */
+  margin-right: 8px; /* Espaçamento entre o ícone e o texto */
+  vertical-align: middle; /* Alinha o ícone verticalmente ao centro */
 `;
 
 export const ModalOverlay = styled.div`

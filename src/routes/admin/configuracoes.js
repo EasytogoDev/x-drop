@@ -7,6 +7,7 @@ const Assinatura = lazy(() => import('../../container/configuracoes/pages/minhaA
 const Integracoes = lazy(() => import('../../container/configuracoes/pages/integracoes/integracoes'));
 const Galpao = lazy(() => import(`../../container/configuracoes/pages/galpao/index.js`));
 const Meli = lazy(() => import(`../../container/configuracoes/meli.js`));
+const Shopee = lazy(() => import(`../../container/configuracoes/shopee.js`));
 
 function ConfiguracaoRoutes() {
     return (
@@ -16,6 +17,7 @@ function ConfiguracaoRoutes() {
             <Route path="integracoes" element={<Integracoes />} />
             <Route path="meugalpao" element={<Galpao />} />
             <Route path="meli" element={<Meli />} />
+            <Route path="Shopee" element={<Shopee />} />
         </Routes>
     );
 }

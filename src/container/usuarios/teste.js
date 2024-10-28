@@ -58,7 +58,7 @@ function Formulario() {
             redirect: "follow"
         };
 
-        fetch("http://192.168.15.47:8080/api/usuarios", requestOptions)
+        fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/usuarios`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
                 if (result && result.length > 0) {

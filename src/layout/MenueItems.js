@@ -4,7 +4,7 @@ import {
   UilClipboardAlt,
   UilCreateDashboard,
   UilExchange,
-  UilHeadphones,
+  // UilHeadphones,
   UilServer,
   UilShoppingCart,
   UilUsersAlt,
@@ -83,7 +83,7 @@ function MenuItems({ toggleCollapsed }) {
       ),
     ),
     getItem(
-      !topMenu && <NavTitle className="ninjadash-sidebar-nav-title">{t('Vendas')}</NavTitle>,
+      !topMenu && <NavTitle className="ninjadash-sidebar-nav-title">{t('Geral')}</NavTitle>,
       'app-title',
       null,
       null,
@@ -98,22 +98,22 @@ function MenuItems({ toggleCollapsed }) {
         'orsers',
         null,
       ),
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/vendas/pedido-manual`}>
-          {/* /estoque/pedido-manual */}
-          {t('Pedido Manual')}
-        </NavLink>,
-        'Pedido Manual',
-        null,
-      ),
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/vendas/devolucao`}>
-          {/* /estoque/devolucao */}
-          {t('Devolução')}
-        </NavLink>,
-        'Devolução',
-        null,
-      ),
+      // getItem(
+      //   <NavLink onClick={toggleCollapsed} to={`${path}/vendas/pedido-manual`}>
+      //     {/* /estoque/pedido-manual */}
+      //     {t('Pedido Manual')}
+      //   </NavLink>,
+      //   'Pedido Manual',
+      //   null,
+      // ),
+      // getItem(
+      //   <NavLink onClick={toggleCollapsed} to={`${path}/vendas/devolucao`}>
+      //     {/* /estoque/devolucao */}
+      //     {t('Devolução')}
+      //   </NavLink>,
+      //   'Devolução',
+      //   null,
+      // ),
       // getItem(
       //   <NavLink onClick={toggleCollapsed} to={`${path}/orders/newOrders`}>
       //     {`${t('Criar')} ${t('Pedido')}`}
@@ -122,13 +122,13 @@ function MenuItems({ toggleCollapsed }) {
       //   null,
       // ),
     ]),
-    getItem(
-      !topMenu && <NavTitle className="ninjadash-sidebar-nav-title">{t('Compras')}</NavTitle>,
-      'app-title',
-      null,
-      null,
-      'group',
-    ),
+    // getItem(
+    //   !topMenu && <NavTitle className="ninjadash-sidebar-nav-title">{t('Compras')}</NavTitle>,
+    //   'app-title',
+    //   null,
+    //   null,
+    //   'group',
+    // ),
     getItem(t('Compras'), 'compras', !topMenu && <UilExchange />, [
       // getItem(
       //   <NavLink onClick={toggleCollapsed} to={`${path}/compras/solicitacoes`}>
@@ -144,13 +144,13 @@ function MenuItems({ toggleCollapsed }) {
         'pedidos',
         null,
       ),
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/compras/pedidosManuais`}>
-          {t('Pedido Manual')}
-        </NavLink>,
-        'pedidosManuais',
-        null,
-      ),
+      // getItem(
+      //   <NavLink onClick={toggleCollapsed} to={`${path}/compras/pedidosManuais`}>
+      //     {t('Pedido Manual')}
+      //   </NavLink>,
+      //   'pedidosManuais',
+      //   null,
+      // ),
       getItem(
         <NavLink onClick={toggleCollapsed} to={`${path}/compras/fornecedores`}>
           {/* /compras/catalogo */}
@@ -160,13 +160,13 @@ function MenuItems({ toggleCollapsed }) {
         null,
       ),
     ]),
-    getItem(
-      !topMenu && <NavTitle className="ninjadash-sidebar-nav-title">{t('Geral')}</NavTitle>,
-      'app-title',
-      null,
-      null,
-      'group',
-    ),
+    // getItem(
+    //   !topMenu && <NavTitle className="ninjadash-sidebar-nav-title">{t('Geral')}</NavTitle>,
+    //   'app-title',
+    //   null,
+    //   null,
+    //   'group',
+    // ),
     getItem(t('Produtos'), 'produtos', !topMenu && <UilShoppingCart />, [
       getItem(
         <NavLink onClick={toggleCollapsed} to={`${path}/produtos/painel`}>
@@ -183,13 +183,13 @@ function MenuItems({ toggleCollapsed }) {
         'meus-produto',
         null,
       ),
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/produtos/criar-kits`}>
-          {t('Criar Kits')}
-        </NavLink>,
-        'criar-kits',
-        null,
-      ),
+      // getItem(
+      //   <NavLink onClick={toggleCollapsed} to={`${path}/produtos/criar-kits`}>
+      //     {t('Criar Kits')}
+      //   </NavLink>,
+      //   'criar-kits',
+      //   null,
+      // ),
       // getItem(
       //   <NavLink onClick={toggleCollapsed} to={`${path}/estoque/armazens/`}>
       //     {t('Armazém')}
@@ -246,30 +246,30 @@ function MenuItems({ toggleCollapsed }) {
       //   null,
       // ),
     ]),
-    getItem(`${t('Fiscal')}`, 'fiscal', !topMenu && <Uil500px />, [
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/fiscal/notas-saida`}>
-          {/* /fiscal/faturamento */}
-          {`${t('Notas de saída')}`}
-        </NavLink>,
-        'notas-saida',
-        null,
-      ),
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/fiscal/notas-entradas`}>
-          {`${t('Nodas de entradas')}`}
-        </NavLink>,
-        'notas-entradas',
-        null,
-      ),
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/fiscal/gerenciador-Nfe`}>
-          {`${t('gerenciador de NFe')}`}
-        </NavLink>,
-        'gerenciador-nfe',
-        null,
-      ),
-    ]),
+    // getItem(`${t('Fiscal')}`, 'fiscal', !topMenu && <Uil500px />, [
+    //   getItem(
+    //     <NavLink onClick={toggleCollapsed} to={`${path}/fiscal/notas-saida`}>
+    //       {/* /fiscal/faturamento */}
+    //       {`${t('Notas de saída')}`}
+    //     </NavLink>,
+    //     'notas-saida',
+    //     null,
+    //   ),
+    //   getItem(
+    //     <NavLink onClick={toggleCollapsed} to={`${path}/fiscal/notas-entradas`}>
+    //       {`${t('Nodas de entradas')}`}
+    //     </NavLink>,
+    //     'notas-entradas',
+    //     null,
+    //   ),
+    //   getItem(
+    //     <NavLink onClick={toggleCollapsed} to={`${path}/fiscal/gerenciador-Nfe`}>
+    //       {`${t('gerenciador de NFe')}`}
+    //     </NavLink>,
+    //     'gerenciador-nfe',
+    //     null,
+    //   ),
+    // ]),
     getItem(`${t('Financeiro')}`, 'financeiro', !topMenu && <Uil500px />, [
       // getItem(
       //   <NavLink onClick={toggleCollapsed} to={`${path}/financeiro/geral`}>
@@ -288,12 +288,12 @@ function MenuItems({ toggleCollapsed }) {
         </NavLink>,
         'painel',
       ),
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/financeiro/lancamentos`}>
-          {t('lancamentos')}
-        </NavLink>,
-        'Lançamentos',
-      ),
+      // getItem(
+      //   <NavLink onClick={toggleCollapsed} to={`${path}/financeiro/lancamentos`}>
+      //     {t('lancamentos')}
+      //   </NavLink>,
+      //   'Lançamentos',
+      // ),
       // getItem(
       //   <NavLink onClick={toggleCollapsed} to={`${path}/financeiro/saidas`}>
       //     {t('saidas')}
@@ -355,14 +355,14 @@ function MenuItems({ toggleCollapsed }) {
       //   'Perfil',
       //   null,
       // ),
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/configuracoes/minha-assinatura`}>
-          {/* /others/mySubscriptions */}
-          {`${t('Minha Assinatura')}`}
-        </NavLink>,
-        'minha-assinatura',
-        null,
-      ),
+      // getItem(
+      //   <NavLink onClick={toggleCollapsed} to={`${path}/configuracoes/minha-assinatura`}>
+      //     {/* /others/mySubscriptions */}
+      //     {`${t('Minha Assinatura')}`}
+      //   </NavLink>,
+      //   'minha-assinatura',
+      //   null,
+      // ),
       getItem(
         <NavLink onClick={toggleCollapsed} to={`${path}/configuracoes/integracoes`}>
           {/* /others/integracoes */}
@@ -372,49 +372,49 @@ function MenuItems({ toggleCollapsed }) {
         null,
       ),
     ]),
-    getItem(t('Usuários'), 'Usuários', !topMenu && <UilUsersAlt />, [
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/usuarios/lista`}>
-          {t('Usuários')}
-        </NavLink>,
-        'Usuários',
-        null,
-      ),
+    // getItem(t('Usuários'), 'Usuários', !topMenu && <UilUsersAlt />, [
+    //   getItem(
+    //     <NavLink onClick={toggleCollapsed} to={`${path}/usuarios/lista`}>
+    //       {t('Usuários')}
+    //     </NavLink>,
+    //     'Usuários',
+    //     null,
+    //   ),
+    //   // getItem(
+    //   //   <NavLink onClick={toggleCollapsed} to={`${path}/usuarios/meu-cadastro`}>
+    //   //     {t('Meu Cadastro')}
+    //   //   </NavLink>,
+    //   //   'meu-cadastro',
+    //   //   null,
+    //   // ),
+    // ]),
+    // getItem(t('Suporte'), 'suporte', !topMenu && <UilHeadphones />, [
+    //   getItem(
+    //     <NavLink onClick={toggleCollapsed} to={`${path}/suporte/chamados`}>
+    //       {/* /app/support/tickets */}
+    //       {t('Chamados')}
+    //     </NavLink>,
+    //     'chamados',
+    //     null,
+    //   ),
+    // ]),
+    getItem(t('Ferramentas'), 'ferramentas', !topMenu && <UilClipboardAlt />, [
       // getItem(
-      //   <NavLink onClick={toggleCollapsed} to={`${path}/usuarios/meu-cadastro`}>
-      //     {t('Meu Cadastro')}
+      //   <NavLink onClick={toggleCollapsed} to={`${path}/ferramentas/encurtador-de-link`}>
+      //     {/* /app/task/all */}
+      //     {`${t('Encurtador de Link')}`}
       //   </NavLink>,
-      //   'meu-cadastro',
+      //   'Encurtador',
       //   null,
       // ),
-    ]),
-    getItem(t('Suporte'), 'suporte', !topMenu && <UilHeadphones />, [
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/suporte/chamados`}>
-          {/* /app/support/tickets */}
-          {t('Chamados')}
-        </NavLink>,
-        'chamados',
-        null,
-      ),
-    ]),
-    getItem(t('Ferramentas'), 'ferramentas', !topMenu && <UilClipboardAlt />, [
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/ferramentas/encurtador-de-link`}>
-          {/* /app/task/all */}
-          {`${t('Encurtador de Link')}`}
-        </NavLink>,
-        'Encurtador',
-        null,
-      ),
-      getItem(
-        <NavLink onClick={toggleCollapsed} to={`${path}/ferramentas/gerador-de-qrcode`}>
-          {/* /email/inbox */}
-          {`${t('Gerador de QRCode')}`}
-        </NavLink>,
-        'gerador-de-qrcode',
-        null,
-      ),
+      // getItem(
+      //   <NavLink onClick={toggleCollapsed} to={`${path}/ferramentas/gerador-de-qrcode`}>
+      //     {/* /email/inbox */}
+      //     {`${t('Gerador de QRCode')}`}
+      //   </NavLink>,
+      //   'gerador-de-qrcode',
+      //   null,
+      // ),
       getItem(
         <NavLink onClick={toggleCollapsed} to={`${path}/ferramentas/tendencias`}>
           {`${t('Tendências')}`}

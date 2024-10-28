@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin, Badge, Button, Card, Input, Drawer, Pagination, Modal, message, List } from 'antd';
-import { SoundOutlined, EyeOutlined, ShoppingCartOutlined, MenuOutlined } from '@ant-design/icons';
+import { EyeOutlined, ShoppingCartOutlined, MenuOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import Cookies from 'js-cookie';
 
@@ -179,11 +179,18 @@ function Grid() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+ 
+  const [percentual, setPercentual] = useState(0);
+  const [valor, setValor] = useState(0);
+
   const productsPerPage = 12;
 
   // Modal de perguntas
   const [isPerguntaModalVisible, setIsPerguntaModalVisible] = useState(false);
   const [isViewProductModalVisible, setIsViewProductModalVisible] = useState(false);
+  const [modalJson, setModalJson] = useState([]);
+
+  
   const [isCadastroModalVisible, setIsCadastroModalVisible] = useState(false);
 
   const [pergunta, setPergunta] = useState('');
@@ -217,15 +224,17 @@ function Grid() {
     }
   };
 
-  const showPerguntaModal = () => {
-    setIsPerguntaModalVisible(true);
-  };
+  // const showPerguntaModal = () => {
+  //   setIsPerguntaModalVisible(true);
+  // };
 
   const handlePerguntaModalClose = () => {
     setIsPerguntaModalVisible(false);
   };
 
-  const showViewProductModal = () => {
+  const showViewProductModal = (Modal) => {
+
+    setModalJson(JSON.stringify(Modal));
     setIsViewProductModalVisible(true);
   };
 
@@ -233,12 +242,66 @@ function Grid() {
     setIsViewProductModalVisible(false);
   };
 
-  const showCadastroModal = () => {
+  const showCadastroModal = (product) => {
+    setSelectedProduct(product);
+  
+    // Carregar o percentual do localStorage ou definir 0 como valor padrão
+    const savedPercentual = parseFloat(localStorage.getItem('percentual')) || 0;
+    setPercentual(savedPercentual);
+  
+    const priceNumeric = parseFloat(product.price.replace("R$", "").replace(",", "."));
+    const initialValue = (priceNumeric * (1 + savedPercentual / 100)).toFixed(2);
+    setValor(initialValue); // Define o valor inicial do produto
+    
     setIsCadastroModalVisible(true);
   };
 
   const handleCadastroModalClose = () => {
     setIsCadastroModalVisible(false);
+  };
+
+
+  const handlePercentualChange = (e) => {
+    const newPercentual = parseFloat(e.target.value);
+    setPercentual(newPercentual);
+  
+    // Salva o percentual no localStorage
+    localStorage.setItem('percentual', newPercentual);
+  
+    const productPrice = parseFloat(selectedProduct.price.replace("R$", "").replace(",", "."));
+    
+    if (!isNaN(productPrice)) {
+      const newValue = (productPrice * (1 + newPercentual / 100)).toFixed(2);
+      setValor(newValue);
+    }
+  };
+  
+
+  const handleValorChange = (e) => {
+    const newValue = parseFloat(e.target.value);
+    setValor(newValue);
+  
+    // Verifica se o selectedProduct.price é um número válido
+    const productPrice = parseFloat(selectedProduct.price.replace("R$", "").replace(",", "."));
+  
+    if (!isNaN(productPrice)) {
+      // Calcula o percentual com base no novo valor
+      const newPercentual = (((newValue / productPrice) - 1) * 100).toFixed(2); // Percentual atualizado
+      setPercentual(newPercentual); // Atualiza o percentual no campo
+    }
+  };
+
+  const handleCadastrarProduto = () => {
+    const product = selectedProduct;
+    
+    // Aqui você pode fazer o cadastro do produto com o valor atualizado
+    cadastrarProduto({
+      ...product,
+      price: valor, // O valor editado ou calculado
+    });
+    
+    handleCadastroModalClose();
+    message.success(`Produto "${product.name}" cadastrado com sucesso!`);
   };
 
   useEffect(() => {
@@ -261,23 +324,23 @@ function Grid() {
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
     myHeaders.append("Content-Type", "application/json");
-  
+
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
       body: JSON.stringify({
-        sku: product.sku || "",            
-        nome: product.name,           
+        sku: product.codigo || "",
+        nome: product.name,
         descricao: product.name,
-        preco: product.price,         
-        quantidade: product.quantidade || "", 
-        alerta: product.alerta || "",      
-        categoria: product.category, 
-        localizacao: product.localizacao || "", 
-        imagem: product.imagem || "",     
-        tipo: product.tipo || "",           
-        acesso: product.acesso || "",     
-        ativo: product.ativoPRODUTO || 1        
+        preco: product.price,
+        quantidade: product.quantidade || "",
+        alerta: product.alerta || "",
+        categoria: product.category,
+        localizacao: product.localizacao || "",
+        imagem: product.imagem || "",
+        tipo: product.tipo || "",
+        acesso: product.acesso || "",
+        ativo: product.ativoPRODUTO || 1
       }),
       redirect: "follow",
     };
@@ -296,31 +359,97 @@ function Grid() {
     const accessToken = Cookies.get('access_token');
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
-
+  
     const requestOptions = {
       method: "GET",
       headers: myHeaders,
       redirect: "follow",
     };
+  
+  
+  fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/fornecedores/produtos/3?tipo=1&page=1&limit=20`, requestOptions)
+  .then((response) => response.json())
+  .then((result) => {
+    if (result && result.products) {
+      const mappedProducts = result.products.map((product) => {
+        const jsonProduto = product.jsonProduto || {};
 
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/fornecedores/produtos/3`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        const mappedProducts = result.map(product => ({
-          id: product.ID,
-          name: product.Nome,
-          codigo: product.Codigo,
-          price: product.PrecoVenda,
-          category: product.Categoria,
-        }));
-        setProducts(mappedProducts);
-        setIsLoadingProducts(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setIsLoadingProducts(false);
+        // Inicialmente, usar o preço de venda principal
+        let priceDrop = jsonProduto.PrecoVenda || 0;
+
+        // Verificar se há variações de produto
+        const variacoes = jsonProduto.VariacoesProduto || [];
+
+
+       
+
+        let tabelaDrop = null;
+
+        // Se o produto tiver variações e for do tipo 1
+        // if (variacoes.length > 0 && jsonProduto.TipoDoProduto === 1) {
+        //   // Procurar o preço da tabela "DROP" nas variações
+        //   for (let variacao of variacoes) {
+        //     tabelaDrop = variacao.PrecosTabelas?.find(tabela => tabela.Tabela === "DROP");
+        //     if (tabelaDrop && tabelaDrop.PrecoVenda) {
+        //       priceDrop = tabelaDrop.PrecoVenda; // Encontrou o preço da tabela "DROP"
+        //       break; // Interrompe o loop assim que encontrar o preço
+        //     }
+        //   }
+        // }
+
+        // Se o produto não tem variações, buscar no nível principal do produto
+        if (!tabelaDrop) {
+          tabelaDrop = jsonProduto.PrecosTabelas?.find(tabela => tabela.Tabela === "DROP");
+          if (tabelaDrop && tabelaDrop.PrecoVenda) {
+            priceDrop = tabelaDrop.PrecoVenda;
+          }
+        }
+
+        // Verificar se o preço está em centavos e ajustar
+        if (priceDrop > 1000) {
+          priceDrop = priceDrop / 100;
+        }
+
+        // Se o preço ainda for inválido ou não encontrado, definir como 0
+        if (isNaN(priceDrop) || priceDrop <= 0) {
+          priceDrop = 0;
+        }
+
+
+        console.log("VariacoesProduto:", variacoes);
+        console.log("Tabela encontrada:", tabelaDrop);
+
+        // Formatar o preço no padrão BRL
+        const priceFormatted = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(priceDrop);
+
+        return {
+          id: jsonProduto.ID,
+          name: jsonProduto.Nome || 'Produto Sem Nome',
+          codigo: jsonProduto.Codigo || 'Sem Código',
+          price: priceFormatted,
+          category: jsonProduto.Categoria || 'Sem Categoria',
+          tipo: jsonProduto.TipoDoProduto || 'Sem Tipo',
+          json: jsonProduto || [],
+        };
       });
+
+      console.log(mappedProducts);
+
+      setProducts(mappedProducts);
+      setIsLoadingProducts(false);
+    } else {
+      console.error("Nenhum produto retornado.");
+      setIsLoadingProducts(false);
+    }
+  })
+  .catch((error) => {
+    console.error("Erro ao carregar produtos:", error);
+    setIsLoadingProducts(false);
+  });
+
+
   }
+  
 
   function carregaCategorias() {
     const accessToken = Cookies.get('access_token');
@@ -354,20 +483,22 @@ function Grid() {
     const accessToken = Cookies.get('access_token');
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
-
+  
     const requestOptions = {
       method: "GET",
       headers: myHeaders,
       redirect: "follow",
     };
-
+  
     fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/fornecedores/imagens/3?produto=${CODIGO}`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        const imagem = result && result.imagem && result.imagem[0] ? result.imagem[0] : null;
+        const imagem = result && result.imagem && result.imagem[0] ? result.imagem[0].url : null;
+        const imagemBase64 = imagem ? `data:image/png;base64,${imagem}` : null; // Adiciona o prefixo
+  
         setImages(prevImages => [
           ...prevImages.filter(img => img.codigo !== CODIGO),  // Remova qualquer imagem anterior com o mesmo código
-          { codigo: CODIGO, imagem: imagem }  // Adicione a nova imagem
+          { codigo: CODIGO, imagem: imagemBase64 }  // Adicione a nova imagem com base64 formatado
         ]);
       })
       .catch((error) => {
@@ -395,7 +526,7 @@ function Grid() {
 
   return (
     <div className="container">
-      <MobileMenuButton icon={<MenuOutlined />} onClick={showDrawer}>
+      {/* <MobileMenuButton icon={<MenuOutlined />} onClick={showDrawer}>
         Categorias
       </MobileMenuButton>
       <Drawer title="Categorias" placement="left" onClose={onClose} visible={visible}>
@@ -412,9 +543,9 @@ function Grid() {
             <p>No categories found</p>
           )}
         </Menu>
-      </Drawer>
+      </Drawer> */}
       <Row gutter={[12, 12]}>
-        <Col xs={0} lg={4}>
+        {/* <Col xs={0} lg={4}>
           <Menu>
             {isLoadingCategories ? (
               <Spin />
@@ -428,7 +559,7 @@ function Grid() {
               <p>No categories found</p>
             )}
           </Menu>
-        </Col>
+        </Col> */}
         <Col xs={24} lg={20}>
           <Input
             placeholder="Buscar produto na página"
@@ -451,21 +582,27 @@ function Grid() {
                         <ImageBox
                           alt={product.name}
                           src={productImage && productImage.imagem
-                            ? `data:image/png;base64,${productImage.imagem}`
+                            ? `${productImage.imagem}`
                             : 'https://via.placeholder.com/180x180.png?text=No+Image'}
                         />
                         <CodeSpan>{product.codigo}</CodeSpan>
-                        <PriceSpan>R${product.price}</PriceSpan>
+                        <PriceSpan>{product.price}</PriceSpan>
                         <Subtitle>{product.name}</Subtitle>
                         <WrapperButtons>
-                          <Btn icon={<SoundOutlined />} onClick={showPerguntaModal}>
+                          {/* <Btn icon={<SoundOutlined />} onClick={showPerguntaModal}>
                             Fazer Pergunta
-                          </Btn>
-                          <ViewButton icon={<EyeOutlined />} onClick={showViewProductModal}>
-                            Visualizar Produto
-                          </ViewButton>
-                          <AddCartButton icon={<ShoppingCartOutlined />} onClick={() => cadastrarProduto(product)}>
+                          </Btn> */}
+                          {product.tipo === 0?
+                          <ViewButton icon={<ShoppingCartOutlined />} onClick={() => showCadastroModal(product)}>
                             Cadastrar X-Drop - SP
+                          </ViewButton>
+                          :
+                          <ViewButton icon={<ShoppingCartOutlined />} onClick={() => showCadastroModal(product)}>
+                            Ver Variações Produto
+                          </ViewButton>
+                          }
+                          <AddCartButton icon={<EyeOutlined />} onClick={() => showViewProductModal(product.json)}>
+                            Visualizar Produto
                           </AddCartButton>
                         </WrapperButtons>
                       </CardProduct>
@@ -488,6 +625,37 @@ function Grid() {
           />
         </Col>
       </Row>
+
+      {/* Modal para ajustar o percentual e o valor */}
+      <Modal
+        title="Cadastrar Produto - X-Drop SP"
+        visible={isCadastroModalVisible}
+        onCancel={handleCadastroModalClose}
+        footer={[
+          <Button key="back" onClick={handleCadastroModalClose}>
+            Cancelar
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleCadastrarProduto}>
+            Cadastrar Produto
+          </Button>,
+        ]}
+      >
+        <p>Produto: {selectedProduct && selectedProduct.name}</p>
+        <p>Código: {selectedProduct && selectedProduct.codigo}</p>
+        <Input
+          addonBefore="Percentual (%)"
+          type="number"
+          value={percentual}
+          onChange={handlePercentualChange}
+        />
+        <br />
+        <Input
+          addonBefore="Valor (R$)"
+          type="number"
+          value={valor}
+          onChange={handleValorChange}
+        />
+      </Modal>
 
       {/* Modal de perguntas */}
       <Modal
@@ -537,11 +705,14 @@ function Grid() {
           </Button>,
         ]}
       >
-        <p>Informações detalhadas do produto aqui.</p>
+        <p>Informações detalhadas do produto aqui.
+
+          {modalJson}
+        </p>
       </Modal>
 
       {/* Modal de Cadastro */}
-      <Modal
+      {/* <Modal
         title="Cadastrar X-Drop - SP"
         visible={isCadastroModalVisible}
         onCancel={handleCadastroModalClose}
@@ -552,7 +723,7 @@ function Grid() {
         ]}
       >
         <p>Detalhes do cadastro aqui.</p>
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

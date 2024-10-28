@@ -19,11 +19,7 @@ const productColumns = [
     dataIndex: 'deals',
     key: 'deals',
   },
-  {
-    title: 'Quantia',
-    dataIndex: 'amount',
-    key: 'amount',
-  },
+  // Removemos a coluna de quantia (amount)
 ];
 
 const TopProduct = React.memo(() => {
@@ -44,21 +40,19 @@ const TopProduct = React.memo(() => {
     fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/painel/top-products`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        const mappedProducts = result.products.map((product) => ({
+        const mappedProducts = result.products.slice(0, 10).map((product) => ({
           key: product.codigoITEMPEDIDO,
           productname: (
             <div className="ninjadash-info-element align-center-v">
               <img
-                src={product.image || defaultImageUrl}
+                src={product.imagemITEMPEDIDO || defaultImageUrl}
                 alt={product.nomeProdutoITEMPEDIDO}
-                style={{ width: '40px', height: '40px', marginRight: '10px' }}
+                style={{ width: '60px', height: 'auto', marginRight: '10px' }} // Manter proporção da imagem
               />
               <span className="ninjadash-info-element__text">{product.nomeProdutoITEMPEDIDO}</span>
             </div>
           ),
           deals: `$${parseFloat(product.precoITEMPEDIDO).toFixed(2)}`,
-          // Quantia agora sem casas decimais
-          amount: Math.floor(product.quantidadeITEMPEDIDO),
         }));
         setProducts(mappedProducts);
       })

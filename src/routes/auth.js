@@ -1,5 +1,6 @@
+/* eslint-disable */
 import React, { lazy, useEffect } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';  
 import AuthLayout from '../container/profile/authentication/Index';
 
 const ForgotPass = lazy(() => import('../container/profile/authentication/overview/ForgotPassword'));
@@ -9,10 +10,10 @@ const FbLogin = lazy(() => import('../container/profile/authentication/overview/
 const FbSignUp = lazy(() => import('../container/profile/authentication/overview/FbSignup'));
 // const NotFound = lazy(() => import('../container/pages/404'));
 
+ 
 const AuthRoot = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => navigate('/'));
+  const navigate = useNavigate();  
+  useEffect(() => navigate('/'), []); 
 };
 
 const FrontendRoutes = React.memo(() => {

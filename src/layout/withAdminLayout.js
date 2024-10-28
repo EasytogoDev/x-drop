@@ -7,7 +7,7 @@ import propTypes from 'prop-types';
 import { Component } from 'react';
 import { Scrollbars } from '@pezhmanparsaee/react-custom-scrollbars';
 import { connect } from 'react-redux';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import MenuItems from './MenueItems';
 import { FooterStyle, LayoutContainer, SmallScreenAuthInfo, TopMenuSearch } from './Style';
@@ -215,15 +215,15 @@ const ThemeLayout = (WrappedComponent) => {
                     <Row>
                       <Col md={12} xs={24}>
                         <span className="admin-footer__copyright">
-                          © 2024<Link to="https://easytogo.com.br/">Easytogo Soluções Técnologicas Ltda </Link>
+                          © 2024<Link to="#">X-Drop </Link>
                         </span>
                       </Col>
-                      <Col md={12} xs={24}>
+                      {/* <Col md={12} xs={24}>
                         <div className="admin-footer__links">
                           <NavLink to="/outros/perguntas-frequentes">F.A.Q</NavLink>
                           <NavLink to="/outros/termos">Termos</NavLink>
                         </div>
-                      </Col>
+                      </Col> */}
                     </Row>
                   </FooterStyle>
                 </Content>

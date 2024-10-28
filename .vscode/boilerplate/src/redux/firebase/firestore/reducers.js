@@ -38,7 +38,7 @@ const initialState = {
   error: null,
 };
 
-const initialStateSingle = {
+const Single = {
   data: null,
   loading: false,
   error: null,

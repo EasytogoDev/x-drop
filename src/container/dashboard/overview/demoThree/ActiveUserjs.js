@@ -84,7 +84,7 @@ const ActiveUser = React.memo(() => {
   const [products, setProducts] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const slideWidth = 300; // Largura do slide, ajuste conforme necessário
-
+  const [pedidosMeli, setPedidosMeli] = useState([]);
   const carouselRef = useRef(null);
 
   const prevSlide = () => {
@@ -114,7 +114,7 @@ const ActiveUser = React.memo(() => {
           name: product.nomeProdutoITEMPEDIDO,
           category: product.origemITEMPEDIDO,
           price: parseFloat(product.precoITEMPEDIDO).toFixed(2),
-          image: product.image || null, // Verificar se o produto tem imagem
+          image: product.imagemITEMPEDIDO, // Verificar se o produto tem imagem
         }));
         setProducts(mappedProducts);
       })
@@ -123,8 +123,57 @@ const ActiveUser = React.memo(() => {
       });
   };
 
+  function carregaPedidosMeli() {
+    const accessToken = Cookies.get('access_token');
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/pedidos`, {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result); // Verifique o payload retornado
+
+        if (Array.isArray(result) && result.length > 0) {
+          const pedidos = result.map((pedido) => ({
+            codigo: pedido.codigo, // Ajuste para o campo correto
+            nome: pedido.nome,
+            sobrenome: pedido.sobrenome,
+            status: pedido.status,
+            datacriacao: pedido.datacriacao, // Data de criação do pedido
+            totalAmount: pedido.total, // Valor total do pedido
+            buyerNickname: `${pedido.nome} ${pedido.sobrenome}`, // Nome e sobrenome concatenados
+            rua: pedido.rua, // Rua
+            numero: pedido.numero, // Número da casa
+            bairro: pedido.bairro, // Bairro
+            cep: pedido.cep, // CEP
+            integracao: pedido.integracao,
+            telefone: `${pedido.areaTelefone} ${pedido.telefone}`, // Telefone
+            email: pedido.email, // Email do cliente
+            items: pedido.Itens ? pedido.Itens.map((item) => ({
+              title: item.produto, // Nome do produto
+              quantity: item.quantidade, // Quantidade
+              sku: item.produto, // SKU do produto
+              price: item.preco, // Preço
+              imagem: item.imagem
+            })) : [], // Verifica se ItensPedido existe antes de mapear
+          }));
+
+          setPedidosMeli(pedidos);
+          setFilteredPedidos(pedidos); // Define o estado de pedidos filtrados também
+        } else {
+          console.error('Nenhum pedido encontrado ou formato inesperado:', result);
+        }
+      })
+      .catch((error) => console.error('Erro ao carregar pedidos:', error));
+  }
+
   useEffect(() => {
     carregaProdutos();
+    carregaPedidosMeli();
   }, []);
 
   return (

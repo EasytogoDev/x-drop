@@ -42,7 +42,7 @@ const RecentDeal = React.memo(() => {
             price: pedido.total_amount,
           }));
 
-          setPedidosMeli(pedidos);
+          setPedidosMeli(pedidos.slice(-10));
         } else {
           console.error('Nenhum pedido encontrado:', result);
         }

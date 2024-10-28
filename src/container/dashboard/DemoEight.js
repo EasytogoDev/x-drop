@@ -1,5 +1,8 @@
 /* eslint-disable */
+import { message } from 'antd';
 import React, { lazy, Suspense, useEffect, useState } from 'react';
+
+import { useLocation } from 'react-router-dom';
 import { Row, Col, Skeleton } from 'antd';
 import Cookies from 'js-cookie';
 import { FaMoneyBillWave, FaShoppingCart, FaDollarSign, FaChartLine } from 'react-icons/fa'; // Ícones
@@ -12,6 +15,10 @@ const MonthlyEarning = lazy(() => import('./overview/demoThree/MonthlyEarning'))
 const TopProduct = lazy(() => import('./overview/demoThree/TopProduct'));
 const RecentDeals = lazy(() => import('./overview/demoThree/RecentDeals'));
 const ActiveUser = lazy(() => import('./overview/demoThree/ActiveUserjs'));
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 // Estilos internos
 const Main = styled.main`
@@ -116,10 +123,65 @@ function DemoEight() {
         console.error(error);
       });
   }
+  const query = useQuery();
 
   useEffect(() => {
+
+    const LocalCodeShopee = localStorage.getItem('CodeShopee');
+    const LocalIdShopee = localStorage.getItem('IdShopee');
+
+    // Aqui, salve no localStorage se os parâmetros estiverem presentes
+    if (LocalCodeShopee && LocalIdShopee) {
+      verificaShopee(LocalCodeShopee, LocalIdShopee);
+    }
+
     carregaPedidos();
-  }, []);
+
+  }, [query]);
+
+
+
+  const verificaShopee = (code, shop_id) => {
+    const accessToken = Cookies.get('access_token'); // Verifica se o usuário está logado
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+
+    // Pega o valor de horarioCorte do localStorage
+    const horarioCorte = localStorage.getItem('horarioCorte') || '12:00'; // Definir um valor padrão se não existir no localStorage
+
+    const raw = JSON.stringify({
+      code,
+      shop_id,
+      fornecedor: 3, // aqui você pode modificar com base no localStorage ou lógica relevante
+      horarioCorte,  // Adiciona o horário de corte no corpo do request
+    });
+
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/shopee/token`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.createRecord) {
+          message.success(result.message);
+          // Redireciona para a página de sucesso
+          localStorage.removeItem('CodeShopee');
+          localStorage.removeItem('IdShopee');
+          navigate('/configuracoes/integracoes?status=sucesso&integracao=shopee');
+        } else {
+          message.error(result.message || 'Erro desconhecido');
+        }
+      })
+      .catch((error) => {
+        message.error(error.error || 'Erro na integração com Shopee');
+        console.error(error);
+      });
+  };
 
   return (
     <>

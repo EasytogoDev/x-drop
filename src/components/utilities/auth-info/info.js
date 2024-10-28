@@ -5,14 +5,14 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable jsx-a11y/alt-text */
 import UilAngleDown from '@iconscout/react-unicons/icons/uil-angle-down';
-import UilBell from '@iconscout/react-unicons/icons/uil-bell';
-import UilDollarSign from '@iconscout/react-unicons/icons/uil-dollar-sign';
-import UilSetting from '@iconscout/react-unicons/icons/uil-setting';
+// import UilBell from '@iconscout/react-unicons/icons/uil-bell';
+// import UilDollarSign from '@iconscout/react-unicons/icons/uil-dollar-sign';
+// import UilSetting from '@iconscout/react-unicons/icons/uil-setting';
 import UilSignout from '@iconscout/react-unicons/icons/uil-signout';
-import UilUser from '@iconscout/react-unicons/icons/uil-user';
-import UilUsersAlt from '@iconscout/react-unicons/icons/uil-users-alt';
+// import UilUser from '@iconscout/react-unicons/icons/uil-user';
+// import UilUsersAlt from '@iconscout/react-unicons/icons/uil-users-alt';
 // import { ReactSVG } from 'react-svg';
-import { Avatar } from 'antd';
+// import { Avatar } from 'antd';
 import React, { useState, useEffect } from 'react';
 // import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -22,10 +22,10 @@ import { themeColor } from '../../../config/theme/themeVariables';
 
 
 import { InfoWraper, NavAuth, UserDropDwon } from './auth-info-style';
-import Message from './Message';
+// import Message from './Message';
 import Notification from './Notification';
-import Search from './Search';
-import Settings from './settings';
+// import Search from './Search';
+// import Settings from './settings';
 import { logOut } from '../../../redux/authentication/actionCreator';
 import { changeLayoutMode } from '../../../redux/themeLayout/actionCreator';
 
@@ -139,10 +139,10 @@ const AuthInfo = React.memo(() => {
         <figure className="user-dropdwon__info">
           <img src={User.foto} width={100} />
           <figcaption>
-            <Heading as="h5">{User.nome}</Heading>
+            <Heading as="h5">{User.usuario}</Heading>
           </figcaption>
         </figure>
-        <ul className="user-dropdwon__links">
+        {/* <ul className="user-dropdwon__links">
           <li>
             <Link target='_blank' to="#">
               <UilUser /> Perfil
@@ -168,7 +168,7 @@ const AuthInfo = React.memo(() => {
               <UilBell /> Video Aulas
             </Link>
           </li>
-        </ul>
+        </ul> */}
         <Link className="user-dropdwon__bottomAction" onClick={SignOut} to="#">
           <UilSignout /> Sair
         </Link>
@@ -215,10 +215,10 @@ const AuthInfo = React.memo(() => {
 
   return (
     <InfoWraper>
-      <Search />
-      <Message />
+      {/* <Search /> */}
+      {/* <Message /> */}
       <Notification />
-      <Settings />
+      {/* <Settings /> */}
       <div className="ninjadash-nav-actions__item ninjadash-nav-actions__language">
         <Dropdown placement="bottomRight" content={country} trigger="click">
           {ModeTheme ? 
@@ -251,8 +251,8 @@ const AuthInfo = React.memo(() => {
       <div className="ninjadash-nav-actions__item ninjadash-nav-actions__author">
         <Popover placement="bottomRight" content={userContent} action="click">
           <Link to="#" className="ninjadash-nav-action-link">
-            <Avatar src={User.foto} />
-            <span className="ninjadash-nav-actions__author--name">{User.nome}</span>
+            {/* <Avatar src={User.foto} /> */}
+            <span className="ninjadash-nav-actions__author--name">{User.usuario}</span>
             <UilAngleDown />
           </Link>
         </Popover>

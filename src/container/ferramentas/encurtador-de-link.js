@@ -76,7 +76,7 @@ function Encurtador() {
       },
     };
   
-    axios.post('http://192.168.15.47:8080/api/encurtador/shorten', {
+    axios.post(`${process.env.REACT_APP_API_ENDPOINT}/api/encurtador/shorten`, {
       originalURL: link,
     }, requestOptions)
     .then(response => {console.log(response)
