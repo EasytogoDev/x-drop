@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin, Badge, Button, Card, Input, Drawer, Pagination, Modal, message } from 'antd';
-import { NotificationOutlined, EyeOutlined, ShoppingCartOutlined, MenuOutlined } from '@ant-design/icons';
+import { NotificationOutlined, EyeOutlined, ShoppingCartOutlined, MenuOutlined, EditOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import Cookies from 'js-cookie';
 import { PageHeader } from '../../../../components/page-headers/page-headers';
@@ -22,6 +22,43 @@ function MeusProdutos() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [marketplace, setMarketplace] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [isViewProductModalVisible, setIsViewProductModalVisible] = useState(false);
+const [modalJson, setModalJson] = useState([]);
+const [editableJson, setEditableJson] = useState({});
+const camposPermitidos = [
+  "ID", "Nome", "Codigo", "Categoria", "PrecoVenda", "Descricao", "EstoqueUnidade", 
+  "UnidadeComercial", "GeneroFiscal", "Fornecedor"
+];
+const showViewProductModal = (productJson) => {
+  if (!productJson) {
+    message.error("Dados do produto não encontrados.");
+    return;
+  }
+
+  setModalJson(JSON.stringify(productJson));
+  setEditableJson(productJson || {}); // Carrega o JSON editável ou um objeto vazio
+  setIsViewProductModalVisible(true);
+};
+
+const handleJsonChange = (key, value) => {
+  setEditableJson(prevJson => ({
+    ...prevJson,
+    [key]: value,
+  }));
+};
+
+const handleViewProductModalClose = () => {
+  setIsViewProductModalVisible(false);
+};
+
+const handleSaveChanges = (updatedJson) => {
+  // Aqui você pode atualizar o estado do produto ou enviar os dados para uma API
+  console.log("Dados atualizados:", updatedJson);
+  message.success("Alterações salvas com sucesso!");
+  setIsViewProductModalVisible(false);
+};
   
   
   const productsPerPage = 12;
@@ -34,6 +71,8 @@ function MeusProdutos() {
 
   const handlePlatformSelect = (platform) => {
     setSelectedPlatform(platform);
+    setIsEditing(true);  // Ativa o modo de edição
+    setIsAnnounceModalVisible(true);
   };
 
   const handleConfirm = () => {
@@ -354,9 +393,19 @@ justify-content: space-around;
                         <ViewButton icon={<EyeOutlined />} onClick={() => showModal(product, productImage.imagem)}>
                           Visualizar Produto
                         </ViewButton>
-                        {/* <AddCartButton icon={<ShoppingCartOutlined />}>
-                          Cadastrar X-Drop - SP
-                        </AddCartButton> */}
+                        <Button
+  icon={<EditOutlined />}
+  onClick={() => handlePlatformSelect('Shopee')}
+  style={{ marginBottom: 5 }}
+>
+  Shopee
+</Button>
+<Button
+  icon={<EditOutlined />}
+  onClick={() => handlePlatformSelect('Mercado Livre')}
+>
+  Mercado Livre
+</Button>
                       </WrapperButtons>
                     </CardProduct>
                   </Badge.Ribbon>
@@ -417,6 +466,48 @@ justify-content: space-around;
 
       </SelectionContainer>
     </Modal>
+
+    <Modal
+  title={`Editar Anúncio - ${selectedPlatform}`}
+  visible={isAnnounceModalVisible}
+  onCancel={() => { setIsAnnounceModalVisible(false); setIsEditing(false); }}
+  footer={[
+    <Button key="back" onClick={() => { setIsAnnounceModalVisible(false); setIsEditing(false); }}>
+      Fechar
+    </Button>,
+    <Button key="submit" type="primary" onClick={() => handleSaveChanges(editableJson)}>
+      Salvar Alterações
+    </Button>,
+  ]}
+>
+  <p>Editando anúncio para: "{selectedProduct?.product?.name || 'Produto Sem Nome'}".</p>
+
+  {/* Campos editáveis */}
+  <Input
+    placeholder="Nome do Produto"
+    value={editableJson.name || ''}
+    onChange={(e) => handleJsonChange('name', e.target.value)}
+    style={{ marginBottom: 10 }}
+  />
+  <Input
+    placeholder="Preço do Produto"
+    value={editableJson.price || ''}
+    onChange={(e) => handleJsonChange('price', e.target.value)}
+    style={{ marginBottom: 10 }}
+  />
+  <Input
+    placeholder="Categoria"
+    value={editableJson.category || ''}
+    onChange={(e) => handleJsonChange('category', e.target.value)}
+    style={{ marginBottom: 10 }}
+  />
+  <Input
+    placeholder="Descrição"
+    value={editableJson.description || ''}
+    onChange={(e) => handleJsonChange('description', e.target.value)}
+    style={{ marginBottom: 10 }}
+  />
+</Modal>
 
       {/* Modal de Visualizar Produto */}
       <Modal

@@ -1,171 +1,14 @@
 /* eslint-disable */
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Spin, Badge, Button, Card, Input, Drawer, Pagination, Modal, message, List } from 'antd';
+import { Row, Col, Spin, Badge, Button, Card, Input, Drawer, Pagination, Modal, message, List, Collapse } from 'antd';
 import { EyeOutlined, ShoppingCartOutlined, MenuOutlined } from '@ant-design/icons';
-import styled from 'styled-components';
 import Cookies from 'js-cookie';
-
-// Estilos personalizados
-const Btn = styled(Button)`
-  color: #fff;
-  background-color: #6b46c1; /* Cor roxa do botão "Fazer Pergunta" */
-  border: none;
-  font-weight: bold;
-  width: 100%;
-  margin-bottom: 8px;
-
-  &:hover {
-    background-color: #5a3a9d;
-  }
-`;
-
-const ViewButton = styled(Button)`
-  color: #fff;
-  background-color: #fb923c; /* Cor laranja para o botão "Visualizar Produto" */
-  border: none;
-  width: 100%;
-  margin-bottom: 8px;
-
-  &:hover {
-    background-color: #f97316;
-  }
-`;
-
-const AddCartButton = styled(Button)`
-  color: #6b46c1;
-  background-color: transparent;
-  border: none;
-  width: 100%;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const CardProduct = styled(Card)`
-  border-radius: 12px;
-  overflow: hidden;
-  text-align: center;
-  background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-  height: auto;
-
-  &:hover {
-    transform: translateY(-5px);
-  }
-`;
-
-const ImageBox = styled.img`
-  max-width: 180px;
-  margin-bottom: 12px;
-  object-fit: cover;
-  height: 180px;
-  border-radius: 8px; /* Ajuste de bordas arredondadas */
-`;
-
-const Title = styled.h2`
-  font-size: 16px;
-  font-weight: bold;
-  margin: 0;
-  color: #111827;
-`;
-
-const PriceSpan = styled.span`
-  display: block;
-  font-size: 18px;
-  color: #10b981;
-  font-weight: bold;
-  margin-top: 8px;
-`;
-
-const CodeSpan = styled.span`
-  display: block;
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 8px;
-`;
-
-const Subtitle = styled.p`
-  font-size: 12px;
-  color: #6b7280;
-  margin-top: 4px;
-`;
-
-const WrapperButtons = styled.div`
-  display: flex;
-  flex-direction: column; /* Botões empilhados */
-  margin-top: 12px;
-`;
-
-const PerguntaInput = styled(Input)`
-  margin-bottom: 16px;
-  width: 80%;
-`;
-
-const EnviarButton = styled(Button)`
-  background-color: #6b46c1;
-  color: #fff;
-  margin-left: 8px;
-
-  &:hover {
-    background-color: #5a3a9d;
-  }
-`;
-
-const PerguntasBox = styled.div`
-  background-color: #f9fafb;
-  padding: 16px;
-  border-radius: 8px;
-  margin-top: 16px;
-  height: 200px; /* Defina uma altura fixa */
-  overflow-y: auto; /* Permitir rolagem */
-`;
-
-const MobileMenuButton = styled(Button)`
-  display: none;
-  margin-bottom: 20px;
-
-  @media (max-width: 768px) {
-    display: inline-block;
-  }
-`;
-
-const Menu = styled.ul`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  background-color: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 20px;
-
-  @media (max-width: 768px) {
-    padding: 8px;
-    margin-bottom: 10px;
-  }
-`;
-
-const MenuItem = styled.li`
-  white-space: nowrap;
-  overflow-wrap: normal;
-  line-height: 30px; /* Reduzido o espaçamento entre as linhas */
-  width: 100%;
-  overflow: hidden;
-  font-size: 12px; /* Reduzido para caber melhor na tela */
-`;
-
-const MenuLink = styled.a`
-  cursor: pointer;
-  text-decoration: none;
-  color: #6d6d6d;
-  transition: color 0.5s ease-in-out;
-
-  &:hover {
-    color: #8231d3;
-  }
-`;
+import {
+  Btn, ViewButton, AddCartButton, CardProduct, ImageBox,
+  Title, PriceSpan, CodeSpan, Subtitle, WrapperButtons,
+  PerguntaInput, EnviarButton, PerguntasBox, MobileMenuButton,
+  Menu, MenuItem, MenuLink
+} from './gridStyles'; 
 
 function Grid() {
   const [products, setProducts] = useState([]);
@@ -179,6 +22,14 @@ function Grid() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [editableJson, setEditableJson] = useState({});
+  const { Panel } = Collapse;
+
+  const camposPermitidos = [
+    "ID", "Nome", "Codigo", "Categoria", "PrecoVenda", "Descricao", "EstoqueUnidade", 
+    "UnidadeComercial", "GeneroFiscal", "Fornecedor"
+  ];
+  
  
   const [percentual, setPercentual] = useState(0);
   const [valor, setValor] = useState(0);
@@ -199,6 +50,13 @@ function Grid() {
   const showDrawer = () => {
     setVisible(true);
   };
+
+  const handleSaveChanges = (updatedJson) => {
+    // Aqui você pode atualizar o estado do produto ou enviar os dados para uma API
+    console.log("Dados atualizados:", updatedJson);
+    message.success("Alterações salvas com sucesso!");
+    setIsViewProductModalVisible(false);
+  };  
 
   const onClose = () => {
     setVisible(false);
@@ -232,11 +90,18 @@ function Grid() {
     setIsPerguntaModalVisible(false);
   };
 
-  const showViewProductModal = (Modal) => {
-
-    setModalJson(JSON.stringify(Modal));
+  const showViewProductModal = (productJson) => {
+    setModalJson(JSON.stringify(productJson));
+    setEditableJson(productJson); // Carrega o JSON editável
     setIsViewProductModalVisible(true);
   };
+  
+  const handleJsonChange = (key, value) => {
+    setEditableJson(prevJson => ({
+      ...prevJson,
+      [key]: value,
+    }));
+  };  
 
   const handleViewProductModalClose = () => {
     setIsViewProductModalVisible(false);
@@ -696,20 +561,35 @@ function Grid() {
 
       {/* Modal de Visualizar Produto */}
       <Modal
-        title="Visualizar Produto"
-        visible={isViewProductModalVisible}
-        onCancel={handleViewProductModalClose}
-        footer={[
-          <Button key="back" onClick={handleViewProductModalClose}>
-            Fechar
-          </Button>,
-        ]}
-      >
-        <p>Informações detalhadas do produto aqui.
+  title="Visualizar Produto"
+  visible={isViewProductModalVisible}
+  onCancel={handleViewProductModalClose}
+  width={800}
+  footer={[
+    <Button key="back" onClick={handleViewProductModalClose}>
+      Fechar
+    </Button>,
+    <Button key="save" type="primary" onClick={() => handleSaveChanges(editableJson)}>
+      Salvar Alterações
+    </Button>,
+  ]}
+>
+  <p>Edite as informações do produto abaixo:</p>
+  {Object.entries(editableJson).map(([key, value]) => {
+    if (!camposPermitidos.includes(key)) return null; // Ignora os campos não permitidos
 
-          {modalJson}
-        </p>
-      </Modal>
+    return (
+      <div key={key} style={{ marginBottom: '10px' }}>
+        <label style={{ fontWeight: 'bold' }}>{key}:</label>
+        <Input
+          value={value}
+          onChange={(e) => handleJsonChange(key, e.target.value)}
+          style={{ width: '100%' }}
+        />
+      </div>
+    );
+  })}
+</Modal>
 
       {/* Modal de Cadastro */}
       {/* <Modal
